@@ -1,36 +1,4 @@
 -- stylua: ignore start
-local globs = {
-  "**/_cacache/**",
-  "**/.cache/**",
-  "**/.cargo/**",
-  "**/.copilot/**",
-  "**/copyq/items**",
-  "**/.git/**",
-  "**/.github/**",
-  "**/go/**",
-  "**license**",
-  "**License**",
-  "**LICENSE**",
-  "**/.local/lib**",
-  "**/.local/state/**",
-  "**.log",
-  "**.LOG",
-  "**/mason/packages/**",
-  "**/mise/**",
-  "**/mozilla/firefox/**",
-  "**/node_modules/**",
-  "**/.npm/**",
-  "**/nvim/mason**",
-  "**/.nvm/**",
-  "**/pipx/**",
-  "**/pnpm/**",
-  "**/.quokka/**",
-  "**/Trash/**",
-  "**/.Trash-1000/**",
-  "**ttf**",
-  "**/undodir/**",
-}
-
 local function up(path, count)
   for _ = 1, count do
     path = vim.fn.fnamemodify(path, ":h")
@@ -386,10 +354,10 @@ return {
           highlights = { layout = { preset = "custom_layout" } },
           lines = { layout = { preview = "top", preset = "custom_layout" } },
           keymaps = { plugs = true },
-          todo_comments = { hidden = true, exclude = globs },
-          files = { hidden = true, exclude = globs, follow = true, },
-          grep = { hidden = true, exclude = globs, regex = false, },
-          grep_word = { hidden = true, exclude = globs, auto_confirm = true, },
+          todo_comments = { hidden = true, },
+          files = { hidden = true, follow = true, },
+          grep = { hidden = true, regex = false, },
+          grep_word = { hidden = true, auto_confirm = true, },
         },
         win = {
           input = {

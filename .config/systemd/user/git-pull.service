@@ -1,6 +1,0 @@
-[Unit]
-Description=git-pull
-
-[Service]
-Type=oneshot
-ExecStart=%h/archlinux/.config/systemd/user/bin/git-pull

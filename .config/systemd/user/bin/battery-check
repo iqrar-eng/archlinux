@@ -1,20 +1,13 @@
 #!/bin/bash
-# --- Config ---
-BATTERY_PATH="/sys/class/power_supply/BAT0"     # where the kernel exposes battery info
 
-LOW_THRESHOLD=42                                 # % below which we alert (discharging)
-LOW_STATE_FILE="/tmp/battery-low-notified"       # marker: "we already notified this low drop"
-LOW_ID_FILE="/tmp/battery-low-notif-id"          # stores dunst's notification ID so we can close it later
+BATTERY_PATH="/sys/class/power_supply/BAT0"
+LOW_THRESHOLD=40
+LOW_STATE_FILE="/tmp/battery-low-notified"
+LOW_ID_FILE="/tmp/battery-low-notif-id"
 
-HIGH_THRESHOLD=80                                # % at/above which we alert (charging)
-HIGH_STATE_FILE="/tmp/battery-high-notified"     # marker: "we already notified this high charge"
-HIGH_ID_FILE="/tmp/battery-high-notif-id"        # stores dunst's notification ID so we can close it later
+CAPACITY=$(cat "$BATTERY_PATH/capacity")
+STATUS=$(cat "$BATTERY_PATH/status")
 
-# --- Read current battery state ---
-CAPACITY=$(cat "$BATTERY_PATH/capacity")   # e.g. 28
-STATUS=$(cat "$BATTERY_PATH/status")       # "Charging", "Discharging", "Full", etc.
-
-# --- Helper: send a notification, save its ID to a file ---
 send_notification() {
   local summary="$1"
   local id_file="$2"
@@ -34,7 +27,6 @@ send_notification() {
   echo "$REPLY" | grep -oP 'uint32 \K[0-9]+' > "$id_file"
 }
 
-# --- Helper: close a previously-sent notification by its saved ID ---
 close_notification() {
   local id_file="$1"
   if [ -f "$id_file" ]; then
@@ -49,9 +41,6 @@ close_notification() {
   fi
 }
 
-# =========================================================
-# Case 1: LOW BATTERY (discharging, below threshold)
-# =========================================================
 if [ "$CAPACITY" -lt "$LOW_THRESHOLD" ] && [ "$STATUS" != "Charging" ]; then
   if [ ! -f "$LOW_STATE_FILE" ]; then
     send_notification "${CAPACITY}% 🪫 🟥" "$LOW_ID_FILE"
@@ -60,17 +49,4 @@ if [ "$CAPACITY" -lt "$LOW_THRESHOLD" ] && [ "$STATUS" != "Charging" ]; then
 else
   close_notification "$LOW_ID_FILE"
   rm -f "$LOW_STATE_FILE"
-fi
-
-# =========================================================
-# Case 2: HIGH CHARGE (charging, at/above threshold)
-# =========================================================
-if [ "$CAPACITY" -ge "$HIGH_THRESHOLD" ] && [ "$STATUS" == "Charging" ]; then
-  if [ ! -f "$HIGH_STATE_FILE" ]; then
-    send_notification "${CAPACITY}% 🔋 🟩" "$HIGH_ID_FILE"
-    touch "$HIGH_STATE_FILE"
-  fi
-else
-  close_notification "$HIGH_ID_FILE"
-  rm -f "$HIGH_STATE_FILE"
 fi

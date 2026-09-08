@@ -1,4 +1,4 @@
-local function remote_scroll_any(filetypes, dir)
+local function remote_scroll(filetypes, dir)
   return function()
     local count = vim.v.count1
     for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -23,12 +23,12 @@ local function remote_scroll_any(filetypes, dir)
   end
 end
 
-vim.keymap.set("n", "<C-PageDown>", remote_scroll_any({ "snacks_picker_list" }, "j"), {})
-vim.keymap.set("n", "<C-PageUp>", remote_scroll_any({ "snacks_picker_list" }, "k"), {})
-vim.keymap.set("n", "<M-C-S-Home>", remote_scroll_any({ "undotree", "aerial" }, "j"), {})
-vim.keymap.set("n", "<C-G>", remote_scroll_any({ "undotree", "aerial" }, "k"), {})
+vim.keymap.set("n", "<C-PageDown>", remote_scroll({ "snacks_picker_list" }, "j"), {})
+vim.keymap.set("n", "<C-PageUp>", remote_scroll({ "snacks_picker_list" }, "k"), {})
+vim.keymap.set("n", "<M-C-S-Home>", remote_scroll({ "undotree", "aerial" }, "j"), {})
+vim.keymap.set("n", "<C-G>", remote_scroll({ "undotree", "aerial" }, "k"), {})
 
--- ========================
+-- ------------------------------------------------
 
 vim.keymap.set({ "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>", { silent = true })
 vim.keymap.set("x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>", { silent = true })
@@ -55,7 +55,7 @@ vim.keymap.set("n", "<C-Q>", function()
   end
   vim.defer_fn(function()
     vim.cmd("w")
-  end, 50)
+  end, 100)
   vim.defer_fn(function()
     vim.cmd("qa!")
   end, 200)
@@ -70,7 +70,7 @@ vim.keymap.set("n", "<esc>", function()
   return "<esc>"
 end, { expr = true, desc = "Escape and Clear hlsearch" })
 
--- ========================
+-- ------------------------------------------------
 
 vim.keymap.set("x", "<M-2>", function()
   vim.cmd("normal! " .. ("jojo"):rep(vim.v.count1))
@@ -93,7 +93,7 @@ vim.keymap.set("x", "z", function()
   vim.cmd("normal! " .. ("loho"):rep(vim.v.count1))
 end, { silent = true, desc = "visual extend/shrink horizontally" })
 
--- ========================
+-- ------------------------------------------------
 
 vim.keymap.set("n", "<leader>hv", function()
   local file = vim.fn.expand("%")
@@ -173,7 +173,7 @@ vim.keymap.set({ "n", "x" }, "<End>", function()
   return vim.v.count > 1 and ("m'" .. vim.v.count .. "gj$") or "$"
 end, { expr = true })
 
--- ========================
+-- ------------------------------------------------
 
 local function yank_motion_text(type)
   local rv, rt = vim.fn.getreg('"'), vim.fn.getregtype('"')
@@ -217,7 +217,7 @@ end
 
 bind_send("<leader>f", cmd, "+")
 
--- ========================
+-- ------------------------------------------------
 
 local function bind_send_text(lhs, base_cmd)
   local global_name = "SlimeBrowserSendTextOp_" .. lhs:gsub("[^%w]", "_")
@@ -240,7 +240,7 @@ bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core last --
 bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core last --jump --execute")
 bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
 
--- ========================
+-- ------------------------------------------------
 
 vim.keymap.set("n", "<leader>a[", function()
   vim.cmd("normal! mz")
@@ -250,9 +250,11 @@ vim.keymap.set("n", "<leader>a[", function()
   vim.cmd("undojoin")
 end, { silent = true, desc = "stylua: ignore above" })
 
+----------------------------------------------
+
 vim.keymap.set("n", "<leader>a]", function()
   vim.cmd("normal! mz")
-  vim.cmd("put ='========================'")
+  vim.cmd("put ='------------------------------------------------'")
   vim.cmd("normal gcc")
   vim.cmd("put =''")
   vim.cmd("normal! =k`z")
@@ -283,7 +285,7 @@ Snacks.toggle.option("wrap"):map("<leader>hr")
 vim.keymap.set("x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>', { silent = true, desc = "Delete blank lines" })
 vim.keymap.set("n", "<leader>a<CR>", ":let @+=@:<Left><Insert>", { desc = "let @+ =@x" })
 
--- ========================
+-- ------------------------------------------------
 
 vim.keymap.set("i", "<C-S-End><Del>", '<C-Home><C-v><Esc>"zd<C-End>', { remap = true, silent = true })
 
@@ -311,5 +313,18 @@ vim.keymap.set("i", "<S-End><Del>", function()
   end
 end, { expr = true })
 vim.keymap.set("c", "<S-End><Del>", '<c-f>"zD<C-c>')
+
+vim.keymap.set({ "n", "x" }, "<leader>jv", function()
+  Snacks.gitbrowse()
+end, { desc = "Git browser (open)" })
+
+vim.keymap.set({ "n", "x" }, "<leader>jc", function()
+  Snacks.gitbrowse({
+    open = function(url)
+      vim.fn.setreg("+", url)
+    end,
+    notify = false,
+  })
+end, { desc = "Git browser (copy)" })
 
 require("lazyvim.config.keymaps_explorer")

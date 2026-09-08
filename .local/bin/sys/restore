@@ -1,27 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# https://github.com/morganamilo/paru#installation
-sudo pacman -S --needed --noconfirm base-devel
-git clone https://aur.archlinux.org/paru.git paru
-cd paru
+sudo pacman -S --needed --noconfirm git
+git clone https://github.com/iqrar-eng/archlinux ~/archlinux
+
+sudo pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
 makepkg -si
 
-rm -rf paru
-
-pacman -Qqen > "$HOME/archlinux/pacman.packages"
-pacman -Qqem > "$HOME/archlinux/paru.packages"
+cd ..
+rm -rf yay
 
 sudo pacman -S --needed --noconfirm - < "$HOME/archlinux/pacman.packages"
-paru -S --needed --noconfirm - < "$HOME/archlinux/paru.packages"
+yay -S --needed --noconfirm - < "$HOME/archlinux/yay.packages"
 
-# Set the charge type to Long_Life mode ( 80% threshold )
-# https://linrunner.de/tlp/installation/arch.html
-# https://linrunner.de/tlp/settings/battery.html#start-stop-charge-thresh-batx
-# https://linrunner.de/tlp/settings/bc-vendors.html#lenovo-non-thinkpad-series
-sudoedit /etc/tlp.conf
-
-git clone https://github.com/iqrar-eng/archlinux ~/archlinux
+# ------------------------------------------------
 
 paths=(
   ".bash_profile"
@@ -59,9 +53,13 @@ sudo rm -rf "/etc/keyd/default.conf"
 sudo mkdir -p /etc/keyd
 sudo ln -sfn "$HOME/archlinux/etc/keyd/default.conf" "/etc/keyd/default.conf"
 
-update-desktop-database "$HOME/.local/share/applications/"
-systemctl --user restart xdg-desktop-portal-termfilechooser.service
-systemctl --user restart xdg-desktop-portal.service
+# ------------------------------------------------
+
+# Set the charge type to Long_Life mode ( 80% threshold )
+# https://linrunner.de/tlp/installation/arch.html
+# https://linrunner.de/tlp/settings/battery.html#start-stop-charge-thresh-batx
+# https://linrunner.de/tlp/settings/bc-vendors.html#lenovo-non-thinkpad-series
+sudoedit /etc/tlp.conf
 
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
 sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null << 'EOF'
@@ -71,9 +69,12 @@ ExecStart=-/usr/bin/agetty --autologin iqrar --noclear %I $TERM
 EOF
 sudo systemctl daemon-reload
 sudo systemctl restart getty@tty1
-loginctl terminate-user $USER
 
-# ========================
+update-desktop-database "$HOME/.local/share/applications/"
+systemctl --user restart xdg-desktop-portal-termfilechooser.service
+systemctl --user restart xdg-desktop-portal.service
+
+# ------------------------------------------------
 
 mkdir -p "$HOME/.src"
 

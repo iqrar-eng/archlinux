@@ -3,7 +3,7 @@ local function augroup(name)
 end
 
 -- Highlight on yank
--- ========================
+-- ------------------------------------------------
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
@@ -13,7 +13,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- close some filetypes with <q>
--- ========================
+-- ------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
   group = augroup("close_with_q"),
   pattern = {
@@ -54,7 +54,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- go to last loc when opening a buffer
--- ========================
+-- ------------------------------------------------
 
 vim.api.nvim_create_autocmd("BufReadPost", {
   group = augroup("last_loc"),
@@ -74,7 +74,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 })
 
 -- Auto create dir when saving a file, in case some intermediate directory does not exist
--- ========================
+-- ------------------------------------------------
 
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = augroup("auto_create_dir"),
@@ -88,7 +88,7 @@ vim.api.nvim_create_autocmd({ "BufWritePre" }, {
 })
 
 -- Auto Format on file switching
--- ========================
+-- ------------------------------------------------
 
 local format_group = vim.api.nvim_create_augroup("AutoFormatOnLeave", { clear = true })
 local needs_format = {}
@@ -181,7 +181,7 @@ vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "VimLeavePre" }, {
 })
 
 -- Define highlight groups for different intervals
--- ========================
+-- ------------------------------------------------
 local themes = {
   light = {
     RelativeLineInterval_b = { bg = "#FFFCE2" },
@@ -358,7 +358,7 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
--- ========================
+-- ------------------------------------------------
 
 vim.api.nvim_create_autocmd("BufEnter", {
   callback = function(args)
@@ -376,16 +376,16 @@ vim.api.nvim_create_autocmd("BufEnter", {
   end,
 })
 
--- vim.api.nvim_create_autocmd("FileType", {
---   group = augroup("man_unlisted"),
---   pattern = { "man", "help" },
---   callback = function(event)
---     local buf = vim.api.nvim_get_current_buf()
---     vim.bo[buf].buflisted = true
---     vim.bo[buf].buftype = ""
---     vim.bo[buf].bufhidden = "hide"
---
---     pcall(vim.keymap.del, "n", "j", { buffer = true })
---     pcall(vim.keymap.del, "n", "k", { buffer = true })
---   end,
--- })
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("man_unlisted"),
+  pattern = { "man", "help" },
+  callback = function(event)
+    local buf = vim.api.nvim_get_current_buf()
+    vim.bo[buf].buflisted = true
+    vim.bo[buf].buftype = ""
+    vim.bo[buf].bufhidden = "hide"
+
+    pcall(vim.keymap.del, "n", "j", { buffer = true })
+    pcall(vim.keymap.del, "n", "k", { buffer = true })
+  end,
+})

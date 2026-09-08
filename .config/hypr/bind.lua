@@ -74,7 +74,7 @@ hl.bind(
 hl.bind("SHIFT + CTRL + ALT + SUPER + T", hl.dsp.exec_cmd("grim - | wl-copy"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + N", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 
--- ========================
+-- ------------------------------------------------
 
 local function paste_slot(n)
 	return function()

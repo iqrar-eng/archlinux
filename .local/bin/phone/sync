@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 GVFS="/run/user/$(id -u)/gvfs"
-MTP="/run/user/1000/gvfs/mtp:host=SAMSUNG_SAMSUNG_Android_RFCW91E7Z0A/Internal storage"
 MTP_URI="mtp://SAMSUNG_SAMSUNG_Android_RFCW91E7Z0A/"
 
 USB="/run/media/iqrar/IQRAR_USB"

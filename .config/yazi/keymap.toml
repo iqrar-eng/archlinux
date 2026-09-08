@@ -12,7 +12,6 @@ prepend_keymap = [
   { on = [ "M", "r" ], run = "plugin gvfs -- remove-mount", desc = "Remove a GVFS mount URI" },
   { on = [ "g", "m" ], run = "plugin gvfs -- jump-to-device", desc = "Select device then jump to its mount point" },
   { on = [ "`", "`" ], run = "plugin gvfs -- jump-back-prev-cwd", desc = "Jump back to the position before jumped to device" },
-  # automount-when-cd is not designed for mtp://
   { on = [ "M", "t" ], run = "plugin gvfs -- automount-when-cd", desc = "Enable automount when cd to device under cwd" },
   { on = [ "M", "T" ], run = "plugin gvfs -- automount-when-cd --disabled", desc = "Disable automount when cd to device under cwd" },
 
@@ -23,19 +22,51 @@ prepend_keymap = [
 	{ on = [ "g", "l" ], run = "reveal ~/.local/share/", desc = "Go to ~/.local" },
 	{ on = [ "g", "p" ], run = "reveal ~/personal/phone/", desc = "Go to ~/personal" },
 
-	# Toggle
+	{ on = [ "<Space>", "o" ], run = "open --hovered",               desc = "Always open the hovered file" },
+	{ on = [ "<Space>", "O" ], run = "open --interactive --hovered", desc = "Open hovered file interactively" },
+	{ on = [ "<Space>", "d" ],  run = "remove --hovered",                       desc = "Trash the hovered file only" },
+	{ on = [ "<Space>", "D" ],  run = "remove --permanently --hovered",         desc = "Permanently delete the hovered file only" },
+	{ on = [ "<Space>", "r" ],      run = "rename --hovered --cursor=before_ext", desc = "Always rename the hovered file" },
+	{ on = [ "<Space>", "a" ], run = "create --force",            desc = "Create, overwrite destination without confirmation" },
+	{ on = [ "<Space>", "p" ], run = "paste --follow",         desc = "Paste, copying symlink targets rather than the links" },
+	{ on = [ "<Space>", "P" ], run = "paste --force --follow", desc = "Paste, overwrite destination and copy symlink targets" },
+
+	{ on = [ "<Space>", "c", "c" ], run = "copy path --hovered",             desc = "Copy hovered path" },
+	{ on = [ "<Space>", "c", "C" ], run = "copy url --hovered",              desc = "Copy hovered URL" },
+	{ on = [ "<Space>", "c", "d" ], run = "copy dirpath --hovered",          desc = "Copy hovered directory path" },
+	{ on = [ "<Space>", "c", "D" ], run = "copy dirurl --hovered",           desc = "Copy hovered directory URL" },
+	{ on = [ "<Space>", "c", "f" ], run = "copy filename --hovered",         desc = "Copy hovered filename" },
+	{ on = [ "<Space>", "c", "n" ], run = "copy name_without_ext --hovered", desc = "Copy hovered filename without extension" },
+
+  { on = [ "F" ], run = 'search_do --via=fd --args=', desc = "Flat view" },
+
 	{ on = "<Tab>", run = [ "toggle", "arrow 1" ], desc = "Toggle the current selection state" },
 	{ on = "<S-Tab>", run = [ "toggle", "arrow -1" ], desc = "Toggle the current selection state" },
 
-	# Spotting
-	{ on = "<Space>", run = "spot", desc = "Spot hovered file" },
+	{ on = "^", run = "spot", desc = "Spot hovered file" },
 ]
 
 [input]
 
 prepend_keymap = [
+	{ on = "X", run = [ "delete --cut", "move -1 --in-operating" ],         desc = "Cut current character" },
+  { on = [ "\"", "H", "d" ], run = "delete",                              desc = "Delete selected characters without cutting to clipboard" },
+  { on = [ "\"", "H", "D" ], run = [ "delete", "move eol" ],               desc = "Delete until EOL without cutting" },
+  { on = [ "\"", "H", "c" ], run = [ "delete", "--insert" ],               desc = "Delete and enter insert mode without cutting" },
+  { on = [ "\"", "H", "C" ], run = [ "delete --insert", "move eol" ],      desc = "Delete until EOL and enter insert mode without cutting" },
+  { on = [ "\"", "H", "x" ], run = [ "delete", "move 1 --in-operating" ],  desc = "Delete current character without cutting" },
+  { on = [ "\"", "H", "X" ], run = [ "delete", "move -1 --in-operating" ],  desc = "Delete current character without cutting" },
 
-  # Kill
 	{ on = "<S-Home>",         run = "kill bol",      desc = "Kill backwards to the BOL" },
 	{ on = "<S-End>",         run = "kill eol",      desc = "Kill forwards to the EOL" },
+]
+
+[cmp]
+
+prepend_keymap = [
+	{ on = "<A-C-S-Home>",   run = "close --submit",                             desc = "Submit the completion" }, # default
+	{ on = "<C-c>", run = [ "close", "input:close" ], desc = "Complete and submit the input" }, # default
+
+  { on = "<S-Tab>", run = "arrow prev", desc = "Previous item" }, # default
+	{ on = "<Tab>", run = "arrow next", desc = "Next item" }, # default
 ]

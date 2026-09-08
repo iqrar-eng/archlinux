@@ -1,8 +1,8 @@
 [Unit]
-Description=git-pull
+Description=sync_full_system
 
 [Timer]
-OnCalendar=Mon *-*-* 06:00:00
+OnCalendar=*-01,05,09-01 06:00:00
 Persistent=true
 
 [Install]

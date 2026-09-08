@@ -61,7 +61,7 @@ vim.keymap.set({ "n", "x", "s", "i" }, "<M-N>", buf_action("explorer_rename"), {
 vim.keymap.set({ "n", "x", "s", "i" }, "<M-g>", buf_action("explorer_del"), { noremap = true, silent = true })
 vim.keymap.set({ "n", "x", "s", "i" }, "<M-n>", buf_action("explorer_add"), { noremap = true, silent = true })
 
-vim.keymap.set("n", "<leader>ab", function()
+vim.keymap.set("n", "<leader>au", function()
   local modifier = ":~"
   if vim.v.count > 0 then
     modifier = modifier .. string.rep(":h", vim.v.count)
@@ -70,16 +70,6 @@ vim.keymap.set("n", "<leader>ab", function()
   vim.fn.system("wl-copy", path)
   vim.notify("Copied: " .. path, vim.log.levels.INFO, { title = "Relative path" })
 end, { desc = "Copy relative path N levels up" })
-
-vim.keymap.set("n", "<leader>au", function()
-  local modifier = ""
-  if vim.v.count > 0 then
-    modifier = modifier .. string.rep(":h", vim.v.count)
-  end
-  local path = vim.fn.expand("%" .. modifier)
-  vim.fn.system("wl-copy", path)
-  vim.notify("Copied: " .. path, vim.log.levels.INFO, { title = "Absolute path" })
-end, { desc = "Copy absolute path N levels up" })
 
 vim.keymap.set("n", "<C-S-B>", function()
   local p = vim.fn.expand("%:p")
@@ -170,3 +160,15 @@ vim.keymap.set("n", "<leader>a{", function()
 
   vim.fn.jobstart("tmux new-window -c " .. vim.fn.shellescape(root), { detach = true })
 end, { desc = "Open tmux window project root" })
+
+vim.keymap.set("n", "<leader>h<CR>", function()
+  vim.ui.input({
+    prompt = "Edit file: ",
+    default = vim.fn.expand("%:p:h") .. "/",
+    completion = "file",
+  }, function(input)
+    if input and input ~= "" then
+      vim.cmd.edit(input)
+    end
+  end)
+end, { desc = "Edit file in current dir" })

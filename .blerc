@@ -98,7 +98,7 @@ ble-bind -m vi_nmap -f '[ SP' 'my/open-line above'
 ble-bind -m vi_nmap -c 'C-o' 'cd -'
 ble-bind -m vi_nmap -c 'C-k' 'cd ..'
 
-# ========================
+# ------------------------------------------------
 
 function ble/widget/my/_fzf-cd-from {
   local root="${1:-$HOME}"
@@ -126,7 +126,7 @@ ble-bind -m vi_nmap -f 'SP k' my/fzf-cd-home
 
 ble-bind -m 'vi_nmap' -x C-f fzf-history-widget
 
-# ========================
+# ------------------------------------------------
 
 function ble/widget/my/_replace-and-accept {
   local full=$1
@@ -164,16 +164,16 @@ function ble/widget/my/pacman-install {
 ble-bind -m vi_nmap -f 'SP a i' my/pacman-install
 
 function ble/widget/my/paru-remove {
-  ble/widget/my/_replace-and-accept "paru -Rns --noconfirm $_ble_edit_str"
+  ble/widget/my/_replace-and-accept "yay -Rns --noconfirm $_ble_edit_str"
 }
 ble-bind -m vi_nmap -f 'SP a R' my/paru-remove
 
 function ble/widget/my/paru-install {
-  ble/widget/my/_replace-and-accept "paru -S --needed --noconfirm $_ble_edit_str"
+  ble/widget/my/_replace-and-accept "yay -S --needed --noconfirm $_ble_edit_str"
 }
 ble-bind -m vi_nmap -f 'SP a I' my/paru-install
 
-# ========================
+# ------------------------------------------------
 
 # forward-cword = e = <C-Right>
 # vi-command/backward-vword = backward-cword = b = <C-Left>
@@ -212,7 +212,7 @@ ble-bind -m 'auto_complete' -f M-x 'auto_complete/@end insert-fword' # E respect
 ble-bind -m 'auto_complete' -f right 'forward-char'
 ble-bind -m 'auto_complete' -f end auto_complete/insert
 
-# ========================
+# ------------------------------------------------
 
 # kill-forward-vword doesnt exist but we can use forward-vword + kill-region
 function ble/widget/my/imap-d-w {
@@ -261,7 +261,7 @@ ble-bind -m vi_nmap -f 'C-BS' 'kill-region-or kill-uword'
 
 ble-bind -m vi_imap -f C-a transpose-chars
 
-# ========================
+# ------------------------------------------------
 
 ble-import lib/vim-surround
 

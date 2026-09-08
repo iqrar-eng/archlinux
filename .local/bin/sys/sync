@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
+yay -Syu --noconfirm
+
+pacman -Qqen > "$HOME/archlinux/pacman.packages"
+pacman -Qqem > "$HOME/archlinux/yay.packages"
 
 roots=(
   # ~/projects

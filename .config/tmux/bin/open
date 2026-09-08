@@ -20,10 +20,10 @@ else
 fi
 
 if [[ $term_flag -eq 1 ]]; then
-    tmux switch-client -t "$session_name:nvim"
+    tmux switch-client -t "$session_name:1"
     tmux last-window
 else
-    tmux switch-client -t "$session_name:nvim"
+    tmux switch-client -t "$session_name:1"
 fi
 
 hyprctl dispatch 'hl.dsp.focus({ workspace = "2" })' >/dev/null
