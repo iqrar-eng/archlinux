@@ -93,18 +93,17 @@ hl.bind("SHIFT + CTRL + ALT + SUPER + P", hl.dsp.exec_cmd("~/archlinux/.local/bi
 
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + A",
-	hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core --execute --jump")
+	hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --execute --jump")
 )
-hl.bind("SHIFT + CTRL + ALT + SUPER + B", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core --execute"))
-hl.bind("SHIFT + CTRL + ALT + SUPER + C", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core --jump"))
-hl.bind("SHIFT + CTRL + ALT + SUPER + F", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-run-and-copy"))
+hl.bind("SHIFT + CTRL + ALT + SUPER + B", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --execute"))
+hl.bind("SHIFT + CTRL + ALT + SUPER + C", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --jump"))
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + Q",
-	hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core --jump --no-cancel")
+	hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
 )
 
+hl.bind("SHIFT + CTRL + ALT + SUPER + F", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-run-and-copy"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + M", hl.dsp.exec_cmd("~/archlinux/.local/bin/toggle-theme"))
-
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + U",
 	hl.dsp.exec_cmd(

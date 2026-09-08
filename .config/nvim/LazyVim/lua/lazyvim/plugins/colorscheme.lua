@@ -30,11 +30,6 @@ return {
         -- Increase contrast, which is not enough by default:
         latte = function(colors)
           return {
-            VM_Mono = { bg = "#000000", fg = "#ffffff" },
-            VM_Insert = { bg = "#E6AF0E", fg = "#ffffff" },
-            VM_Cursor = { bg = "#2DC427", fg = "#ffffff" },
-            VM_Extend = { bg = "#E0F3FF", ctermbg = 250, ctermfg = 16, bold = true, fg = "none" },
-
             ["@property"] = { fg = "#ff0000" },
             ["@property.css"] = { fg = "#ff0000" }, -- CSS properties - sky blue
             ["@property.class.css"] = { fg = "#D000ED" }, -- Tag attribute - blue
@@ -65,13 +60,11 @@ return {
             ["@my_markup.raw.markdown_inline"] = { fg = "#17929A", underline = true, bold = true, sp = "#B2C9CB" },
             ["@my_mdn_bad_code_example"] = { undercurl = true, sp = "#cfc8c8" },
 
-            MatchParen = { fg = "#000000", bg = "#C9EAFF" },
             Substitute = { bg = "#D20F3A", fg = "#FFFFFE" },
             Search = { bg = "#FFFCC2", fg = "none" },
             Visual = { bg = "#E6E7EB", bold = true, cterm = { bold = true } },
             VisualNOS = { link = "Visual" },
             WinSeparator = { fg = "#D5B7BF", bg = colors.base },
-            CursorLineNr = { fg = "#000000", bold = true },
 
             LspReferenceText = { bg = "#ffe8cc", bold = true },
             LspReferenceRead = { bg = "#D4E6FF" },
@@ -96,16 +89,10 @@ return {
             SnacksIndent12 = { fg = "#C39900", bg = "none" },
 
             RenderMarkdownCode = { bg = colors.crust },
-
-            AerialLine = { link = "VisualNOS" },
           }
         end,
         mocha = function(colors)
           return {
-            VM_Mono = { bg = "#cdd6f4", fg = "#1e1e2e" },
-            VM_Insert = { bg = "#E6AF0E", fg = "#1e1e2e" },
-            VM_Cursor = { bg = "#2DC427", fg = "#1e1e2e" },
-            VM_Extend = { bg = "#1a3a5c", ctermbg = 236, ctermfg = 255, bold = true, fg = "none" },
 
             ["@property"] = { fg = "#ffa857", bold = true },
 
@@ -119,16 +106,11 @@ return {
             ["type"] = { fg = "#fab387" },
             ["@string"] = { bold = true, fg = "#E8E3E3" },
             ["@markup.link.label"] = { fg = "#B4BEFF", underline = true, bold = true, sp = "#545557" },
-            ["@my_markup.strong"] = { fg = "#F38BA9", underline = true, bold = true, sp = "#998E91" },
-            ["@my_markup.raw.markdown_inline"] = { fg = "#00E6C0", underline = true, bold = true, sp = "#809792" },
-            ["@my_mdn_bad_code_example"] = { undercurl = true, sp = "#4A3F3F" },
 
-            MatchParen = { fg = "#ffffff", bg = "#356aa3" },
             Substitute = { bg = "#E64553", fg = "#ffffff" },
             Search = { bg = "#c7aa2a", fg = "#000000" },
             CurSearch = { bg = "#911c3d", fg = "#ffffff" },
             WinSeparator = { fg = "#911c3d", bg = colors.base },
-            CursorLineNr = { fg = "#FFFFFF", bold = true },
 
             LspReferenceText = { bg = "#5A4328", bold = true },
             LspReferenceRead = { bg = "#1A3A73" },

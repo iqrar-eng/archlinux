@@ -7,24 +7,29 @@ set -euo pipefail
 EXECUTE=0
 CANCEL=1
 JUMP=0
-TARGET_PANE=":"
+TARGET_PANE=""
 TEXT_ARG=""
 USE_TEXT_ARG=0
+
 args=("$@")
 i=0
-
 while [[ $i -lt ${#args[@]} ]]; do
   arg="${args[$i]}"
   case "$arg" in
-    --execute) EXECUTE=1 ;;
+    --execute)   EXECUTE=1 ;;
     --no-cancel) CANCEL=0 ;;
-    --jump)    JUMP=1    ;;
+    --jump)      JUMP=1 ;;
     --text)
       USE_TEXT_ARG=1
       i=$((i + 1))
       TEXT_ARG="${args[$i]:-}"
       ;;
-    *)         TARGET_PANE="$arg" ;;
+    last|--last)
+      TARGET_PANE="last"
+      ;;
+    *)
+      TARGET_PANE="$arg"
+      ;;
   esac
   i=$((i + 1))
 done
@@ -40,25 +45,49 @@ else
   TMUX_CMD="tmux"
 fi
 
+if [[ "$TARGET_PANE" == "last" ]]; then
+  if $TMUX_CMD display-message -p -t '{last}' '#{pane_id}' >/dev/null 2>&1; then
+    TARGET_PANE='{last}'
+  else
+    exit 1
+  fi
+fi
+
+# Build -t args conditionally: pass nothing when TARGET_PANE is empty,
+# so tmux falls back to its normal "current pane" behavior instead of
+# choking on an explicit but ambiguous target string.
+target_args=()
+if [[ -n "$TARGET_PANE" ]]; then
+  target_args=(-t "$TARGET_PANE")
+fi
+
 if [[ "$USE_TEXT_ARG" -eq 1 ]]; then
   TEXT="$TEXT_ARG"
 else
   TEXT="$(wl-paste 2>/dev/null)" || { echo "Error: clipboard empty or unavailable" >&2; exit 1; }
 fi
-
 [[ -z "$TEXT" ]] && { echo "Clipboard is empty." >&2; exit 0; }
 
 if [[ "$CANCEL" -eq 1 ]]; then
-  $TMUX_CMD send-keys -t "$TARGET_PANE" C-c
+  $TMUX_CMD send-keys "${target_args[@]}" C-c
 fi
 
 printf '%s' "$TEXT" | $TMUX_CMD load-buffer -
-$TMUX_CMD paste-buffer -d -p -t "$TARGET_PANE"
+$TMUX_CMD paste-buffer -d -p "${target_args[@]}"
 
 if [[ "$EXECUTE" -eq 1 ]]; then
-  $TMUX_CMD send-keys -t "$TARGET_PANE" Enter
+  $TMUX_CMD send-keys "${target_args[@]}" Enter
 fi
 
+session_name=$(tmux display-message -p "#S")
+current_window=$(tmux display-message -p "#W")
+
 if [[ "$JUMP" -eq 1 ]]; then
-  hyprctl dispatch "hl.dsp.focus({ workspace = "3" })" >/dev/null
+  if [ "$current_window" = "nvim" ]; then
+    tmux last-window
+  else
+    tmux switch-client -t "$session_name:nvim"
+    tmux last-window
+  fi
+  hyprctl dispatch "hl.dsp.focus({ workspace = "2" })" >/dev/null
 fi

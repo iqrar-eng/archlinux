@@ -26,9 +26,6 @@ return {
         width = "block",
         icons = { "▊ ", "▊ ", "▊ ", "▊ ", "▊ ", "▊ " },
       },
-      pipe_table = {
-        padding = 0,
-      },
       patterns = {
         markdown = {
           disable = false,

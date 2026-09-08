@@ -1,58 +1,32 @@
-local function make_window_jump(win_cmd, move_cmd, input_keys, esc_replace_mode)
+local function remote_scroll_any(filetypes, dir)
   return function()
     local count = vim.v.count1
-    local mode = vim.fn.mode()
-    local was_insert = mode == "i"
-    local was_visual = mode:match("^[vV\22]$") ~= nil
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      if vim.tbl_contains(filetypes, vim.bo[buf].filetype) then
+        local cur_win = vim.api.nvim_get_current_win()
+        vim.api.nvim_set_current_win(win)
+        vim.api.nvim_feedkeys(count .. dir, "n", false)
 
-    local visual_key
-    if mode == "V" then
-      visual_key = "V"
-    elseif mode == "\22" then
-      visual_key = "<C-v>"
-    else
-      visual_key = "v"
-    end
+        vim.defer_fn(function()
+          if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_set_current_win(win)
+            -- 'm' = allow remapping, so plugin-defined `l` behavior fires
+            local keys = vim.api.nvim_replace_termcodes("l", true, false, true)
+            vim.api.nvim_feedkeys(keys, "m", false)
+          end
+        end, 50)
 
-    if was_insert or was_visual then
-      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), esc_replace_mode, false)
-    end
-
-    vim.cmd("wincmd " .. win_cmd)
-
-    if move_cmd:match("^<.+>$") then
-      local keys = vim.api.nvim_replace_termcodes(move_cmd, true, false, true)
-      for _ = 1, count do
-        vim.api.nvim_feedkeys(keys, "m", true)
+        return
       end
-    else
-      vim.cmd("normal " .. count .. move_cmd)
-    end
-
-    vim.api.nvim_input(input_keys)
-
-    if was_insert then
-      vim.schedule(function()
-        vim.cmd("startinsert")
-      end)
-    elseif was_visual then
-      vim.schedule(function()
-        local keys = vim.api.nvim_replace_termcodes("`<" .. visual_key .. "``", true, false, true)
-        vim.cmd("normal! " .. keys)
-      end)
     end
   end
 end
 
-vim.keymap.set({ "n", "i" }, "<C-PageDown>", make_window_jump("1w", "j", "l", "n"), {})
-vim.keymap.set({ "n", "i" }, "<C-S-PageDown>", make_window_jump("1w", "<C-End>", "l", "O"), {})
-vim.keymap.set({ "n", "i" }, "<C-PageUp>", make_window_jump("1w", "k", "l", "O"), {})
-vim.keymap.set({ "n", "i" }, "<C-S-PageUp>", make_window_jump("1w", "<C-Home>", "l", "O"), {})
-
-vim.keymap.set({ "n", "i", "x" }, "<C-P>", make_window_jump("9l", "k", "l", "O"), {})
-vim.keymap.set({ "n", "i", "x" }, "<C-S-P>", make_window_jump("9l", "<C-Home>", "l", "O"), {})
-vim.keymap.set({ "n", "i", "x" }, "<C-G>", make_window_jump("9l", "j", "l", "n"), {})
-vim.keymap.set({ "n", "i", "x" }, "<C-S-G>", make_window_jump("9l", "<C-End>", "l", "n"), {})
+vim.keymap.set("n", "<C-PageDown>", remote_scroll_any({ "snacks_picker_list" }, "j"), {})
+vim.keymap.set("n", "<C-PageUp>", remote_scroll_any({ "snacks_picker_list" }, "k"), {})
+vim.keymap.set("n", "<M-C-S-Home>", remote_scroll_any({ "undotree", "aerial" }, "j"), {})
+vim.keymap.set("n", "<C-G>", remote_scroll_any({ "undotree", "aerial" }, "k"), {})
 
 -- ========================
 
@@ -86,8 +60,6 @@ vim.keymap.set("n", "<C-Q>", function()
     vim.cmd("qa!")
   end, 200)
 end, { desc = "Quit nvim" })
-
-vim.keymap.set("n", "<C-R>", "<C-i>")
 
 vim.keymap.set("n", "<esc>", function()
   local cc_map = vim.fn.maparg("<C-c>", "n", false, true)
@@ -138,6 +110,11 @@ vim.keymap.set("n", "<leader>hb", "<cmd>source %<CR>", { desc = "Source current 
 vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>", { desc = "Reload keyd" })
 vim.keymap.set("n", "<leader>ab", "<cmd>Lazy<CR>")
 vim.keymap.set("n", "<leader>ae", "<cmd>Mason<CR>")
+vim.keymap.set("n", "<leader>ad", function()
+  local file = vim.fn.expand("%:t") -- current filename
+  vim.cmd("Sexplore")
+  vim.fn.search("^" .. vim.fn.escape(file, "\\.*$^~[]") .. "$", "w")
+end, { desc = "Explore and focus current file" })
 
 vim.keymap.set("n", "<leader>a}", function()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -157,11 +134,6 @@ vim.keymap.set("n", "<leader>a}", function()
 end, { desc = "Toggle Inspect Tree" })
 
 vim.keymap.set("n", "<leader>a{", vim.show_pos, { desc = "Inspect Pos" })
-
-vim.keymap.set("n", "<C-S-z>", "<C-R>")
-vim.keymap.set("n", "<C-z>", "u")
-vim.keymap.set("i", "<C-S-z>", "<c-o>:redo<CR>", { silent = true })
-vim.keymap.set("i", "<C-z>", "<c-o>:undo<CR>", { silent = true })
 
 vim.keymap.set("n", "<M-C-P>", "g+")
 vim.keymap.set("n", "<M-C-N>", "g-")
@@ -263,10 +235,10 @@ local function bind_send_text(lhs, base_cmd)
   end, { desc = "Send selection text via --text" })
 end
 
-bind_send_text("<leader>r", "~/archlinux/.local/bin/clipboard-slime-core --jump")
-bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core --execute")
-bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core --jump --execute")
-bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core --jump --no-cancel")
+bind_send_text("<leader>r", "~/archlinux/.local/bin/clipboard-slime-core last --jump")
+bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core last --execute")
+bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core last --jump --execute")
+bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
 
 -- ========================
 
@@ -339,3 +311,5 @@ vim.keymap.set("i", "<S-End><Del>", function()
   end
 end, { expr = true })
 vim.keymap.set("c", "<S-End><Del>", '<c-f>"zD<C-c>')
+
+require("lazyvim.config.keymaps_explorer")

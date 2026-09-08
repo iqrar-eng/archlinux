@@ -61,10 +61,8 @@ function blerc/vim-mode-hook {
   ble-bind -m auto_complete -f 'S-RET' newline
   ble-bind -m menu_complete -f 'S-RET' newline
 
-  ble-bind -m vi_nmap -f 'C-z' undo
-  ble-bind -m vi_imap -f 'C-z' undo
-  ble-bind -m vi_nmap -f 'C-S-z' redo
-  ble-bind -m vi_imap -f 'C-S-z' redo
+  ble-bind -m vi_nmap -f 'C-r' redo
+  ble-bind -m vi_imap -f 'C-r' redo
 
   ble-bind -m vi_imap -f C-f 'history-search forward:hide-status'
   ble-bind -m auto_complete -f C-f 'history-search forward:hide-status'
@@ -126,8 +124,7 @@ function ble/widget/my/_fzf-cd-from {
 function ble/widget/my/fzf-cd-home    { ble/widget/my/_fzf-cd-from "$HOME";           }
 ble-bind -m vi_nmap -f 'SP k' my/fzf-cd-home
 
-ble-bind -m 'vi_nmap' -x C-f fzf-file-widget
-ble-bind -m 'vi_nmap' -x C-r fzf-history-widget
+ble-bind -m 'vi_nmap' -x C-f fzf-history-widget
 
 # ========================
 

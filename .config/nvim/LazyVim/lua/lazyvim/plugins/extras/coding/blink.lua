@@ -42,7 +42,7 @@ return {
           ["<C-w>"] = { "hide", "show" },
           ["<C-p>"] = { "cancel", "show" },
 
-          ["<M-CR>"] = { "show_and_insert_or_accept_single", "select_and_accept" },
+          ["<M-C-S-Home>"] = { "show_and_insert_or_accept_single", "select_and_accept" },
           ["<S-CR>"] = { "accept_and_enter", "fallback" },
 
           ["<A-q>"] = { function(cmp) cmp.accept({ index = 6 }) end, },
@@ -67,7 +67,7 @@ return {
         ["<C-w>"] = { "hide", "show" },
         ["<C-p>"] = { "cancel", "show" },
 
-        ["<M-CR>"] = { "show_and_insert_or_accept_single", "select_and_accept" },
+        ["<M-C-S-Home>"] = { "show_and_insert_or_accept_single", "select_and_accept" },
         ["<C-S>"] = { "snippet_backward", "fallback" },
 
         ["<C-S-H>"] = { "scroll_documentation_down" },

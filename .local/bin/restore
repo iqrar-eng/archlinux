@@ -9,26 +9,17 @@ makepkg -si
 
 rm -rf paru
 
-paru -S --needed --noconfirm blesh-git
+pacman -Qqen > "$HOME/archlinux/pacman.packages"
+pacman -Qqem > "$HOME/archlinux/paru.packages"
 
-sudo pacman -S --needed --noconfirm firefox fd ripgrep starship zoxide neovim vim trash-cli yazi \
-  brightnessctl jq make nodejs npm power-profiles-daemon vlc \
-  copyq wl-clipboard \
-  grim slurp satty \
-  noto-fonts noto-fonts-emoji noto-fonts-cjk noto-fonts-extra ttf-jetbrains-mono-nerd \
-  git github-cli lazygit
+sudo pacman -S --needed --noconfirm - < "$HOME/archlinux/pacman.packages"
+paru -S --needed --noconfirm - < "$HOME/archlinux/paru.packages"
 
 # Set the charge type to Long_Life mode ( 80% threshold )
 # https://linrunner.de/tlp/installation/arch.html
-# https://linrunner.de/tlp/settings/bc-vendors.html#lenovo-non-thinkpad-series
 # https://linrunner.de/tlp/settings/battery.html#start-stop-charge-thresh-batx
-sudo pacman -S --needed --noconfirm tlp
+# https://linrunner.de/tlp/settings/bc-vendors.html#lenovo-non-thinkpad-series
 sudoedit /etc/tlp.conf
-
-sudo pacman -S --needed --noconfirm man-db man-pages
-sudo man-db
-
-# ========================
 
 git clone https://github.com/iqrar-eng/archlinux ~/archlinux
 
@@ -58,9 +49,6 @@ paths=(
   ".local/share/applications"
 )
 
-# restore
-# ========================
-
 for p in "${paths[@]}"; do
   rm -rf "$HOME/$p"
   mkdir -p "$HOME/$(dirname "$p")" "$HOME/archlinux/$(dirname "$p")"
@@ -72,7 +60,6 @@ sudo mkdir -p /etc/keyd
 sudo ln -sfn "$HOME/archlinux/etc/keyd/default.conf" "/etc/keyd/default.conf"
 
 update-desktop-database "$HOME/.local/share/applications/"
-xdg-mime default yazi.desktop inode/directory
 systemctl --user restart xdg-desktop-portal-termfilechooser.service
 systemctl --user restart xdg-desktop-portal.service
 

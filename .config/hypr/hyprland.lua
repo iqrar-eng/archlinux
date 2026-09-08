@@ -3,7 +3,7 @@
 ---------------------
 
 local firefox = "firefox"
-local nvim = "kitty ~/archlinux/.config/tmux/bin/open"
+local tmux = "kitty --class kitty-tmux ~/archlinux/.config/tmux/bin/open"
 local clipboard = "copyq --start-server show"
 local fileManager = "~/archlinux/.config/yazi/bin/open"
 
@@ -12,7 +12,7 @@ local fileManager = "~/archlinux/.config/yazi/bin/open"
 ------------------------
 
 hl.workspace_rule({ workspace = "1", on_created_empty = firefox })
-hl.workspace_rule({ workspace = "2", on_created_empty = nvim })
+hl.workspace_rule({ workspace = "2", on_created_empty = tmux })
 hl.workspace_rule({ workspace = "4", on_created_empty = clipboard })
 hl.workspace_rule({ workspace = "5", on_created_empty = fileManager })
 
@@ -22,7 +22,8 @@ hl.window_rule({ name = "no-border-single-floating", match = { float = true, wor
 
 -- Always route these apps to their workspace, no matter where they're launched from
 hl.window_rule({ name = "firefox-to-ws1", match = { class = "firefox" }, workspace = "1" })
-hl.window_rule({ name = "nvim-to-ws2", match = { class = "kitty-nvim" }, workspace = "2" })
+hl.window_rule({ name = "tmux-to-ws2", match = { class = "kitty-tmux" }, workspace = "2" })
+hl.window_rule({ name = "copyq-to-ws4", match = { class = "com.github.hluk.copyq" }, workspace = "4" })
 hl.window_rule({ name = "yazi-to-ws5", match = { class = "kitty-yazi" }, workspace = "5" })
 
 -------------------
@@ -33,7 +34,7 @@ hl.window_rule({ name = "yazi-to-ws5", match = { class = "kitty-yazi" }, workspa
 hl.on("hyprland.start", function()
 	hl.exec_cmd("trash-empty -f 30")
 	hl.exec_cmd("[workspace 1 silent] " .. firefox)
-	hl.exec_cmd("[workspace 2 silent] " .. nvim)
+	hl.exec_cmd("[workspace 2 silent] " .. tmux)
 	hl.exec_cmd("[workspace 4 silent] " .. clipboard)
 end)
 

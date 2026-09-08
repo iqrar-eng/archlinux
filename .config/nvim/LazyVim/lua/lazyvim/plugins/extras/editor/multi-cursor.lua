@@ -27,7 +27,7 @@ return {
       vim.keymap.set("n", "<leader>a/", mc.searchAllAddCursors, { desc = "MC: all search results" })
 
       vim.keymap.set({ "n", "x" }, "<leader>v", mc.addCursorOperator, { desc = "MC: cursor per line" })
-      vim.keymap.set({ "n", "x" }, "<leader>s", mc.operator, { desc = "MC: cursor per match" })
+      vim.keymap.set({ "n", "x" }, "<leader>c", mc.operator, { desc = "MC: cursor per match" })
 
       vim.keymap.set({ "n","x" }, "gy", mc.toggleCursor, { desc = "MC: toggle cursor" })
       vim.keymap.set("n", "<leader>ar", mc.restoreCursors, { desc = "MC: restore cursors" })
@@ -66,7 +66,7 @@ return {
           end
         end, { desc = "MC: enable/clear cursors", buffer = true })
 
-        -- flash's char move is too slow in multicursor-mode
+        -- disable flash's char move which is too slow in multicursor-mode
         layerSet({ "n", "o", "x" }, "f", "f", { desc = "MC: next cursor", buffer = true })
         layerSet({ "n", "o", "x" }, 't', "t", { desc = "MC: prev cursor", buffer = true })
         layerSet({ "n", "o", "x" }, "F", "F", { desc = "MC: next cursor", buffer = true })

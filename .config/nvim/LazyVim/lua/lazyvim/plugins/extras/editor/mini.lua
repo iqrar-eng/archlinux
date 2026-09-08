@@ -66,9 +66,9 @@ return {
         replace = { prefix = "", reindent_linewise = true },
         sort = { prefix = "", func = nil },
       })
-      mini.make_mappings("replace", { textobject = "u", line = "", selection = "" })
+      mini.make_mappings("replace", { textobject = "S", line = "", selection = "" })
       mini.make_mappings("exchange", { textobject = "s", line = "", selection = "s" })
-      mini.make_mappings("multiply", { textobject = "<Tab>", line = "", selection = "<Tab>" })
+      mini.make_mappings("multiply", { textobject = "<leader>s", line = "", selection = "<leader>s" })
     end,
   },
 

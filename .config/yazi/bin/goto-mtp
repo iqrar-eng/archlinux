@@ -14,4 +14,4 @@ if [ ! -e "$dir" ]; then
   exit 1
 fi
 
-ya emit cd "$dir"
+ya emit reveal "$dir"

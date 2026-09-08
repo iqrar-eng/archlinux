@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+GVFS="/run/user/$(id -u)/gvfs"
+MTP="/run/user/1000/gvfs/mtp:host=SAMSUNG_SAMSUNG_Android_RFCW91E7Z0A/Internal storage"
+MTP_URI="mtp://SAMSUNG_SAMSUNG_Android_RFCW91E7Z0A/"
+
+USB="/run/media/iqrar/IQRAR_USB"
+USB_LABEL="IQRAR_USB"
+
+ready=true
+
+find_mtp_host() {
+    find "$GVFS" -maxdepth 1 -type d -iname 'mtp:host=*' 2>/dev/null | head -n1
+}
+
+find_mtp_storage() {
+    local host="$1"
+    [ -z "$host" ] && return
+    find "$host" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | head -n1
+}
+
+mtp_host="$(find_mtp_host)"
+
+if [ -z "$mtp_host" ]; then
+    echo "Phone not mounted, attempting to mount..."
+    mtp_uri=$(gio mount -li 2>/dev/null | grep -m1 -oP 'activation_root=\Kmtp://\S+')
+    if [ -n "$mtp_uri" ]; then
+        gio mount "$mtp_uri"
+        sleep 2
+        mtp_host="$(find_mtp_host)"
+    fi
+fi
+
+MTP="$(find_mtp_storage "$mtp_host")"
+
+if [ -z "$MTP" ]; then
+    echo "Error: phone storage not found under $GVFS"
+    echo "Plug in your phone and make sure MTP is accessible, then try again."
+    ready=false
+fi
+
+# --- USB drive ---
+if [ ! -d "$USB" ]; then
+  echo "USB drive not mounted, attempting to mount..."
+  dev="/dev/disk/by-label/$USB_LABEL"
+  if [ -e "$dev" ]; then
+    udisksctl mount -b "$(readlink -f "$dev")"
+    sleep 1
+  fi
+fi
+
+if [ ! -d "$USB" ]; then
+  echo "Error: USB drive is not mounted at $USB"
+  ready=false
+fi
+
+if [ "$ready" = true ]; then
+  echo "Both MTP and USB are ready. Running rest of script..."
+
+  paths=(
+    "Documents"
+    "Recordings"
+  )
+
+  rm -rf "$HOME/personal/phone"
+  mkdir -p "$HOME/personal/phone"
+  for p in "${paths[@]}"; do
+    cp -r "$MTP/$p" "$HOME/personal/phone"
+  done
+
+  rm -rf "$MTP/diary"
+  cp -r "$HOME/personal/diary" "$MTP"
+
+  rm -rf "$USB/personal"
+  cp -r "$HOME/personal" "$USB"
+fi
