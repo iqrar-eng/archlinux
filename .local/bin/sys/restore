@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm git
-git clone https://github.com/iqrar-eng/archlinux ~/archlinux
-
+# https://github.com/jguer/yay#installation
 sudo pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay.git
 cd yay
@@ -12,42 +10,21 @@ makepkg -si
 cd ..
 rm -rf yay
 
-sudo pacman -S --needed --noconfirm - < "$HOME/archlinux/pacman.packages"
-yay -S --needed --noconfirm - < "$HOME/archlinux/yay.packages"
+curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/pacman.packages | sudo pacman -S --needed --noconfirm -
+curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/yay.packages | yay -S --needed --noconfirm -
 
 # ------------------------------------------------
 
-paths=(
-  ".bash_profile"
-  ".bashrc"
-  ".blerc"
-  ".gitconfig"
+git clone https://github.com/iqrar-eng/archlinux ~/archlinux
 
-  ".config/copyq/copyq-commands.ini"
-  ".config/copyq/copyq.conf"
-  ".config/dunst"
-  ".config/hypr"
-  ".config/kitty"
-  ".config/nvim"
-  ".config/rofi"
-  ".config/systemd"
-  ".config/yazi"
-  ".config/tmux/tmux.conf"
-  ".config/mimeapps.list"
-  ".config/starship.toml"
-
-  # https://github.com/boydaihungst/xdg-desktop-portal-termfilechooser/#configuration
-  ".config/xdg-desktop-portal-termfilechooser"
-  ".config/xdg-desktop-portal"
-
-  ".local/share/applications"
-)
-
-for p in "${paths[@]}"; do
-  rm -rf "$HOME/$p"
-  mkdir -p "$HOME/$(dirname "$p")" "$HOME/archlinux/$(dirname "$p")"
-  ln -sfn "$HOME/archlinux/$p" "$HOME/$p"
-done
+pushd "$HOME"
+while IFS= read -r p; do
+  [ -z "$p" ] && continue
+  rm -rf "$p"
+  mkdir -p "$(dirname "$p")" "$HOME/archlinux/$(dirname "$p")"
+  ln -sfn "$HOME/archlinux/$p" "$p"
+done < "$HOME/archlinux/symlinks"
+popd
 
 sudo rm -rf "/etc/keyd/default.conf"
 sudo mkdir -p /etc/keyd
@@ -67,12 +44,8 @@ sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null << '
 ExecStart=
 ExecStart=-/usr/bin/agetty --autologin iqrar --noclear %I $TERM
 EOF
-sudo systemctl daemon-reload
-sudo systemctl restart getty@tty1
 
 update-desktop-database "$HOME/.local/share/applications/"
-systemctl --user restart xdg-desktop-portal-termfilechooser.service
-systemctl --user restart xdg-desktop-portal.service
 
 # ------------------------------------------------
 
@@ -119,3 +92,5 @@ rm "$HOME/.src/react/src/content/reference/_basic"
 rm "$HOME/.src/react/src/content/reference/_api"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/basic/getting-started/" "$HOME/.src/react/src/content/reference/_basic"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/reference/" "$HOME/.src/react/src/content/reference/_api"
+
+# sudo reboot
