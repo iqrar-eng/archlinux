@@ -421,9 +421,8 @@ return {
               ["<M-8>"] = { vim.fn["repeat"]({ "preview_scroll_right" }, 130), mode = { "n", "x", "s", "i" }, },
               ["<M-6>"] = { vim.fn["repeat"]({ "preview_scroll_down" }, 999), mode = { "n", "x", "s", "i" }, },
               ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
-              ["h"] = "list_down",
-              ["l"] = "list_up",
               ["<C-K>"] = { "bufdelete", mode = { "n", "x", "s", "i" } },
+              ["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
             },
           },
           list = {
@@ -465,6 +464,7 @@ return {
               ["<M-6>"] = { vim.fn["repeat"]({ "preview_scroll_down" }, 999), mode = { "n", "x", "s", "i" }, },
               ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
               ["<C-K>"] = { "bufdelete", mode = { "n", "x", "s", "i" } },
+              ["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
             },
           },
           preview = {

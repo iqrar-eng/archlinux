@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "boydaihungst/gvfs"
-rev = "ebdb87c"
-hash = "69c24ef7e0a591864c76ac6e6dedc805"
+rev = "c92953c"
+hash = "d1e8d33ed36d339d5588f036dc3a9204"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"

@@ -46,6 +46,7 @@ ExecStart=-/usr/bin/agetty --autologin iqrar --noclear %I $TERM
 EOF
 
 update-desktop-database "$HOME/.local/share/applications/"
+ya pkg upgrade
 
 # ------------------------------------------------
 

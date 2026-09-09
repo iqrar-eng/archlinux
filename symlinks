@@ -15,5 +15,11 @@
 .config/tmux/tmux.conf
 .config/xdg-desktop-portal
 .config/xdg-desktop-portal-termfilechooser
-.config/yazi
+.config/yazi/gvfs.private
+.config/yazi/gvfs_automounts.private
+.config/yazi/init.lua
+.config/yazi/keymap.toml
+.config/yazi/package.toml
+.config/yazi/theme.toml
+.config/yazi/yazi.toml
 .local/share/applications
