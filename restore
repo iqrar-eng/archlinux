@@ -95,4 +95,5 @@ rm "$HOME/.src/react/src/content/reference/_api"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/basic/getting-started/" "$HOME/.src/react/src/content/reference/_basic"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/reference/" "$HOME/.src/react/src/content/reference/_api"
 
+echo "done"
 # sudo reboot
