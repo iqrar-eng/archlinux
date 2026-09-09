@@ -9,7 +9,7 @@
 .config/hypr
 .config/kitty
 .config/mimeapps.list
-.config/nvim
+.config/nvim/init.lua
 .config/starship.toml
 .config/systemd
 .config/tmux/tmux.conf

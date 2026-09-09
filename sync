@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 paths=(
   # ".config/vlc"
+
 )
 
 for p in "${paths[@]}"; do
@@ -27,8 +27,6 @@ done
     fi
     echo "$f"
   done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
-
-  exit
 
 yay -Syu --noconfirm
 
