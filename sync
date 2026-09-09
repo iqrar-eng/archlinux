@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+paths=(
+  # ".config/vlc"
+)
+
+for p in "${paths[@]}"; do
+  mkdir -p "$HOME/archlinux/$(dirname "$p")"
+  mv "$HOME/$p" "$HOME/archlinux/$p"
+  ln -sfn "$HOME/archlinux/$p" "$HOME/$p"
+done
+
+{
+  fd -H -t l . "$HOME" --max-depth 1
+  fd -H -t l . "$HOME/.config"
+  fd -H -t l '^applications$' "$HOME/.local/share"
+} | while IFS= read -r f; do
+    if [ ! -e "$f" ]; then
+      rm -rf "$f"
+      continue
+    fi
+    if [ -d "$f" ] && [ -z "$(fd -H . "$f" -L --max-depth 1)" ]; then
+      target=$(readlink -f "$f")
+      rm -rf "$f" "$target"
+      continue
+    fi
+    echo "$f"
+  done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
+
+  exit
+
+yay -Syu --noconfirm
+
+pacman -Qqen > "$HOME/archlinux/pacman.packages"
+pacman -Qqem > "$HOME/archlinux/yay.packages"
+
+roots=(
+  # ~/projects
+  ~/.src
+)
+find "${roots[@]}" -name .git -type d -print0 | while IFS= read -r -d '' d; do
+  repo="${d%/.git}"
+  echo "==> $repo"
+  git -C "$repo" fetch origin
+  git -C "$repo" reset --hard "origin/$(git -C "$repo" symbolic-ref --short HEAD)"
+  git -C "$repo" pull
+done
