@@ -61,16 +61,6 @@ vim.keymap.set({ "n", "x", "s", "i" }, "<M-N>", buf_action("explorer_rename"), {
 vim.keymap.set({ "n", "x", "s", "i" }, "<M-g>", buf_action("explorer_del"), { noremap = true, silent = true })
 vim.keymap.set({ "n", "x", "s", "i" }, "<M-n>", buf_action("explorer_add"), { noremap = true, silent = true })
 
-vim.keymap.set("n", "<leader>au", function()
-  local modifier = ":~"
-  if vim.v.count > 0 then
-    modifier = modifier .. string.rep(":h", vim.v.count)
-  end
-  local path = vim.fn.expand("%" .. modifier)
-  vim.fn.system("wl-copy", path)
-  vim.notify("Copied: " .. path, vim.log.levels.INFO, { title = "Relative path" })
-end, { desc = "Copy relative path N levels up" })
-
 vim.keymap.set("n", "<C-S-B>", function()
   local p = vim.fn.expand("%:p")
   local count = vim.v.count
