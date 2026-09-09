@@ -1,24 +1,10 @@
-# archlinux
-
-> This is my personal Arch Linux development environment, tailored to my
-> workflow and primarily intended for reference. Use individual configurations
-> or the installation scripts as needed.
-
-Dotfiles, package lists, and install/backup scripts for a Hyprland + tmux +
-Neovim reproducible development environment on Arch Linux.
-
-## Contents
-
-* [Principle](#principle)
-* [Installation](#installation)
-
-## Principle
+### Principle
 
 > GUI interaction is avoided when a shortcut or script can do it faster.
 
 The result? Less about making it pretty, more about making it work.
 
-## Installation
+### Installation
 
 1. Installs every package listed in `./pacman.packages` and ./`yay.packages`.
 3. Clones this repository and symlinks paths in the `./symlinks` from `$HOME` into it.
