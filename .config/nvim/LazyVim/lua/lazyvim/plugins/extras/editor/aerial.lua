@@ -63,7 +63,6 @@ return {
             require("aerial").select({ jump = false })
           end,
 
-          ["h"] = "actions.tree_close",
           ["j"] = function()
             local count = math.max(vim.v.count, 1)
             if count == 1 then
@@ -80,18 +79,6 @@ return {
             else
               vim.cmd("normal! m'" .. count .. "gk")
               require("aerial").select({ jump = false })
-            end
-          end,
-          ["l"] = function()
-            local data = require("aerial.data")
-            local aerial = require("aerial")
-            local bufdata = data.get_or_create(0)
-            local index = vim.api.nvim_win_get_cursor(0)[1]
-            local item = bufdata:item(index)
-            if item and bufdata:is_collapsable(item) and bufdata:is_collapsed(item) then
-              aerial.tree_open()
-            else
-              aerial.select()
             end
           end,
 

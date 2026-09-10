@@ -63,6 +63,16 @@ hl.bind(
 )
 hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"), { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"), { locked = true, repeating = true })
+hl.bind(
+	"SUPER + XF86MonBrightnessUp",
+	hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 100%+"),
+	{ locked = true, repeating = true }
+)
+hl.bind(
+	"SUPER + XF86MonBrightnessDown",
+	hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 100%-"),
+	{ locked = true, repeating = true }
+)
 
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + R",

@@ -25,30 +25,6 @@ return {
                 },
               },
             },
-            win = {
-              list = {
-                keys = {
-                  ["h"] = "explorer_close", -- close directory
-                  ["j"] = {
-                    function()
-                      return vim.v.count > 1 and ("m'" .. vim.v.count .. "gj") or "gj"
-                    end,
-                    mode = { "n", "x" },
-                    expr = true,
-                    desc = "move down (visual line)",
-                  },
-                  ["k"] = {
-                    function()
-                      return vim.v.count > 1 and ("m'" .. vim.v.count .. "gk") or "gk"
-                    end,
-                    mode = { "n", "x" },
-                    expr = true,
-                    desc = "move up (visual line)",
-                  },
-                  ["l"] = "confirm",
-                },
-              },
-            },
           },
         },
       },
@@ -120,35 +96,6 @@ return {
           end
         end,
       })
-    end,
-  },
-
-  {
-    "mbbill/undotree",
-    cmd = "UndotreeToggle",
-    keys = {
-      { "<leader>hz", "<cmd>UndotreeToggle<CR>", desc = "Toggle Undotree (closes explorer first)" },
-    },
-    config = function()
-      vim.g.undotree_WindowLayout = 3
-      vim.g.undotree_DiffAutoOpen = 0
-      vim.g.undotree_HelpLine = 0
-      vim.cmd([[
-      function! g:Undotree_CustomMap()
-      noremap <buffer> <C-Home> gg<plug>UndotreeEnter
-      noremap <buffer> <C-End> G<plug>UndotreeEnter
-      noremap <buffer> <PageDown> <C-d>zz<plug>UndotreeEnter
-      noremap <buffer> <PageUp> <C-u>zz<plug>UndotreeEnter
-      noremap <buffer><expr> j v:count > 1 ? "j\<Plug>UndotreeEnter" : "\<Plug>UndotreePreviousState"
-      noremap <buffer><expr> k v:count > 1 ? "k\<Plug>UndotreeEnter" : "\<Plug>UndotreeNextState"
-      noremap <buffer> l <plug>UndotreeEnter<C-W>h
-      noremap <buffer> <C-S-Z> <plug>UndotreeRedo
-      noremap <buffer> <C-Z> <plug>UndotreeUndo
-      noremap <buffer> t <plug>UndotreeDiffToggle
-      noremap <buffer> g? <plug>UndotreeHelp
-      noremap <buffer> ? ?
-      endfunction
-      ]])
     end,
   },
 }

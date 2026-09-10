@@ -11,8 +11,7 @@ local function remote_scroll(filetypes, dir)
         vim.defer_fn(function()
           if vim.api.nvim_win_is_valid(win) then
             vim.api.nvim_set_current_win(win)
-            -- 'm' = allow remapping, so plugin-defined `l` behavior fires
-            local keys = vim.api.nvim_replace_termcodes("l", true, false, true)
+            local keys = vim.api.nvim_replace_termcodes("<CR>", true, false, true)
             vim.api.nvim_feedkeys(keys, "m", false)
           end
         end, 50)
@@ -28,7 +27,7 @@ vim.keymap.set("n", "<C-PageUp>", remote_scroll({ "snacks_picker_list" }, "k"), 
 vim.keymap.set("n", "<M-C-S-Home>", remote_scroll({ "undotree", "aerial" }, "j"), {})
 vim.keymap.set("n", "<C-G>", remote_scroll({ "undotree", "aerial" }, "k"), {})
 
--- ------------------------------------------------
+------------------------------------------------
 
 vim.keymap.set({ "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>", { silent = true })
 vim.keymap.set("x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>", { silent = true })
@@ -70,7 +69,7 @@ vim.keymap.set("n", "<esc>", function()
   return "<esc>"
 end, { expr = true, desc = "Escape and Clear hlsearch" })
 
--- ------------------------------------------------
+------------------------------------------------
 
 vim.keymap.set("x", "<M-2>", function()
   vim.cmd("normal! " .. ("jojo"):rep(vim.v.count1))
@@ -93,7 +92,7 @@ vim.keymap.set("x", "z", function()
   vim.cmd("normal! " .. ("loho"):rep(vim.v.count1))
 end, { silent = true, desc = "visual extend/shrink horizontally" })
 
--- ------------------------------------------------
+------------------------------------------------
 
 vim.keymap.set("n", "<leader>hv", function()
   local file = vim.fn.expand("%")
@@ -173,7 +172,7 @@ vim.keymap.set({ "n", "x" }, "<End>", function()
   return vim.v.count > 1 and ("m'" .. vim.v.count .. "gj$") or "$"
 end, { expr = true })
 
--- ------------------------------------------------
+------------------------------------------------
 
 local function yank_motion_text(type)
   local rv, rt = vim.fn.getreg('"'), vim.fn.getregtype('"')
@@ -217,7 +216,7 @@ end
 
 bind_send("<leader>f", cmd, "+")
 
--- ------------------------------------------------
+------------------------------------------------
 
 local function bind_send_text(lhs, base_cmd)
   local global_name = "SlimeBrowserSendTextOp_" .. lhs:gsub("[^%w]", "_")
@@ -240,7 +239,7 @@ bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core last --
 bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core last --jump --execute")
 bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
 
--- ------------------------------------------------
+------------------------------------------------
 
 vim.keymap.set("n", "<leader>a[", function()
   vim.cmd("normal! mz")
@@ -285,7 +284,7 @@ Snacks.toggle.option("wrap"):map("<leader>hr")
 vim.keymap.set("x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>', { silent = true, desc = "Delete blank lines" })
 vim.keymap.set("n", "<leader>a<CR>", ":let @+=@:<Left><Insert>", { desc = "let @+ =@x" })
 
--- ------------------------------------------------
+------------------------------------------------
 
 vim.keymap.set("i", "<C-S-End><Del>", '<C-Home><C-v><Esc>"zd<C-End>', { remap = true, silent = true })
 
@@ -327,4 +326,178 @@ vim.keymap.set({ "n", "x" }, "<leader>jc", function()
   })
 end, { desc = "Git browser (copy)" })
 
-require("lazyvim.config.keymaps_explorer")
+vim.keymap.set({ "n", "x" }, "<leader>jc", function()
+  Snacks.gitbrowse({
+    open = function(url)
+      vim.fn.setreg("+", url)
+    end,
+    notify = false,
+  })
+end, { desc = "Git browser (copy)" })
+
+----------------------------------------------
+
+local explorer_actions = require("snacks.explorer.actions").actions
+local Tree = require("snacks.explorer.tree")
+local function get_path(count)
+  local modifier = count > 0 and string.rep(":h", count) or ""
+  return vim.fn.expand("%:p" .. modifier)
+end
+
+local function fake_picker(path)
+  local dir = vim.fn.fnamemodify(path, ":h")
+  return {
+    opts = {},
+    input = { filter = { meta = {} }, set = function() end },
+    list = {
+      win = { focus = function() end },
+      set_target = function() end,
+      set_selected = function() end,
+      select = function() end,
+      view = function() end,
+    },
+    selected = function(_, o)
+      return (o and o.fallback) and { { file = path } } or {}
+    end,
+    dir = function()
+      return dir
+    end,
+    cwd = function()
+      return dir
+    end,
+    find = function() end,
+    iter = function()
+      return function() end
+    end,
+    current = function()
+      return { file = path }
+    end,
+  }
+end
+
+local function buf_action(name)
+  return function()
+    local path = get_path(vim.v.count)
+    if path == "" then
+      Snacks.notify.warn("No file for current buffer")
+      return
+    end
+    local item = { file = path }
+    local picker = fake_picker(path)
+    local ok, err = pcall(explorer_actions[name], picker, item)
+    if not ok then
+      Snacks.notify.error("buf_action(" .. name .. ") failed:\n" .. tostring(err))
+      return
+    end
+    Tree:refresh(vim.fn.fnamemodify(path, ":h"))
+  end
+end
+
+vim.keymap.set({ "n", "x", "s", "i" }, "<C-D>", buf_action("explorer_yank"), { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "s", "i" }, "<M-C-Y>", buf_action("explorer_open"), { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "s", "i" }, "<M-M>", buf_action("explorer_paste"), { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "s", "i" }, "<M-N>", buf_action("explorer_rename"), { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "s", "i" }, "<M-g>", buf_action("explorer_del"), { noremap = true, silent = true })
+vim.keymap.set({ "n", "x", "s", "i" }, "<M-n>", buf_action("explorer_add"), { noremap = true, silent = true })
+
+vim.keymap.set("n", "<C-S-B>", function()
+  local p = vim.fn.expand("%:p")
+  local count = vim.v.count
+  local path = count == 0 and p or vim.fn.fnamemodify(p, string.rep(":h", count))
+  local uri = vim.uri_from_fname(path)
+  local script = string.format("copy('text/uri-list','%s','x-special/gnome-copied-files','copy\\n%s')", uri, uri)
+  vim.fn.jobstart({ "copyq", "eval", "--", script })
+  vim.notify(uri, vim.log.levels.INFO)
+end, { desc = "yank_file_uri" })
+
+vim.keymap.set("n", "<leader>hc", function()
+  local file_src = vim.api.nvim_buf_get_name(0)
+  if file_src == "" then
+    vim.notify("No file in buffer", vim.log.levels.WARN)
+    return
+  end
+  vim.ui.input({ prompt = "Copy to ", default = file_src, completion = "file" }, function(file_out)
+    if not file_out or file_out == "" then
+      return
+    end
+    local dir = vim.fn.fnamemodify(file_out, ":h")
+    local res = vim.fn.system({ "mkdir", "-p", dir })
+    if vim.v.shell_error ~= 0 then
+      vim.notify(res, vim.log.levels.ERROR)
+      return
+    end
+    vim.fn.system({ "cp", "-R", file_src, file_out })
+    if vim.v.shell_error ~= 0 then
+      vim.notify("Copy failed", vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("Copied to " .. file_out, vim.log.levels.INFO)
+    vim.cmd("edit " .. vim.fn.fnameescape(file_out))
+  end)
+end, { desc = "Copy File To" })
+
+vim.keymap.set("n", "<leader>hx", function()
+  local file_src = vim.api.nvim_buf_get_name(0)
+  if file_src == "" then
+    vim.notify("No file in buffer", vim.log.levels.WARN)
+    return
+  end
+  vim.ui.input({ prompt = "Move to ", default = file_src, completion = "file" }, function(file_out)
+    if not file_out or file_out == "" then
+      return
+    end
+    local dir = vim.fn.fnamemodify(file_out, ":h")
+    local res = vim.fn.system({ "mkdir", "-p", dir })
+    if vim.v.shell_error ~= 0 then
+      vim.notify(res, vim.log.levels.ERROR)
+      return
+    end
+    vim.fn.system({ "mv", file_src, file_out })
+    if vim.v.shell_error ~= 0 then
+      vim.notify("Move failed", vim.log.levels.ERROR)
+      return
+    end
+    vim.notify("Moved to " .. file_out, vim.log.levels.INFO)
+    vim.cmd("edit " .. vim.fn.fnameescape(file_out))
+  end)
+end, { desc = "Move File To" })
+
+vim.keymap.set("n", "<leader>a}", function()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then
+    return
+  end
+
+  local modifier = ":h"
+  if vim.v.count > 0 then
+    modifier = modifier .. string.rep(":h", vim.v.count)
+  end
+  local dir = vim.fn.fnamemodify(path, modifier)
+
+  vim.fn.jobstart("tmux new-window -c " .. vim.fn.shellescape(dir), { detach = true })
+end, { desc = "Open tmux window N parent dir" })
+
+vim.keymap.set("n", "<leader>a{", function()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then
+    return
+  end
+
+  local buf = vim.fn.bufadd(path)
+  vim.fn.bufload(buf)
+  local root = LazyVim.root.get({ buf = buf })
+
+  vim.fn.jobstart("tmux new-window -c " .. vim.fn.shellescape(root), { detach = true })
+end, { desc = "Open tmux window project root" })
+
+vim.keymap.set("n", "<leader>h<CR>", function()
+  vim.ui.input({
+    prompt = "Edit file: ",
+    default = vim.fn.expand("%:p:h") .. "/",
+    completion = "file",
+  }, function(input)
+    if input and input ~= "" then
+      vim.cmd.edit(input)
+    end
+  end)
+end, { desc = "Edit or Create file in current dir" })

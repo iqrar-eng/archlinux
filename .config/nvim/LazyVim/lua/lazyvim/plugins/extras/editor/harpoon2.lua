@@ -14,7 +14,7 @@ return {
       },
     })
 
-    -- ------------------------------------------------
+    ------------------------------------------------
 
     local buffer_select_keys = { "<M-1>", "<M-2>", "<M-3>", "<M-4>", "<M-5>", "<M-6>", "<M-7>", "<M-8>", "<M-9>" }
     for i, k in ipairs(buffer_select_keys) do
@@ -30,7 +30,7 @@ return {
       end, { desc = "harpoon: select buffer " .. i .. " (or N×" .. i .. " with count)" })
     end
 
-    -- ------------------------------------------------
+    ------------------------------------------------
 
     local function normalize_list_paths(list)
       for _, item in ipairs(list.items) do

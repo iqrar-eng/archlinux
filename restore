@@ -99,4 +99,11 @@ rm -rf  "$HOME/.src/react/src/content/reference/_api"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/basic/getting-started/" "$HOME/.src/react/src/content/reference/_basic"
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/reference/" "$HOME/.src/react/src/content/reference/_api"
 
+# ------------------------------------------------
+
+rm x
 echo "done 100%"
+
+trap 'echo; exit 1' INT
+read -p "Reboot now? [Y/n] " a
+[[ "$a" != "n" && "$a" != "N" ]] && sudo reboot
