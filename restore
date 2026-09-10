@@ -100,4 +100,3 @@ ln -s "$HOME/.src/typescript-cheatsheets-react/docs/basic/getting-started/" "$HO
 ln -s "$HOME/.src/typescript-cheatsheets-react/docs/reference/" "$HOME/.src/react/src/content/reference/_api"
 
 echo "done 100%"
-# sudo reboot
