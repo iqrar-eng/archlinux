@@ -258,27 +258,4 @@ return {
       end,
     },
   },
-
-  {
-    "tpope/vim-fugitive",
-    event = "VeryLazy",
-    keys = {
-      {
-        "<leader>jA",
-        function()
-          vim.cmd("Git add -A")
-          vim.cmd("Git commit -m 'add files/dirs'")
-          vim.cmd("Git push origin main")
-        end,
-        desc = "Git add, commit, push",
-      },
-      {
-        "<leader>ja",
-        function()
-          vim.cmd("Git add %")
-        end,
-        desc = "Git add %",
-      },
-    },
-  },
 }

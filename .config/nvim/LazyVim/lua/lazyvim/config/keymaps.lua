@@ -501,3 +501,22 @@ vim.keymap.set("n", "<leader>h<CR>", function()
     end
   end)
 end, { desc = "Edit or Create file in current dir" })
+
+----------------------------------------------
+
+vim.keymap.set("n", "<leader>jA", function()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then return end
+  local dir = vim.fn.fnamemodify(path, ":h")
+  vim.system({ "sh", "-c", [[
+    git add -A &&
+    git commit -m 'add files/dirs' &&
+    git push origin main
+  ]] }, { cwd = dir })
+end, { desc = "Git add, commit, push" })
+
+vim.keymap.set("n", "<leader>ja", function()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == "" then return end
+  vim.system({ "git", "add", path }, { cwd = vim.fn.fnamemodify(path, ":h") })
+end, { desc = "Git add %" })
