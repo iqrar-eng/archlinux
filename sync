@@ -11,6 +11,8 @@ for p in "${paths[@]}"; do
   ln -sfn "$HOME/archlinux/$p" "$HOME/$p"
 done
 
+# ------------------------------------------------
+
 {
   fd -H -t l . "$HOME" --max-depth 1
   fd -H -t l . "$HOME/.config"
@@ -27,6 +29,8 @@ done
     fi
     echo "$f"
   done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
+
+# ------------------------------------------------
 
 yay -Syu --noconfirm
 
