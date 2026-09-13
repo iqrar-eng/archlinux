@@ -1,6 +1,0 @@
-[Unit]
-Description=sync_full_system
-
-[Service]
-Type=oneshot
-ExecStart=%h/archlinux/.local/bin/sys/sync

@@ -146,15 +146,7 @@ return {
                 local root_path = LazyVim.root.get({ normalize = true })
                 local root = vim.fs.basename(root_path)
                 local path = LazyVim.lualine.pretty_path()(self)
-                return string.format(
-                  "%s%s%s%s%s%d",
-                  "%*%#SnacksPickerDirectory#",
-                  root,
-                  "%*%#NeogitGraphBoldGreen#/",
-                  path,
-                  "%*%#Dimmed#:%#CursorLineNr#",
-                  total
-                )
+                return string.format("%s%s%s%s%s%d", "%*%#SnacksPickerDirectory#", root, "%*%#NeogitGraphBoldGreen#/", path, "%*%#Dimmed#:%#CursorLineNr#", total)
               end,
               color = function()
                 return { fg = Snacks.util.color("Special") }

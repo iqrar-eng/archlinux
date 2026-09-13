@@ -476,7 +476,6 @@ return {
       },
     },
     keys = {
-      { "<leader>ay", function() LazyVim.pick("grep", { dirs = { "/etc/keyd/default.conf" } })() end, desc = "grepFile keyd config", mode = { "n", "x" } }, -- ── Find / Grep by Directory ──────────────────────────────────────────────
       { "<C-L>",     LazyVim.pick("files"), desc = "Find Files (root dir)", mode = { "n", "x" } },
       { "<BS><Up>", LazyVim.pick("files", { root = false }), desc = "Find Files (cwd)", mode = { "n", "x" } },
       { "<BS><PageDown>", LazyVim.pick("grep"),  desc = "Grep (root dir)",       mode = { "n", "x" } },

@@ -17,10 +17,12 @@ prepend_keymap = [
 
   { on = [ "g", "i" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Documents/"' --confirm''', desc = "Go to MTP: Internal storage" },
   { on = [ "g", "w" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents"' --confirm''', desc = "Go to MTP: WhatsApp Documents" },
-	{ on = [ "g", "s" ], run = "reveal ~/archlinux/.config/", desc = "Go to ~/archlinux" },
-	{ on = [ "g", "u" ], run = "reveal /run/media/iqrar/IQRAR_USB/personal/phone/", desc = "Go to IQRAR_USB: personal" },
-	{ on = [ "g", "l" ], run = "reveal ~/.local/share/", desc = "Go to ~/.local" },
-	{ on = [ "g", "p" ], run = "reveal ~/personal/phone/", desc = "Go to ~/personal" },
+  { on = [ "g", "s" ], run = "reveal ~/archlinux/.config/", desc = "Go to ~/archlinux" },
+  { on = [ "g", "u" ], run = "reveal /run/media/iqrar/IQRAR_USB/my/phone/", desc = "Go to IQRAR_USB: personal" },
+  { on = [ "g", "l" ], run = "reveal ~/.local/share/", desc = "Go to ~/.local" },
+  { on = [ "g", "p" ], run = "cd ~/personal/", desc = "Go to ~/personal" },
+  { on = [ "g", "P" ], run = "cd ~/phone/", desc = "Go to ~/phone/" },
+  { on = [ "g", "r" ], run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"', desc = "git rev-parse --show-toplevel" },
 
 	{ on = [ "<Space>", "o" ], run = "open --hovered",               desc = "Always open the hovered file" },
 	{ on = [ "<Space>", "O" ], run = "open --interactive --hovered", desc = "Open hovered file interactively" },
@@ -44,6 +46,29 @@ prepend_keymap = [
 	{ on = "<S-Tab>", run = [ "toggle", "arrow -1" ], desc = "Toggle the current selection state" },
 
 	{ on = "^", run = "spot", desc = "Spot hovered file" },
+
+  { on  = "u", run = "plugin parent-arrow -1", desc = "plugin parent-arrow -1" },
+  { on  = "i", run = "plugin parent-arrow 1", desc = "plugin parent-arrow 1" },
+
+	{ on = "<A-1>", run = "tab_switch 0", desc = "Switch to first tab" },
+	{ on = "<A-2>", run = "tab_switch 1", desc = "Switch to second tab" },
+	{ on = "<A-3>", run = "tab_switch 2", desc = "Switch to third tab" },
+	{ on = "<A-4>", run = "tab_switch 3", desc = "Switch to fourth tab" },
+	{ on = "<A-5>", run = "tab_switch 4", desc = "Switch to fifth tab" },
+	{ on = "<A-6>", run = "tab_switch 5", desc = "Switch to sixth tab" },
+	{ on = "<A-7>", run = "tab_switch 6", desc = "Switch to seventh tab" },
+	{ on = "<A-8>", run = "tab_switch 7", desc = "Switch to eighth tab" },
+	{ on = "<A-9>", run = "tab_switch 8", desc = "Switch to ninth tab" },
+
+  { on = [ "1" ], run = "plugin relative-motions 1", desc = "Move in relative steps" },
+  { on = [ "2" ], run = "plugin relative-motions 2", desc = "Move in relative steps" },
+  { on = [ "3" ], run = "plugin relative-motions 3", desc = "Move in relative steps" },
+  { on = [ "4" ], run = "plugin relative-motions 4", desc = "Move in relative steps" },
+  { on = [ "5" ], run = "plugin relative-motions 5", desc = "Move in relative steps" },
+  { on = [ "6" ], run = "plugin relative-motions 6", desc = "Move in relative steps" },
+  { on = [ "7" ], run = "plugin relative-motions 7", desc = "Move in relative steps" },
+  { on = [ "8" ], run = "plugin relative-motions 8", desc = "Move in relative steps" },
+  { on = [ "9" ], run = "plugin relative-motions 9", desc = "Move in relative steps" },
 ]
 
 [input]

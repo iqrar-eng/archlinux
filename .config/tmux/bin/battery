@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+BAT=/sys/class/power_supply/BAT0
+
+[ -r "$BAT/capacity" ] || exit 0
+capacity=$(cat "$BAT/capacity")
+status=$(cat "$BAT/status")
+
+case "$status" in
+  Charging)    arrow="↑" ;;
+  Discharging) arrow="↓" ;;
+  *)           arrow="=" ;;
+esac
+
+echo "${arrow} ${capacity}%"

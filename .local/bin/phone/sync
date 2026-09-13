@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 GVFS="/run/user/$(id -u)/gvfs"
 MTP_URI="mtp://SAMSUNG_SAMSUNG_Android_RFCW91E7Z0A/"
@@ -57,20 +56,29 @@ fi
 if [ "$ready" = true ]; then
   echo "Both MTP and USB are ready. Running rest of script..."
 
-  paths=(
+  phone_paths=(
     "Documents"
     "Recordings"
   )
 
-  rm -rf "$HOME/personal/phone"
-  mkdir -p "$HOME/personal/phone"
-  for p in "${paths[@]}"; do
-    cp -r "$MTP/$p" "$HOME/personal/phone"
+  for p in "${phone_paths[@]}"; do
+    rm -rf "$HOME/phone/$p"
+    mkdir -p "$HOME/phone/$p"
+    cp -r "$MTP/$p" "$HOME/phone"
   done
 
-  rm -rf "$MTP/diary"
-  cp -r "$HOME/personal/diary" "$MTP"
+  rm -rf "$MTP/personal"
+  cp -r "$HOME/personal" "$MTP"
+
+  home_paths=(
+    "personal"
+    "phone"
+  )
 
   rm -rf "$USB/personal"
-  cp -r "$HOME/personal" "$USB"
+  rm -rf "$USB/my"
+  mkdir -p "$USB/my"
+  for p in "${home_paths[@]}"; do
+    cp -r "$HOME/$p" "$USB/my"
+  done
 fi

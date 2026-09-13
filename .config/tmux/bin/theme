@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if gsettings get org.gnome.desktop.interface color-scheme | grep -q prefer-dark; then
+  tmux set  -g pane-border-style            "fg=#313244"
+  tmux set  -g pane-active-border-style     "fg=#89b4fa"
+  tmux set  -g status-style                 "fg=#a6adc8,bg=#181825"
+  tmux set  -g message-style                "fg=#1e1e2e,bg=#C2B08C,bold"
+  tmux set  -g mode-style                   "bg=#2e465e"
+  tmux setw -g window-status-style          "fg=#a6adc8,bg=#1e1e2e"
+  tmux setw -g window-status-current-style  "fg=#1e1e2e,bg=#89b4fa,bold"
+  tmux setw -g window-status-bell-style     "fg=#C2B08C,bg=#1e1e2e,blink,bold"
+  tmux setw -g window-status-activity-style "fg=#cdd6f4,bg=#1e1e2e,underscore"
+  tmux set  -g status-left                  "#[fg=#1e1e2e,bg=#C2B08C,bold] #S #[fg=#a6adc8,bg=#1e1e2e,none] "
+  tmux set  -g @theme mocha
+else
+  tmux set  -g pane-border-style            "fg=#dce0e8"
+  tmux set  -g pane-active-border-style     "fg=#1e66f5"
+  tmux set  -g status-style                 "fg=#6c6f85,bg=#eff1f5"
+  tmux set  -g message-style                "fg=#eff1f5,bg=#df8e1d,bold"
+  tmux set  -g mode-style                   "bg=#cbefc8"
+  tmux setw -g window-status-style          "fg=#6c6f85,bg=#eff1f5"
+  tmux setw -g window-status-current-style  "fg=#eff1f5,bg=#1e66f5,bold"
+  tmux setw -g window-status-bell-style     "fg=#df8e1d,bg=#eff1f5,blink,bold"
+  tmux setw -g window-status-activity-style "fg=#4c4f69,bg=#eff1f5,underscore"
+  tmux set  -g status-left                  "#[fg=#eff1f5,bg=#df8e1d,bold] #S #[fg=#6c6f85,bg=#eff1f5,none] "
+  tmux set  -g @theme latte
+fi

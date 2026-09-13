@@ -96,6 +96,7 @@ return {
           { "^:%s*", "" },
           { "inner", "🎯" },
           { "MC:", "🧞‍♂️" },
+          { "^edit ", "󰈔 " },
           { "clipboard", "📋" },
           { "[-<>(){}]", " " },
           { "outer", "🌐" },
@@ -107,32 +108,17 @@ return {
           { "goto_%a+_end", "🚩" },
           { "lhs", "LHS" },
           { "rhs", "RHS" },
-          { "^%a+ %a+ to REPL", "📤" },
-          { "=']", "" },
-          { '"z', "" },
           { "browser", "🌎" },
           { "Gitsigns", "❓" },
           { "Github", " " },
           { "Google", " " },
           { "Lazygit", " " },
-          { "Git", "  " },
           { "git", " 🔎" },
           { "Find Files*", "📁 " },
           { "Grep*", "🔎 " },
-          { "grepFile*", " 📕 " },
-          { "file*", "󰈔 " },
-          { "@", "📚 " },
           { "[Dd]eleted?", "🚮" },
-          { '"z', "📚 " },
           { "[rR]egister.*", "📚" },
-          { "substitute", "🪓" },
-          { "complete_word", "󰈭 " },
-          { "auto_apply", "🅰️" },
-          { "prefix", "S" },
-          { "prompt_current_text", "🟦" },
-          { "_", " " },
           { "let", "" },
-          { "cursor position", "start" },
         },
       },
       icons = {
@@ -235,6 +221,7 @@ return {
             gs.nav_hunk("prev", { target = "staged" })
           end
         end, "Prev Hunk")
+
         map("n", ">H", function() gs.nav_hunk("last", { target = "staged" }) end, "Gitsigns Last Hunk")
         map("n", "<H", function() gs.nav_hunk("first", { target = "staged" }) end, "Gitsigns First Hunk")
 
@@ -244,6 +231,7 @@ return {
 
         map("n", "<leader>jr", gs.reset_buffer, "Gitsigns Reset Buffer")
         map({ "n", "x" }, "<leader>jm", ":Gitsigns reset_hunk<CR>", "Gitsigns Reset Hunk")
+        map({ "n" }, "<leader>jR", ":Gitsigns reset_buffer_index<CR>", "Gitsigns reset_buffer_index")
 
         map("n", "<leader>jw", gs.preview_hunk_inline, "Gitsigns Preview Hunk Inline")
         map("n", "<M-p>", gs.preview_hunk, "Gitsigns Preview Hunk Inline")
@@ -258,4 +246,5 @@ return {
       end,
     },
   },
+  { "tpope/vim-fugitive", event = "VeryLazy" },
 }

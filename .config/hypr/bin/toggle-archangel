@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PIDFILE="/tmp/archangel-mpg123.pid"
+if [ -f "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
+    kill "$(cat "$PIDFILE")"
+    rm -f "$PIDFILE"
+else
+    mpg123 --loop -1 -f 2500  "$HOME/Music/Archangel.mp3" &
+    echo $! > "$PIDFILE"
+fi

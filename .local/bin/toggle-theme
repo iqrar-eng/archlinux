@@ -27,20 +27,15 @@ result = subprocess.run(
 if result.returncode != 0:
     subprocess.run(["pkill", "-USR1", "-x", "kitty"])
 
-# tmux
-tmux_bg = "#a6e3a1" if is_dark else "#2e465e"
-tmux_fg = "#1e1e2e" if is_dark else "#eff1f5"
-subprocess.run(
-    ["tmux", "set", "-g", "mode-style", f"bg={tmux_bg}"],
-    capture_output=True
-)
-
 # GNOME
 gnome_scheme = "prefer-light" if is_dark else "prefer-dark"
 subprocess.run([
     "gsettings", "set", "org.gnome.desktop.interface",
     "color-scheme", gnome_scheme
 ])
+
+# tmux
+result = subprocess.run(["tmux", "run-shell", "~/archlinux/.config/tmux/bin/theme"])
 
 # CopyQ
 copyq_theme = home / "archlinux/.config/copyq/themes" / ("light.ini" if is_dark else "dark.ini")

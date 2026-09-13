@@ -42,7 +42,6 @@ return {
     end,
   },
 
-  -- stylua: ignore
   {
     "chrisgrieser/nvim-various-textobjs",
     event = "VeryLazy",
@@ -91,32 +90,36 @@ return {
       vim.keymap.set({ "o", "x" }, "go", '<cmd>lua require("various-textobjs").column("down")<CR>')
       vim.keymap.set({ "o", "x" }, "gt", '<cmd>lua require("various-textobjs").column("up")<CR>')
 
-    vim.keymap.set("n", "du", function()
+      vim.keymap.set("n", "du", function()
         -- select outer indentation
         require("various-textobjs").indentation("outer", "outer")
 
         -- plugin only switches to visual mode when a textobj has been found
         local indentationFound = vim.fn.mode():find("V")
-        if not indentationFound then return end
+        if not indentationFound then
+          return
+        end
 
         -- dedent indentation
-        vim.cmd.normal { "<", bang = true }
+        vim.cmd.normal({ "<", bang = true })
 
         -- delete surrounding lines
         local endBorderLn = vim.api.nvim_buf_get_mark(0, ">")[1]
         local startBorderLn = vim.api.nvim_buf_get_mark(0, "<")[1]
         vim.cmd(tostring(endBorderLn) .. " delete") -- delete end first so line index is not shifted
         vim.cmd(tostring(startBorderLn) .. " delete")
-    end, { desc = "Delete Surrounding Indentation" })
+      end, { desc = "Delete Surrounding Indentation" })
 
-    vim.keymap.set("n", "yu", function()
+      vim.keymap.set("n", "yu", function()
         local startPos = vim.api.nvim_win_get_cursor(0)
 
         -- identify start- and end-border
         require("various-textobjs").indentation("outer", "outer")
         local indentationFound = vim.fn.mode():find("V")
-        if not indentationFound then return end
-        vim.cmd.normal { "V", bang = true } -- leave visual mode so the '< '> marks are set
+        if not indentationFound then
+          return
+        end
+        vim.cmd.normal({ "V", bang = true }) -- leave visual mode so the '< '> marks are set
 
         -- copy them into the + register
         local startLn = vim.api.nvim_buf_get_mark(0, "<")[1] - 1
@@ -134,7 +137,7 @@ return {
 
         -- restore cursor position
         vim.api.nvim_win_set_cursor(0, startPos)
-    end, { desc = "Yank surrounding indentation" })
+      end, { desc = "Yank surrounding indentation" })
     end,
   },
 }

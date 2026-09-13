@@ -106,6 +106,7 @@ hl.bind(
 	hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --execute --jump")
 )
 hl.bind("SHIFT + CTRL + ALT + SUPER + B", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --execute"))
+hl.bind("XF86Favorites", hl.dsp.exec_cmd("/home/iqrar/archlinux/.config/hypr/bin/toggle-archangel"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + C", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-slime-core last --jump"))
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + Q",

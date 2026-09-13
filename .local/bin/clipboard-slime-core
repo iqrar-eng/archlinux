@@ -53,9 +53,6 @@ if [[ "$TARGET_PANE" == "last" ]]; then
   fi
 fi
 
-# Build -t args conditionally: pass nothing when TARGET_PANE is empty,
-# so tmux falls back to its normal "current pane" behavior instead of
-# choking on an explicit but ambiguous target string.
 target_args=()
 if [[ -n "$TARGET_PANE" ]]; then
   target_args=(-t "$TARGET_PANE")

@@ -253,13 +253,13 @@ ble-bind -m vi_imap -f M-C-S-down 'kill-backward-fword'  # B respects /
 # kill-sword = kill-uword
 ble-bind -m vi_imap -f C-s kill-cword # iw and space before
 ble-bind -m vi_imap -f C-h kill-sword # iW and space before
-ble-bind -m vi_imap -f M-s kill-fword # sword respects /
+ble-bind -m vi_imap -f M-l kill-fword # sword respects /
 ble-bind -m vi_imap -f M-h kill-eword # im and space before
 
 ble-bind -m vi_imap -f 'C-BS' 'kill-region-or kill-uword'
 ble-bind -m vi_nmap -f 'C-BS' 'kill-region-or kill-uword'
 
-ble-bind -m vi_imap -f C-a transpose-chars
+ble-bind -m vi_imap -f C-e transpose-chars
 
 # ------------------------------------------------
 

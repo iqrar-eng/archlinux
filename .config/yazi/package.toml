@@ -3,6 +3,11 @@ use = "boydaihungst/gvfs"
 rev = "c92953c"
 hash = "d1e8d33ed36d339d5588f036dc3a9204"
 
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "a603d9e"
+hash = "e02a788e5b8ae0fb47fd0193dda589cc"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "20b47bf"

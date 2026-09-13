@@ -109,11 +109,14 @@ vim.keymap.set("n", "<leader>hb", "<cmd>source %<CR>", { desc = "Source current 
 vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>", { desc = "Reload keyd" })
 vim.keymap.set("n", "<leader>ab", "<cmd>Lazy<CR>")
 vim.keymap.set("n", "<leader>ae", "<cmd>Mason<CR>")
-vim.keymap.set("n", "<leader>ad", function()
-  local file = vim.fn.expand("%:t") -- current filename
-  vim.cmd("Sexplore")
-  vim.fn.search("^" .. vim.fn.escape(file, "\\.*$^~[]") .. "$", "w")
-end, { desc = "Explore and focus current file" })
+vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
+
+vim.keymap.set("n", "<leader>ay", "<cmd>e /etc/keyd/default.conf<CR>", { desc = "edit default.conf" })
+vim.keymap.set("n", "<leader>ah", "<cmd>e ~/personal/TODO.md<CR>", { desc = "edit TODO.md" })
+vim.keymap.set("n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>", { desc = "edit profiles.md" })
+vim.keymap.set("n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>", { desc = "edit keymaps.lua" })
+vim.keymap.set("n", "<leader>al", "<cmd>e ~/archlinux/.local/bin/_scratch<CR>", { desc = "edit _scratch" })
+vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>", { desc = "edit hyprland.lua" })
 
 vim.keymap.set("n", "<leader>a}", function()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -196,28 +199,6 @@ local function yank_selection_text()
   return text
 end
 
-local cmd = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && ~/archlinux/.config/hypr/bin/paste"
-
-local function bind_send(lhs, cmd, register)
-  local global_name = "SlimeBrowserSendOp_" .. lhs:gsub("[^%w]", "_")
-  _G[global_name] = function(type)
-    vim.fn.setreg(register, yank_motion_text(type))
-    vim.fn.jobstart(cmd, { detach = true })
-  end
-  vim.keymap.set("n", lhs, function()
-    vim.o.operatorfunc = "v:lua." .. global_name
-    return "g@"
-  end, { expr = true, desc = "Send motion to browser" })
-  vim.keymap.set("x", lhs, function()
-    vim.fn.setreg(register, yank_selection_text())
-    vim.fn.jobstart(cmd, { detach = true })
-  end, { desc = "Send selection to browser" })
-end
-
-bind_send("<leader>f", cmd, "+")
-
-------------------------------------------------
-
 local function bind_send_text(lhs, base_cmd)
   local global_name = "SlimeBrowserSendTextOp_" .. lhs:gsub("[^%w]", "_")
   _G[global_name] = function(type)
@@ -239,6 +220,50 @@ bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core last --
 bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core last --jump --execute")
 bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
 
+----------------------------------------------
+
+local cmd_fast = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && ~/archlinux/.config/hypr/bin/paste"
+local cmd_delayed = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && sleep 2 && ~/archlinux/.config/hypr/bin/paste"
+local LINE_THRESHOLD = 500
+
+local function send_content(content, register, cmd)
+  local line_count = select(2, content:gsub("\n", "\n")) + 1
+
+  if line_count > LINE_THRESHOLD then
+    local tmpfile = vim.fn.tempname() .. ".txt"
+    vim.fn.writefile(vim.split(content, "\n"), tmpfile)
+    local uri_list = "file://" .. tmpfile .. "\n"
+    local gnome = "copy\n" .. uri_list
+    local script = ("copy('text/uri-list',%s,'x-special/gnome-copied-files',%s)"):format(vim.json.encode(uri_list), vim.json.encode(gnome))
+    vim.fn.jobstart({ "copyq", "eval", "--", script }, {
+      detach = true,
+      on_exit = function()
+        vim.fn.jobstart(cmd_delayed, { detach = true })
+      end,
+    })
+    Snacks.notify(tmpfile, { title = ("Sent %d line(s) to tmp file:"):format(line_count) })
+  else
+    vim.fn.setreg(register, content)
+    vim.fn.jobstart(cmd_fast, { detach = true })
+  end
+end
+
+local function bind_send(lhs, cmd, register)
+  local global_name = "SlimeBrowserSendOp_" .. lhs:gsub("[^%w]", "_")
+  _G[global_name] = function(type)
+    send_content(yank_motion_text(type), register, cmd)
+  end
+  vim.keymap.set("n", lhs, function()
+    vim.o.operatorfunc = "v:lua." .. global_name
+    return "g@"
+  end, { expr = true, desc = "Send motion to browser" })
+  vim.keymap.set("x", lhs, function()
+    send_content(yank_selection_text(), register, cmd)
+  end, { desc = "Send selection to browser" })
+end
+
+bind_send("<leader>f", cmd, "+")
+
 ------------------------------------------------
 
 vim.keymap.set("n", "<leader>a[", function()
@@ -248,8 +273,6 @@ vim.keymap.set("n", "<leader>a[", function()
   vim.cmd("normal! ==`z")
   vim.cmd("undojoin")
 end, { silent = true, desc = "stylua: ignore above" })
-
-----------------------------------------------
 
 vim.keymap.set("n", "<leader>a]", function()
   vim.cmd("normal! mz")
@@ -475,7 +498,7 @@ vim.keymap.set("n", "<leader>a}", function()
   local dir = vim.fn.fnamemodify(path, modifier)
 
   vim.fn.jobstart("tmux new-window -c " .. vim.fn.shellescape(dir), { detach = true })
-end, { desc = "Open tmux window N parent dir" })
+end, { desc = "tmux window N parent dir" })
 
 vim.keymap.set("n", "<leader>a{", function()
   local path = vim.api.nvim_buf_get_name(0)
@@ -488,7 +511,7 @@ vim.keymap.set("n", "<leader>a{", function()
   local root = LazyVim.root.get({ buf = buf })
 
   vim.fn.jobstart("tmux new-window -c " .. vim.fn.shellescape(root), { detach = true })
-end, { desc = "Open tmux window project root" })
+end, { desc = "tmux window project root" })
 
 vim.keymap.set("n", "<leader>h<CR>", function()
   vim.ui.input({
@@ -504,28 +527,15 @@ end, { desc = "Edit or Create file in current dir" })
 
 ----------------------------------------------
 
-vim.keymap.set("n", "<leader>jA", function()
-  local buf = vim.api.nvim_get_current_buf()
-  local root = LazyVim.root.git({ buf = buf })
-  if not root then
-    return
-  end
-  vim.system(
-    { "sh", "-c", [[
-    git add -A &&
-    git commit -m 'add files/dirs' &&
-    git push origin main
-  ]] },
-    { cwd = root }
-  )
-end, { desc = "Git add, commit, push" })
-
 vim.keymap.set("n", "<leader>ja", function()
-  local buf = vim.api.nvim_get_current_buf()
-  local root = LazyVim.root.git({ buf = buf })
-  local path = vim.api.nvim_buf_get_name(buf)
-  if not root or path == "" then
-    return
-  end
-  vim.system({ "git", "add", path }, { cwd = root })
+  vim.cmd("Git add %")
 end, { desc = "Git add %" })
+
+vim.keymap.set("n", "<leader>jA", function()
+  vim.cmd("Git add -A")
+  vim.cmd("Git commit -m 'add files/dirs'")
+end, { desc = "Git add, commit" })
+
+vim.keymap.set("n", "<leader>jp", function()
+  vim.cmd("Git push")
+end, { desc = "Git push" })
