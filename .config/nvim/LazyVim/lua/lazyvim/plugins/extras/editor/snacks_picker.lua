@@ -265,9 +265,8 @@ return {
             end
             local content = table.concat(chunks, "\n\n")
             local line_count = select(2, content:gsub("\n", "\n")) + 1
-            if line_count > 1000 then
-              -- multiple items, or content too large: dump to tmp file, copy as uri-list via copyq eval
-              local tmpfile = vim.fn.tempname() .. ".txt"
+            if line_count > 500 then
+              local tmpfile = vim.fn.tempname() .. "warn_merged.txt"
               vim.fn.writefile(vim.split(content, "\n"), tmpfile)
               local uri_list = "file://" .. tmpfile .. "\n"
               local gnome = "copy\n" .. uri_list

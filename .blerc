@@ -289,6 +289,10 @@ bind 'set keyseq-timeout 1'
 ble-import -d integration/fzf-completion
 ble-import -d integration/fzf-key-bindings
 
+ble-face syntax_error=fg=203
+ble-face auto_complete=fg=245
+ble-face menu_complete_match=fg=166,bold
+
 }
 
 blehook/eval-after-load keymap_vi blerc/vim-mode-hook

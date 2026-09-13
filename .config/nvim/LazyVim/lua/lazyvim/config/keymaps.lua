@@ -528,14 +528,14 @@ end, { desc = "Edit or Create file in current dir" })
 ----------------------------------------------
 
 vim.keymap.set("n", "<leader>ja", function()
-  vim.cmd("silent! Git add %")
+  vim.cmd("Git add %")
 end, { desc = "Git add %" })
 
 vim.keymap.set("n", "<leader>jA", function()
-  vim.cmd("silent! Git add -A")
-  vim.cmd("silent! Git commit -m 'add files/dirs'")
+  vim.cmd("Git add -A")
+  vim.cmd("Git commit -m 'add files/dirs'")
 end, { desc = "Git add, commit" })
 
 vim.keymap.set("n", "<leader>jp", function()
-  vim.cmd("silent! Git push")
+  vim.cmd("Git push")
 end, { desc = "Git push" })
