@@ -526,15 +526,43 @@ end, { desc = "Edit or Create file in current dir" })
 
 ----------------------------------------------
 
-vim.keymap.set("n", "<leader>ja", function()
-  vim.cmd("Git add %")
-end, { desc = "Git add %" })
+local git_keymaps = {
+  { "n", "<leader>ja", "Git add %" },
+  { "n", "<leader>jA", "Git add -A" },
+  { "n", "<leader>jp", "Git pull" },
+  { "n", "<leader>jP", "Git push" },
+  { "n", "<leader>jr", "Git restore %" },
+  { "n", "<leader>jR", "Git restore --staged %" },
+}
 
-vim.keymap.set("n", "<leader>jA", function()
-  vim.cmd("Git add -A")
-  vim.cmd("Git commit -m 'add files/dirs'")
-end, { desc = "Git add, commit" })
+for _, map in ipairs(git_keymaps) do
+  local mode, keymap, cmd = map[1], map[2], map[3]
+  vim.keymap.set(mode, keymap, function()
+    vim.cmd(cmd)
+  end, { desc = cmd })
+end
 
-vim.keymap.set("n", "<leader>jp", function()
-  vim.cmd("Git push")
-end, { desc = "Git push" })
+local commit_types = {
+  { key = "f", type = "feat" },
+  { key = "x", type = "fix" },
+  { key = "r", type = "refactor" },
+  { key = "d", type = "docs" },
+  { key = "t", type = "test" },
+  { key = "c", type = "chore" },
+  { key = "p", type = "perf" },
+  { key = "s", type = "style" },
+  { key = "b", type = "build" },
+}
+
+for _, entry in ipairs(commit_types) do
+  vim.keymap.set("n", "<leader>jc" .. entry.key, function()
+    vim.ui.input({ prompt = ("Commit (%s): "):format(entry.type) }, function(input)
+      if not input or input == "" then
+        return
+      end
+      local msg = entry.type .. ": " .. input
+      -- Fugitive
+      vim.cmd("Git commit -m " .. vim.fn.shellescape(msg))
+    end)
+  end, { desc = "Git commit (" .. entry.type .. ")" })
+end

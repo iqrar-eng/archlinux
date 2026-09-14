@@ -93,12 +93,10 @@ return {
           { "<[sS]ilent>", "" },
           { "^lua%s+", "" },
           { "^call%s+", "" },
-          { "^:%s*", "" },
           { "inner", "🎯" },
           { "MC:", "🧞‍♂️" },
           { "^edit ", "󰈔 " },
           { "clipboard", "📋" },
-          { "[-<>(){}]", " " },
           { "outer", "🌐" },
           { "^[nN]ext ", "🔵 " },
           { "^[pP]rev ", "🔴 " },
@@ -155,18 +153,17 @@ return {
 
       vim.keymap.set("n", "<leader>hw", function()
         sort_state = not sort_state
-        -- update sort in place without re-running full setup
         require("which-key.config").options.sort = sort_state and sort_with_desc or sort_without_desc
         vim.notify("which-key sort: " .. (sort_state and "desc" or "key"))
       end, { desc = "Toggle which-key sort order" })
     end,
     keys = {
       {
-        "<leader>j<space>",
+        "<leader>j^",
         function()
           require("which-key").show({ keys = "<leader>j", loop = true })
         end,
-        desc = "Window Hydra Mode (which-key)",
+        desc = "Hydra Mode (which-key)",
       },
     },
   },
@@ -235,12 +232,8 @@ return {
         map("n", "<H", function() gs.nav_hunk("first", { target = "staged" }) end, "Gitsigns First Hunk")
 
         map({ "n", "x" }, "<leader>jh", ":Gitsigns stage_hunk<CR>", "Gitsigns Stage Hunk")
-        map("n", "<leader>ju", gs.stage_buffer, "Gitsigns Stage Buffer")
-        map("n", "<leader>jU", gs.undo_stage_hunk, "Gitsigns Undo Stage Hunk")
-
-        map("n", "<leader>jr", gs.reset_buffer, "Gitsigns Reset Buffer")
+        map("n", "<leader>jH", gs.undo_stage_hunk, "Gitsigns Undo Stage Hunk")
         map({ "n", "x" }, "<leader>jm", ":Gitsigns reset_hunk<CR>", "Gitsigns Reset Hunk")
-        map({ "n" }, "<leader>jR", ":Gitsigns reset_buffer_index<CR>", "Gitsigns reset_buffer_index")
 
         map("n", "<leader>jw", gs.preview_hunk_inline, "Gitsigns Preview Hunk Inline")
         map("n", "<M-p>", gs.preview_hunk, "Gitsigns Preview Hunk Inline")

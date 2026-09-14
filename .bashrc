@@ -81,6 +81,7 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-down:next-history'
 --bind 'ctrl-alt-shift-home:execute(/home/iqrar/archlinux/.config/tmux/bin/vim-fzf-focus {})'
 --bind 'focus:transform-preview-label:echo {}'
+--color 'hl:-1:underline,hl+:-1:underline:reverse' \
 --preview-window 'top:70%:noborder'
 --bind 'ctrl-p:change-preview-window(right:border-left|up:noborder)+refresh-preview'
 --preview '
