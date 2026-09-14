@@ -537,103 +537,57 @@ end, { desc = "Edit or Create file in current dir" })
 
 ----------------------------------------------
 
--- the single source of truth: runs `Git <subcmd> [shell-escaped arg]`
-local function run_git(subcmd, arg)
-  local parts = { "Git", subcmd }
-  if arg ~= nil then
-    table.insert(parts, vim.fn.shellescape(arg))
-  end
-  vim.cmd(table.concat(parts, " "))
-end
-
 -- one entry point: git("add %") for static, git("commit --message", { prompt = "..." }) to prompt first
 local function git(subcmd, opts)
+  local function run(arg)
+    local parts = { "Git", subcmd }
+    if arg ~= nil then
+      table.insert(parts, vim.fn.shellescape(arg))
+    end
+    vim.cmd(table.concat(parts, " "))
+  end
+
   if opts == nil then
     return function()
-      run_git(subcmd)
+      run()
     end
   end
+
+  opts.prompt = opts.prompt or (subcmd:gsub("%-%-?", ""):gsub("^%l", string.upper) .. ": ")
+
   return function()
     vim.ui.input(opts, function(input)
       if input == nil or input == "" then
         return
       end
-      run_git(subcmd, input)
+      run(input)
     end)
   end
 end
 
 local git_keymaps = {
-  { "n", "<leader>ja",  git("add %") },
-  { "n", "<leader>jA",  git("add -A") },
-  { "n", "<leader>jp",  git("pull") },
-  { "n", "<leader>jP",  git("push") },
-  { "n", "<leader>jr",  git("restore %") },
-  { "n", "<leader>jR",  git("restore --staged %") },
-  { "n", "<leader>jc",  git("commit --message", { prompt = "Commit message: " }) },
-  { "n", "<leader>jci", git("commit --message", { prompt = "Commit message: ", default = "initialize" }) },
-  { "n", "<leader>jco", git("checkout", { prompt = "Checkout: " }) },
-  { "n", "<leader>jb",  git("branch", { prompt = "New branch: " }) },
-}
+  { "n", "<leader>ja", git("add %") },
+  { "n", "<leader>jA", git("add -A") },
+  { "n", "<leader>jp", git("pull") },
+  { "n", "<leader>jP", git("push") },
+  { "n", "<leader>jr", git("restore %") },
+  { "n", "<leader>jR", git("restore --staged %") },
+  { "n", "<leader>jci", git("commit --message='initialize'") },
+  { "n", "<leader>jco", git("checkout", {}) },
+  { "n", "<leader>jb", git("branch", {}) },
 
--- local function prompt(opts, cmd_fn)
---   return function()
---     vim.ui.input(opts, function(input)
---       if input == nil or input == "" then
---         return
---       end
---       cmd_fn(input)
---     end)
---   end
--- end
---
--- local git_keymaps = {
---   { "n", "<leader>ja", "<cmd>Git add %<CR>" },
---   { "n", "<leader>jA", "<cmd>Git add -A<CR>" },
---   { "n", "<leader>jp", "<cmd>Git pull<CR>" },
---   { "n", "<leader>jP", "<cmd>Git push<CR>" },
---   { "n", "<leader>jr", "<cmd>Git restore %<CR>" },
---   { "n", "<leader>jR", "<cmd>Git restore --staged %<CR>" },
---   { "n", "<leader>jci", "<cmd>Git commit --message='initialize'<CR>", "initialize" },
---
---   {
---     "n",
---     "<leader>jc?",
---     prompt({ prompt = "Commit message: ", default = "initialize" }, function(msg)
---       vim.cmd("Git commit --message=" .. vim.fn.shellescape(msg))
---     end),
---     "prompt for custom",
---   },
--- }
+  { "n", "<leader>jcf", git("commit --message", { default = "feat: " }) },
+  { "n", "<leader>jcx", git("commit --message", { default = "fix: " }) },
+  { "n", "<leader>jcd", git("commit --message", { default = "docs: " }) },
+  { "n", "<leader>jcr", git("commit --message", { default = "refactor: " }) },
+  { "n", "<leader>jcc", git("commit --message", { default = "chore: " }) },
+  { "n", "<leader>jct", git("commit --message", { default = "test: " }) },
+  { "n", "<leader>jcs", git("commit --message", { default = "style: " }) },
+  { "n", "<leader>jcp", git("commit --message", { default = "perf: " }) },
+}
 
 for _, map in ipairs(git_keymaps) do
   local mode, keymap, cmd, desc = map[1], map[2], map[3], map[4]
   desc = desc or (type(cmd) == "string" and cmd or keymap)
   vim.keymap.set(mode, keymap, cmd, { desc = desc })
-end
-
-local commit_types = {
-  { key = "?", type = "" },
-  { key = "f", type = "feat: " },
-  { key = "x", type = "fix: " },
-  { key = "r", type = "refactor: " },
-  { key = "d", type = "docs: " },
-  { key = "t", type = "test: " },
-  { key = "c", type = "chore: " },
-  { key = "p", type = "perf: " },
-  { key = "s", type = "style: " },
-  { key = "b", type = "build: " },
-}
-
-for _, entry in ipairs(commit_types) do
-  vim.keymap.set("n", "<leader>jc" .. entry.key, function()
-    vim.ui.input({ prompt = ("Commit (%s): "):format(entry.type) }, function(input)
-      if not input or input == "" then
-        return
-      end
-      local msg = entry.type .. input
-      -- Fugitive
-      vim.cmd("Git commit -m " .. vim.fn.shellescape(msg))
-    end)
-  end, { desc = "✏️ " .. entry.type })
 end
