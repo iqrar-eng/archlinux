@@ -198,11 +198,21 @@ local function yank_selection_text()
   return text
 end
 
-local function bind_send_text(lhs, base_cmd)
+-- main_cmd: command that receives --text <escaped>
+-- post_cmd: optional command run after main_cmd succeeds (&&)
+local function bind_send_text(lhs, main_cmd, post_cmd)
+  local function build(text)
+    local cmd = main_cmd .. " --text " .. vim.fn.shellescape(text)
+    if post_cmd then
+      cmd = cmd .. " && " .. post_cmd
+    end
+    return cmd
+  end
+
   local global_name = "SlimeBrowserSendTextOp_" .. lhs:gsub("[^%w]", "_")
   _G[global_name] = function(type)
     local text = yank_motion_text(type)
-    vim.fn.jobstart({ "sh", "-c", base_cmd .. " --text " .. vim.fn.shellescape(text) }, { detach = true })
+    vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
   end
   vim.keymap.set("n", lhs, function()
     vim.o.operatorfunc = "v:lua." .. global_name
@@ -210,14 +220,14 @@ local function bind_send_text(lhs, base_cmd)
   end, { expr = true, desc = "Send motion text via --text" })
   vim.keymap.set("x", lhs, function()
     local text = yank_selection_text()
-    vim.fn.jobstart({ "sh", "-c", base_cmd .. " --text " .. vim.fn.shellescape(text) }, { detach = true })
+    vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
   end, { desc = "Send selection text via --text" })
 end
 
-bind_send_text("<leader>r", "~/archlinux/.local/bin/clipboard-slime-core last --jump")
-bind_send_text("<leader>w", "~/archlinux/.local/bin/clipboard-slime-core last --execute")
-bind_send_text("<leader>q", "~/archlinux/.local/bin/clipboard-slime-core last --jump --execute")
-bind_send_text("<leader>m", "~/archlinux/.local/bin/clipboard-slime-core last --jump --no-cancel")
+bind_send_text("<leader>q", "~/archlinux/.config/tmux/bin/slime last --jump --execute", "tmux last-window")
+bind_send_text("<leader>w", "~/archlinux/.config/tmux/bin/slime last --execute")
+bind_send_text("<leader>r", "~/archlinux/.config/tmux/bin/slime last --jump", "tmux last-window")
+bind_send_text("<leader>m", "~/archlinux/.config/tmux/bin/slime last --jump --no-cancel", "tmux last-window")
 
 ----------------------------------------------
 

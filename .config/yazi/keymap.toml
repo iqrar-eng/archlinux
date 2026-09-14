@@ -18,6 +18,7 @@ prepend_keymap = [
   { on = [ "g", "i" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Documents/"' --confirm''', desc = "Go to MTP: Internal storage" },
   { on = [ "g", "w" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents"' --confirm''', desc = "Go to MTP: WhatsApp Documents" },
   { on = [ "g", "u" ], run = "reveal /run/media/iqrar/IQRAR_USB/my/phone/", desc = "Go to IQRAR_USB: personal" },
+  { on = [ "g", "t" ], run = "cd ~/.local/share/Trash/files", desc = "Go to IQRAR_USB: personal" },
   { on = [ "g", "z" ], run = 'shell "~/archlinux/.config/yazi/bin/dirjump \"$HOME\"" --block', desc = "Fuzzy-find directory (home)" },
 
 	{ on = [ "<Space>", "o" ], run = "open --hovered",               desc = "Always open the hovered file" },
