@@ -160,6 +160,15 @@ return {
         vim.notify("which-key sort: " .. (sort_state and "desc" or "key"))
       end, { desc = "Toggle which-key sort order" })
     end,
+    keys = {
+      {
+        "<leader>j<space>",
+        function()
+          require("which-key").show({ keys = "<leader>j", loop = true })
+        end,
+        desc = "Window Hydra Mode (which-key)",
+      },
+    },
   },
 
   {

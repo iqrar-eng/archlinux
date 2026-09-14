@@ -337,12 +337,9 @@ local function redraw_burst()
   end, 120)
 end
 
-vim.api.nvim_create_autocmd(
-  { "BufEnter", "BufWinEnter", "WinEnter", "WinNew", "WinClosed", "TabEnter", "VimResized" },
-  {
-    callback = redraw_burst,
-  }
-)
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter", "WinNew", "WinClosed", "TabEnter", "VimResized" }, {
+  callback = redraw_burst,
+})
 
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "CursorHold", "CursorHoldI" }, {
   callback = function()

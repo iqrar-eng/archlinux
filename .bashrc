@@ -43,14 +43,12 @@ fi
 alias ls='ls --hyperlink=always --color=always -A --group-directories-first'
 
 source <(fzf --bash)
+
 export FZF_DEFAULT_OPTS="
 --height 100%
 --history=$HOME/.fzf_history
 --filepath-word
 --border none
---preview-window 'top:70%:noborder'
---preview 'if [[ -d {} ]]; then ls -1 --color=always {}; else cat {}; fi' \
---bind 'focus:transform:([[ -d {} ]] || [[ -r {} ]]) && echo show-preview || echo hide-preview'
 --no-separator
 --ansi
 --info inline-right
@@ -82,7 +80,32 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-up:prev-history'
 --bind 'ctrl-down:next-history'
 --bind 'ctrl-alt-shift-home:execute(/home/iqrar/archlinux/.config/tmux/bin/vim-fzf-focus {})'
+--bind 'focus:transform-preview-label:echo {}'
+--preview-window 'top:70%:noborder'
+--bind 'ctrl-p:change-preview-window(right:border-left|up:noborder)+refresh-preview'
+--preview '
+    printf \"\033_Ga=d,q=1\033\\\\\"
+    if [ -d {} ]; then
+        ls --color=always -A --group-directories-first {}
+    else
+        tmp=\"/tmp/fzf_preview\"
+        case \$(basename {}) in
+            *.pdf)
+                pdftoppm -q -f 1 -l 1 -jpeg -jpegopt quality=60 -scale-to-x 1000 -scale-to-y -1 -singlefile {} \$tmp && \\
+                kitty icat --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 \$tmp.jpg
+                ;;
+            *)
+                if file --mime-type {} | grep -qP \"image/(?!vnd\\.djvu)\"; then
+                    kitty icat --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {}
+                else
+                  cat -n -- {} 2>/dev/null
+                fi
+                ;;
+        esac
+    fi
+'
 "
+
 export FZF_CTRL_R_OPTS="--no-preview"
 
 eval "$(starship init bash)"

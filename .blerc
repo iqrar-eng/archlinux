@@ -104,16 +104,8 @@ function ble/widget/my/_fzf-cd-from {
   local root="${1:-$HOME}"
   root="${root/#\~/$HOME}"
   local selected
-  selected=$(
-    fd -t d --hidden \
-      --exclude .git \
-      --exclude node_modules \
-      --exclude .cache \
-      --base-directory "$root" \
-      . 2>/dev/null \
-      | fzf \
-      --preview "ls --color=always -A --group-directories-first '$root'/{}" \
-      --bind 'focus:transform:[[ -n {} ]] && echo show-preview || echo hide-preview'
+  selected=$( fd -t d --hidden --base-directory "$root" . 2>/dev/null \
+      | fzf --preview "ls --color=always -A --group-directories-first '$root'/{}"
     ) || return 0
     [[ -n "$selected" ]] || return 0
     selected="${selected%/}"   # strip trailing slash fd appends

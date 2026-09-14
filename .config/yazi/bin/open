@@ -4,9 +4,19 @@ MY_ID=123456
 PATHS=("${@:-$HOME}")
 YAZI_CMD=(kitty --class kitty-yazi -e yazi)
 
-if ya emit-to "$MY_ID" tab_create "${PATHS[0]}" 2>/dev/null; then
-  for p in "${PATHS[@]:1}"; do
-    ya emit-to "$MY_ID" tab_create "$p"
+if ya emit-to "$MY_ID" tab_create 2>/dev/null; then
+  first=1
+  for p in "${PATHS[@]}"; do
+    if [ "$first" -eq 1 ]; then
+      first=0
+    else
+      ya emit-to "$MY_ID" tab_create
+    fi
+    if [ -d "$p" ]; then
+      ya emit-to "$MY_ID" cd "$p"
+    else
+      ya emit-to "$MY_ID" reveal "$p"
+    fi
   done
 else
   "${YAZI_CMD[@]}" --client-id "$MY_ID" "${PATHS[@]}"

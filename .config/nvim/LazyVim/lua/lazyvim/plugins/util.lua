@@ -20,24 +20,6 @@ return {
     end,
   },
 
-  {
-    "okuuva/auto-save.nvim",
-    enabled = true,
-    event = { "InsertLeave", "TextChanged" },
-    opts = {
-      debounce_delay = 500,
-      trigger_events = {
-        immediate_save = {
-          "BufLeave",
-          "FocusLost",
-          "QuitPre",
-          "VimSuspend",
-          "VimLeavePre",
-        },
-      },
-    },
-  },
-
   { "saghen/filler-begone.nvim" },
 
   -- library used by other plugins

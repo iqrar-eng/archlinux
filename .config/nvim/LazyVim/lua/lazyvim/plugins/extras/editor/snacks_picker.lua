@@ -1,4 +1,66 @@
 -- stylua: ignore start
+local function make_harpoon_picker_source(list_name)
+  return {
+    finder = function(opts, ctx)
+      local list = require("harpoon"):list(list_name)
+      local files = {}
+      for idx = 1, list:length() do
+        local item = list:get(idx)
+        if item then
+          table.insert(files, {
+            text = item.value,
+            file = item.value,
+            idx = idx,
+          })
+        end
+      end
+      return files
+    end,
+    format = "file",
+    preview = "file",
+    confirm = "jump",
+    actions = {
+      harpoon_remove = function(picker)
+        local items = picker:selected({ fallback = true })
+        if #items == 0 then
+          return
+        end
+
+        local harpoon = require("harpoon")
+        local list = harpoon:list(list_name)
+
+        -- remove by VALUE, not by cached idx — idx can be stale/duplicated
+        local values_to_remove = {}
+        for _, it in ipairs(items) do
+          values_to_remove[it.file] = true
+        end
+
+        -- walk the underlying items high-to-low and splice them out directly
+        -- (list:remove_at leaves holes in some harpoon2 versions when the
+        -- internal table already has gaps; rebuilding is the reliable fix)
+        local kept = {}
+        for i = 1, list:length() do
+          local item = list:get(i)
+          if item and not values_to_remove[item.value] then
+            table.insert(kept, item)
+          end
+        end
+
+        list.items = kept
+        harpoon:sync()
+        picker:find()
+      end,
+    },
+    win = {
+      input = {
+        keys = {
+          ["<C-K>"] = { "harpoon_remove", mode = { "n", "x", "s", "i" } },
+        },
+      },
+    },
+  }
+end
+
 local function up(path, count)
   for _ = 1, count do
     path = vim.fn.fnamemodify(path, ":h")
@@ -266,7 +328,7 @@ return {
             local content = table.concat(chunks, "\n\n")
             local line_count = select(2, content:gsub("\n", "\n")) + 1
             if line_count > 500 then
-              local tmpfile = vim.fn.tempname() .. "warn_merged.txt"
+              local tmpfile = vim.fn.tempname() .. "_large_file.txt"
               vim.fn.writefile(vim.split(content, "\n"), tmpfile)
               local uri_list = "file://" .. tmpfile .. "\n"
               local gnome = "copy\n" .. uri_list
@@ -287,66 +349,8 @@ return {
         },
 
         sources = {
-          harpoon = {
-            finder = function(opts, ctx)
-              local list = require("harpoon"):list()
-              local files = {}
-              for idx = 1, list:length() do
-                local item = list:get(idx)
-                if item then
-                  table.insert(files, {
-                    text = item.value,
-                    file = item.value,
-                    idx = idx,
-                  })
-                end
-              end
-              return files
-            end,
-            format = "file",
-            preview = "file",
-            confirm = "jump",
-            actions = {
-              harpoon_remove = function(picker)
-                local items = picker:selected({ fallback = true })
-                if #items == 0 then
-                  return
-                end
-
-                local harpoon = require("harpoon")
-                local list = harpoon:list()
-
-                -- remove by VALUE, not by cached idx — idx can be stale/duplicated
-                local values_to_remove = {}
-                for _, it in ipairs(items) do
-                  values_to_remove[it.file] = true
-                end
-
-                -- walk the underlying items high-to-low and splice them out directly
-                -- (list:remove_at leaves holes in some harpoon2 versions when the
-                -- internal table already has gaps; rebuilding is the reliable fix)
-                local kept = {}
-                for i = 1, list:length() do
-                  local item = list:get(i)
-                  if item and not values_to_remove[item.value] then
-                    table.insert(kept, item)
-                  end
-                end
-
-                list.items = kept
-                harpoon:sync()
-                picker:find()
-              end,
-            },
-            win = {
-              input = {
-                keys = {
-                  ["<C-K>"] = { "harpoon_remove", mode = { "n", "x", "s", "i" } },
-                },
-              },
-            },
-          },
-
+          harpoon = make_harpoon_picker_source(nil),      -- default list
+          harpoon_todo = make_harpoon_picker_source("todo"),
           icons = { layout = { preset = "custom_layout_list_only" } },
           search_history = { layout = { preset = "custom_layout_list_only" } },
           command_history = { layout = { preset = "custom_layout_list_only" } },
@@ -405,6 +409,7 @@ return {
               ["<M-1>"] = { function() require("dial.map").manipulate("increment", "normal") end, mode = { "n" }, desc = "Increment", },
               ["<M-4>"] = { function() require("dial.map").manipulate("decrement", "normal") end, mode = { "n" }, desc = "Decrement", },
               ["<C-L>"] = { "focus_list", mode = { "n", "x", "s", "i" } },
+              ["<M-C-_>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
               ["<PageUp>"] = { "list_scroll_up", mode = { "n", "x", "s", "i" } },
               ["<PageDown>"] = { "list_scroll_down", mode = { "n", "x", "s", "i" } },
               ["<C-Home>"] = { "list_top", mode = { "n", "x", "s", "i" } },
@@ -464,11 +469,13 @@ return {
               ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
               ["<C-K>"] = { "bufdelete", mode = { "n", "x", "s", "i" } },
               ["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
+              ["<M-C-_>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
             },
           },
           preview = {
             keys = {
               ["<C-c>"] = { "cancel", mode = { "n", "x", "s", "i" } },
+              ["<C-L>"] = { "focus_list", mode = { "n", "x", "s", "i" } },
             },
           },
         },
@@ -502,13 +509,22 @@ return {
       { "<leader>kr", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Find Files react", mode = { "n", "x" } },
       { "<leader>kR", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Grep react", mode = { "n", "x" } },
 
-      { "<BS><Down>", LazyVim.pick("buffers"), desc = "Find Files Buffers", mode = { "n", "x" } },
-      { "<BS><Left>", LazyVim.pick("grep_buffers"), desc = "Grep Buffers", mode = { "n", "x" } },
+      { "<BS>1", LazyVim.pick("grep_buffers"), desc = "Grep Buffers", mode = { "n", "x" } },
+      { "<BS>2", LazyVim.pick("buffers"), desc = "Find Files Buffers", mode = { "n", "x" } },
+      { "<BS>?", LazyVim.pick("jumps"), desc = "Jump List", mode = { "n", "x" } },
+      { "<BS>.", LazyVim.pick(function(opts) require("aerial").snacks_picker(opts) end), desc = "aerial picker", mode = { "n", "x" } },
+      { "<BS><Right>", LazyVim.pick("harpoon"), desc = "Harpoon Picker", mode = { "n", "x" } },
+      { "<BS><Left>", LazyVim.pick("harpoon_todo"), desc = "Harpoon Picker (todo)", mode = { "n", "x" } },
+      { "<BS><Down>", LazyVim.pick("undo"), desc = "Undo Tree", mode = { "n", "x" } },
+      { "<BS>7", LazyVim.pick("man"), desc = "Man Pages", mode = { "n", "x" } },
+      { "<BS>6", LazyVim.pick("icons"), desc = "Icons", mode = { "n", "x" } },
+      { "<BS>(", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
+      { "<BS>)", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
+      { "<BS>=", LazyVim.pick("diagnostics"), desc = "Diagnostics", mode = { "n", "x" } },
+      { "<BS>+", LazyVim.pick("diagnostics_buffer"), desc = "Buffer Diagnostics", mode = { "n", "x" } },
       { "<C-F>", function() LazyVim.pick("grep", { dirs = { vim.api.nvim_buf_get_name(0) } })() end, desc = "Grep Current File", mode = { "n", "x" }, },
       { "<leader>av",       function() Snacks.picker.lines()     end, desc = "Buffer Lines"          },
       { "<leader>n",   function() Snacks.picker.resume()    end, desc = "Resume Last Picker"    },
-      { "<BS>?", LazyVim.pick("jumps"), desc = "Jump List", mode = { "n", "x" } },
-      { "<BS>0", LazyVim.pick("undo"), desc = "Undo Tree", mode = { "n", "x" } },
       { "<leader><CR>", LazyVim.pick("help"), desc = "Help Pages", mode = { "n", "x" } },
       { "<leader>hq", LazyVim.pick("qflist"), desc = "Quickfix List", mode = { "n", "x" } },
       { "<leader>hm", LazyVim.pick("marks"), desc = "Marks", mode = { "n", "x" } },
@@ -521,16 +537,8 @@ return {
       { "<leader>hs", LazyVim.pick("keymaps"), desc = "Keymaps", mode = { "n", "x" } },
       { "<leader>hu", LazyVim.pick("highlights"), desc = "Highlights", mode = { "n", "x" } },
       { "<leader>hg",  function() Snacks.picker()                 end, desc = "All Pickers"     },
-      { "<BS>7", LazyVim.pick("man"), desc = "Man Pages", mode = { "n", "x" } },
-      { "<BS>6", LazyVim.pick("icons"), desc = "Icons", mode = { "n", "x" } },
       { "<leader>hd", function() LazyVim.pick("files", { cwd = get_basedir() })() end, desc = "Find Files nth current dir", mode = { "n", "x" } },
       { "<leader>hf", function() LazyVim.pick("grep", { cwd = get_basedir() })() end, desc = "Grep nth current dir", mode = { "n", "x" } },
-      { "<BS><Right>", LazyVim.pick("harpoon"), desc = "Harpoon Picker", mode = { "n", "x" } },
-      { "<BS>(", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
-      { "<BS>)", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
-      { "<BS>=", LazyVim.pick("diagnostics"), desc = "Diagnostics", mode = { "n", "x" } },
-      { "<BS>+", LazyVim.pick("diagnostics_buffer"), desc = "Buffer Diagnostics", mode = { "n", "x" } },
-      { "<BS>.", LazyVim.pick(function(opts) require("aerial").snacks_picker(opts) end), desc = "aerial picker", mode = { "n", "x" } },
 
       { "<leader>jl", function() Snacks.picker.git_log({ cwd = LazyVim.root.git() }) end, desc = "git Log" },
       { "<leader>jL", function() Snacks.picker.git_log_line({ cwd = LazyVim.root.git() }) end, desc = "git Log Line" },

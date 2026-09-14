@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+root="${1:-.}"
+mapfile -t selected < <(fd -H . "$root" | fzf)
+
+[ "${#selected[@]}" -eq 0 ] && exit 0
+~/archlinux/.config/yazi/bin/open "${selected[@]}"
+
+exit 0
