@@ -113,7 +113,12 @@ vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
 
 vim.keymap.set("n", "<leader>ah", "<cmd>e /etc/keyd/default.conf<CR>", { desc = "edit default.conf" })
 vim.keymap.set("n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>", { desc = "edit profiles.md" })
-vim.keymap.set("n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>", { desc = "edit keymaps.lua" })
+vim.keymap.set(
+  "n",
+  "<leader>ak",
+  "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>",
+  { desc = "edit keymaps.lua" }
+)
 vim.keymap.set("n", "<leader>al", "<cmd>e ~/archlinux/.local/bin/_scratch<CR>", { desc = "edit _scratch" })
 vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>", { desc = "edit hyprland.lua" })
 
@@ -232,7 +237,8 @@ bind_send_text("<leader>m", "~/archlinux/.config/tmux/bin/slime last --jump --no
 ----------------------------------------------
 
 local cmd_fast = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && ~/archlinux/.config/hypr/bin/paste"
-local cmd_delayed = "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && sleep 2 && ~/archlinux/.config/hypr/bin/paste"
+local cmd_delayed =
+  "hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && sleep 2 && ~/archlinux/.config/hypr/bin/paste"
 local LINE_THRESHOLD = 500
 
 local function send_content(content, register, cmd)
@@ -243,7 +249,10 @@ local function send_content(content, register, cmd)
     vim.fn.writefile(vim.split(content, "\n"), tmpfile)
     local uri_list = "file://" .. tmpfile .. "\n"
     local gnome = "copy\n" .. uri_list
-    local script = ("copy('text/uri-list',%s,'x-special/gnome-copied-files',%s)"):format(vim.json.encode(uri_list), vim.json.encode(gnome))
+    local script = ("copy('text/uri-list',%s,'x-special/gnome-copied-files',%s)"):format(
+      vim.json.encode(uri_list),
+      vim.json.encode(gnome)
+    )
     vim.fn.jobstart({ "copyq", "eval", "--", script }, {
       detach = true,
       on_exit = function()
@@ -345,20 +354,11 @@ vim.keymap.set("i", "<S-End><Del>", function()
 end, { expr = true })
 vim.keymap.set("c", "<S-End><Del>", '<c-f>"zD<C-c>')
 
-vim.keymap.set({ "n", "x" }, "<leader>jv", function()
+vim.keymap.set({ "n", "x" }, "<leader>jV", function()
   Snacks.gitbrowse()
 end, { desc = "Git browser (open)" })
 
-vim.keymap.set({ "n", "x" }, "<leader>jc", function()
-  Snacks.gitbrowse({
-    open = function(url)
-      vim.fn.setreg("+", url)
-    end,
-    notify = false,
-  })
-end, { desc = "Git browser (copy)" })
-
-vim.keymap.set({ "n", "x" }, "<leader>jc", function()
+vim.keymap.set({ "n", "x" }, "<leader>jC", function()
   Snacks.gitbrowse({
     open = function(url)
       vim.fn.setreg("+", url)
@@ -371,7 +371,8 @@ end, { desc = "Git browser (copy)" })
 
 local explorer_actions = require("snacks.explorer.actions").actions
 local Tree = require("snacks.explorer.tree")
-local function get_path(count)
+
+local function get_basedir(count)
   local modifier = count > 0 and string.rep(":h", count) or ""
   return vim.fn.expand("%:p" .. modifier)
 end
@@ -409,7 +410,7 @@ end
 
 local function buf_action(name)
   return function()
-    local path = get_path(vim.v.count)
+    local path = get_basedir(vim.v.count)
     if path == "" then
       Snacks.notify.warn("No file for current buffer")
       return
@@ -435,7 +436,7 @@ vim.keymap.set({ "n", "x", "s", "i" }, "<M-n>", buf_action("explorer_add"), { no
 vim.keymap.set("n", "<C-S-B>", function()
   local p = vim.fn.expand("%:p")
   local count = vim.v.count
-  local path = count == 0 and p or vim.fn.fnamemodify(p, string.rep(":h", count))
+  local path = get_basedir(vim.v.count)
   local uri = vim.uri_from_fname(path)
   local script = string.format("copy('text/uri-list','%s','x-special/gnome-copied-files','copy\\n%s')", uri, uri)
   vim.fn.jobstart({ "copyq", "eval", "--", script })
@@ -443,7 +444,7 @@ vim.keymap.set("n", "<C-S-B>", function()
 end, { desc = "yank_file_uri" })
 
 vim.keymap.set("n", "<leader>hc", function()
-  local file_src = vim.api.nvim_buf_get_name(0)
+  local file_src = get_basedir(vim.v.count)
   if file_src == "" then
     vim.notify("No file in buffer", vim.log.levels.WARN)
     return
@@ -469,7 +470,7 @@ vim.keymap.set("n", "<leader>hc", function()
 end, { desc = "Copy File To" })
 
 vim.keymap.set("n", "<leader>hx", function()
-  local file_src = vim.api.nvim_buf_get_name(0)
+  local file_src = get_basedir(vim.v.count)
   if file_src == "" then
     vim.notify("No file in buffer", vim.log.levels.WARN)
     return
@@ -495,7 +496,7 @@ vim.keymap.set("n", "<leader>hx", function()
 end, { desc = "Move File To" })
 
 vim.keymap.set("n", "<leader>a}", function()
-  local path = vim.api.nvim_buf_get_name(0)
+  local path = get_basedir(vim.v.count)
   if path == "" then
     return
   end
@@ -510,7 +511,7 @@ vim.keymap.set("n", "<leader>a}", function()
 end, { desc = "tmux window N parent dir" })
 
 vim.keymap.set("n", "<leader>a{", function()
-  local path = vim.api.nvim_buf_get_name(0)
+  local path = get_basedir(vim.v.count)
   if path == "" then
     return
   end
@@ -525,7 +526,7 @@ end, { desc = "tmux window project root" })
 vim.keymap.set("n", "<leader>h<CR>", function()
   vim.ui.input({
     prompt = "Edit file: ",
-    default = vim.fn.expand("%:p:h") .. "/",
+    default = get_basedir(vim.v.count),
     completion = "file",
   }, function(input)
     if input and input ~= "" then
@@ -536,32 +537,92 @@ end, { desc = "Edit or Create file in current dir" })
 
 ----------------------------------------------
 
+-- the single source of truth: runs `Git <subcmd> [shell-escaped arg]`
+local function run_git(subcmd, arg)
+  local parts = { "Git", subcmd }
+  if arg ~= nil then
+    table.insert(parts, vim.fn.shellescape(arg))
+  end
+  vim.cmd(table.concat(parts, " "))
+end
+
+-- one entry point: git("add %") for static, git("commit --message", { prompt = "..." }) to prompt first
+local function git(subcmd, opts)
+  if opts == nil then
+    return function()
+      run_git(subcmd)
+    end
+  end
+  return function()
+    vim.ui.input(opts, function(input)
+      if input == nil or input == "" then
+        return
+      end
+      run_git(subcmd, input)
+    end)
+  end
+end
+
 local git_keymaps = {
-  { "n", "<leader>ja", "Git add %" },
-  { "n", "<leader>jA", "Git add -A" },
-  { "n", "<leader>jp", "Git pull" },
-  { "n", "<leader>jP", "Git push" },
-  { "n", "<leader>jr", "Git restore %" },
-  { "n", "<leader>jR", "Git restore --staged %" },
+  { "n", "<leader>ja",  git("add %") },
+  { "n", "<leader>jA",  git("add -A") },
+  { "n", "<leader>jp",  git("pull") },
+  { "n", "<leader>jP",  git("push") },
+  { "n", "<leader>jr",  git("restore %") },
+  { "n", "<leader>jR",  git("restore --staged %") },
+  { "n", "<leader>jc",  git("commit --message", { prompt = "Commit message: " }) },
+  { "n", "<leader>jci", git("commit --message", { prompt = "Commit message: ", default = "initialize" }) },
+  { "n", "<leader>jco", git("checkout", { prompt = "Checkout: " }) },
+  { "n", "<leader>jb",  git("branch", { prompt = "New branch: " }) },
 }
 
+-- local function prompt(opts, cmd_fn)
+--   return function()
+--     vim.ui.input(opts, function(input)
+--       if input == nil or input == "" then
+--         return
+--       end
+--       cmd_fn(input)
+--     end)
+--   end
+-- end
+--
+-- local git_keymaps = {
+--   { "n", "<leader>ja", "<cmd>Git add %<CR>" },
+--   { "n", "<leader>jA", "<cmd>Git add -A<CR>" },
+--   { "n", "<leader>jp", "<cmd>Git pull<CR>" },
+--   { "n", "<leader>jP", "<cmd>Git push<CR>" },
+--   { "n", "<leader>jr", "<cmd>Git restore %<CR>" },
+--   { "n", "<leader>jR", "<cmd>Git restore --staged %<CR>" },
+--   { "n", "<leader>jci", "<cmd>Git commit --message='initialize'<CR>", "initialize" },
+--
+--   {
+--     "n",
+--     "<leader>jc?",
+--     prompt({ prompt = "Commit message: ", default = "initialize" }, function(msg)
+--       vim.cmd("Git commit --message=" .. vim.fn.shellescape(msg))
+--     end),
+--     "prompt for custom",
+--   },
+-- }
+
 for _, map in ipairs(git_keymaps) do
-  local mode, keymap, cmd = map[1], map[2], map[3]
-  vim.keymap.set(mode, keymap, function()
-    vim.cmd(cmd)
-  end, { desc = cmd })
+  local mode, keymap, cmd, desc = map[1], map[2], map[3], map[4]
+  desc = desc or (type(cmd) == "string" and cmd or keymap)
+  vim.keymap.set(mode, keymap, cmd, { desc = desc })
 end
 
 local commit_types = {
-  { key = "f", type = "feat" },
-  { key = "x", type = "fix" },
-  { key = "r", type = "refactor" },
-  { key = "d", type = "docs" },
-  { key = "t", type = "test" },
-  { key = "c", type = "chore" },
-  { key = "p", type = "perf" },
-  { key = "s", type = "style" },
-  { key = "b", type = "build" },
+  { key = "?", type = "" },
+  { key = "f", type = "feat: " },
+  { key = "x", type = "fix: " },
+  { key = "r", type = "refactor: " },
+  { key = "d", type = "docs: " },
+  { key = "t", type = "test: " },
+  { key = "c", type = "chore: " },
+  { key = "p", type = "perf: " },
+  { key = "s", type = "style: " },
+  { key = "b", type = "build: " },
 }
 
 for _, entry in ipairs(commit_types) do
@@ -570,9 +631,9 @@ for _, entry in ipairs(commit_types) do
       if not input or input == "" then
         return
       end
-      local msg = entry.type .. ": " .. input
+      local msg = entry.type .. input
       -- Fugitive
       vim.cmd("Git commit -m " .. vim.fn.shellescape(msg))
     end)
-  end, { desc = "Git commit (" .. entry.type .. ")" })
+  end, { desc = "✏️ " .. entry.type })
 end
