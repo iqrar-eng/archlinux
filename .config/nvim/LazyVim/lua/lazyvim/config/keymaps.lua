@@ -548,21 +548,25 @@ local function git(subcmd, opts)
   end
 
   if opts == nil then
-    return function()
-      run()
-    end
+    return { fn = function() run() end, desc = subcmd }
   end
 
-  opts.prompt = opts.prompt or (subcmd:gsub("%-%-?", ""):gsub("^%l", string.upper) .. ": ")
-
-  return function()
-    vim.ui.input(opts, function(input)
-      if input == nil or input == "" then
-        return
+  return {
+    fn = function()
+      local resolved = vim.deepcopy(opts)
+      if type(resolved.default) == "function" then
+        resolved.default = resolved.default()
       end
-      run(input)
-    end)
-  end
+      resolved.prompt = resolved.prompt or (subcmd:gsub("%-%-?", ""):gsub("^%l", string.upper) .. ": ")
+      vim.ui.input(resolved, function(input)
+        if input == nil or input == "" then
+          return
+        end
+        run(input)
+      end)
+    end,
+    desc = subcmd,
+  }
 end
 
 local git_keymaps = {
@@ -575,6 +579,15 @@ local git_keymaps = {
   { "n", "<leader>jci", git("commit --message='initialize'") },
   { "n", "<leader>jco", git("checkout", {}) },
   { "n", "<leader>jb", git("branch", {}) },
+  {
+    "n",
+    "<leader>ji",
+    git("init", {
+      default = function()
+        return LazyVim.root.get({ buf = vim.api.nvim_get_current_buf() })
+      end,
+    }),
+  },
 
   { "n", "<leader>jcf", git("commit --message", { default = "feat: " }) },
   { "n", "<leader>jcx", git("commit --message", { default = "fix: " }) },
@@ -587,7 +600,6 @@ local git_keymaps = {
 }
 
 for _, map in ipairs(git_keymaps) do
-  local mode, keymap, cmd, desc = map[1], map[2], map[3], map[4]
-  desc = desc or (type(cmd) == "string" and cmd or keymap)
-  vim.keymap.set(mode, keymap, cmd, { desc = desc })
+  local mode, keymap, g = map[1], map[2], map[3]
+  vim.keymap.set(mode, keymap, g.fn, { desc = g.desc })
 end
