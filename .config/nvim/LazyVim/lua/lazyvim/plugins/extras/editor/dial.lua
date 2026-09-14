@@ -80,6 +80,7 @@ return {
     local strictEquality        = const({ "===", "!==" })
     local AND_OR_operators      = const({ "&&", "||" })
     local on_off                = const({ "off", "on" })
+    local public_private                = const({ "private", "public" })
     local light_dark            = const({ "dark", "light" })
     local upper_lower           = const({ "upper", "lower" })
     local home_end              = const({ "home", "end" })
@@ -150,6 +151,7 @@ return {
           strictEquality,
           AND_OR_operators,
           on_off,
+          public_private,
           light_dark,
           upper_lower,
           home_end,

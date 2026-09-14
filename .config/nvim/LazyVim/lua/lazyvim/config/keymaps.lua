@@ -119,7 +119,7 @@ vim.keymap.set(
   "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>",
   { desc = "edit keymaps.lua" }
 )
-vim.keymap.set("n", "<leader>al", "<cmd>e ~/archlinux/.local/bin/_scratch<CR>", { desc = "edit _scratch" })
+vim.keymap.set("n", "<leader>al", "<cmd>e ~/l<CR>", { desc = "edit ~/l scratch file" })
 vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>", { desc = "edit hyprland.lua" })
 
 vim.keymap.set("n", "<leader>a}", function()
@@ -372,9 +372,10 @@ end, { desc = "Git browser (copy)" })
 local explorer_actions = require("snacks.explorer.actions").actions
 local Tree = require("snacks.explorer.tree")
 
-local function get_basedir(count)
+local function get_nth_path(count)
   local modifier = count > 0 and string.rep(":h", count) or ""
-  return vim.fn.expand("%:p" .. modifier)
+  local path = vim.fn.expand("%:p" .. modifier)
+  return count > 0 and (path .. "/") or path
 end
 
 local function fake_picker(path)
@@ -410,7 +411,7 @@ end
 
 local function buf_action(name)
   return function()
-    local path = get_basedir(vim.v.count)
+    local path = get_nth_path(vim.v.count)
     if path == "" then
       Snacks.notify.warn("No file for current buffer")
       return
@@ -436,7 +437,7 @@ vim.keymap.set({ "n", "x", "s", "i" }, "<M-n>", buf_action("explorer_add"), { no
 vim.keymap.set("n", "<C-S-B>", function()
   local p = vim.fn.expand("%:p")
   local count = vim.v.count
-  local path = get_basedir(vim.v.count)
+  local path = get_nth_path(vim.v.count)
   local uri = vim.uri_from_fname(path)
   local script = string.format("copy('text/uri-list','%s','x-special/gnome-copied-files','copy\\n%s')", uri, uri)
   vim.fn.jobstart({ "copyq", "eval", "--", script })
@@ -444,7 +445,7 @@ vim.keymap.set("n", "<C-S-B>", function()
 end, { desc = "yank_file_uri" })
 
 vim.keymap.set("n", "<leader>hc", function()
-  local file_src = get_basedir(vim.v.count)
+  local file_src = get_nth_path(vim.v.count)
   if file_src == "" then
     vim.notify("No file in buffer", vim.log.levels.WARN)
     return
@@ -470,7 +471,7 @@ vim.keymap.set("n", "<leader>hc", function()
 end, { desc = "Copy File To" })
 
 vim.keymap.set("n", "<leader>hx", function()
-  local file_src = get_basedir(vim.v.count)
+  local file_src = get_nth_path(vim.v.count)
   if file_src == "" then
     vim.notify("No file in buffer", vim.log.levels.WARN)
     return
@@ -496,7 +497,7 @@ vim.keymap.set("n", "<leader>hx", function()
 end, { desc = "Move File To" })
 
 vim.keymap.set("n", "<leader>a}", function()
-  local path = get_basedir(vim.v.count)
+  local path = get_nth_path(vim.v.count)
   if path == "" then
     return
   end
@@ -511,7 +512,7 @@ vim.keymap.set("n", "<leader>a}", function()
 end, { desc = "tmux window N parent dir" })
 
 vim.keymap.set("n", "<leader>a{", function()
-  local path = get_basedir(vim.v.count)
+  local path = get_nth_path(vim.v.count)
   if path == "" then
     return
   end
@@ -526,7 +527,7 @@ end, { desc = "tmux window project root" })
 vim.keymap.set("n", "<leader>h<CR>", function()
   vim.ui.input({
     prompt = "Edit file: ",
-    default = get_basedir(vim.v.count),
+    default = get_nth_path(vim.v.count > 0 and vim.v.count or 1),
     completion = "file",
   }, function(input)
     if input and input ~= "" then
@@ -547,8 +548,18 @@ local function git(subcmd, opts)
     vim.cmd(table.concat(parts, " "))
   end
 
+  local desc = subcmd
+  if opts and type(opts.default) == "string" then
+    desc = desc .. " " .. opts.default
+  end
+
   if opts == nil then
-    return { fn = function() run() end, desc = subcmd }
+    return {
+      fn = function()
+        run()
+      end,
+      desc = desc,
+    }
   end
 
   return {
@@ -565,7 +576,7 @@ local function git(subcmd, opts)
         run(input)
       end)
     end,
-    desc = subcmd,
+    desc = desc,
   }
 end
 
@@ -577,18 +588,7 @@ local git_keymaps = {
   { "n", "<leader>jr", git("restore %") },
   { "n", "<leader>jR", git("restore --staged %") },
   { "n", "<leader>jci", git("commit --message='initialize'") },
-  { "n", "<leader>jco", git("checkout", {}) },
-  { "n", "<leader>jb", git("branch", {}) },
-  {
-    "n",
-    "<leader>ji",
-    git("init", {
-      default = function()
-        return LazyVim.root.get({ buf = vim.api.nvim_get_current_buf() })
-      end,
-    }),
-  },
-
+  { "n", "<leader>jc?", git("commit --message", {}) },
   { "n", "<leader>jcf", git("commit --message", { default = "feat: " }) },
   { "n", "<leader>jcx", git("commit --message", { default = "fix: " }) },
   { "n", "<leader>jcd", git("commit --message", { default = "docs: " }) },

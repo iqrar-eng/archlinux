@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-mkdir -p ~/archlinux/.config/tmux/bin/slime/
-mv ~/archlinux/.local/bin/clipboard-slime-core ~/archlinux/.config/tmux/bin/slime
-mv /home/iqrar/.local/share/nvim/scratch/aca2bb56 tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\"
-mv /home/iqrar/archlinux/.local/bin/util/tmux-win-switch tmux last-window
-rm -rf  /home/iqrar/archlinux/.local/bin/util/
