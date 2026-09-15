@@ -470,85 +470,79 @@ end, { desc = "Edit or Create file in current dir" })
 
 ----------------------------------------------
 
-local keymaps = {
-  { "n", "<leader>ja", "<cmd>Git add %<CR>" },
-  { "n", "<leader>jA", "<cmd>Git add -A<CR>" },
-  { "n", "<leader>jp", "<cmd>Git pull<CR>" },
-  { "n", "<leader>jP", "<cmd>Git push<CR>" },
-  { "n", "<leader>jr", "<cmd>Git restore %<CR>" },
-  { "n", "<leader>jR", "<cmd>Git restore --staged %<CR>" },
+vim.keymap.set("n", "<leader>ja", "<cmd>Git add %<CR>")
+vim.keymap.set("n", "<leader>jA", "<cmd>Git add -A<CR>")
+vim.keymap.set("n", "<leader>jp", "<cmd>Git pull<CR>")
+vim.keymap.set("n", "<leader>jP", "<cmd>Git push<CR>")
+vim.keymap.set("n", "<leader>jr", "<cmd>Git restore %<CR>")
+vim.keymap.set("n", "<leader>jR", "<cmd>Git restore --staged %<CR>")
 
-  { "n", "<leader>jci", "<cmd>Git commit --message='initialize'<CR>" },
-  { "n", "<leader>jc?", ":Git commit --message=''<Left>" },
-  { "n", "<leader>jcf", ":Git commit --message='feat: '<Left>" },
-  { "n", "<leader>jcx", ":Git commit --message='fix: '<Left>" },
-  { "n", "<leader>jcr", ":Git commit --message='refactor: '<Left>" },
-  { "n", "<leader>jcc", ":Git commit --message='chore: '<Left>" },
+vim.keymap.set("n", "<leader>jc?", ":Git commit --message=''<Left>")
+vim.keymap.set("n", "<leader>jca", "<cmd>Git commit --message='update'<CR>")
+vim.keymap.set("n", "<leader>jcb", "<cmd>Git commit --message='initialize'<CR>")
+vim.keymap.set("n", "<leader>jcc", ":Git commit --message='chore: '<Left>")
+vim.keymap.set("n", "<leader>jcd", ":Git commit --message='feat: '<Left>")
+vim.keymap.set("n", "<leader>jce", ":Git commit --message='fix: '<Left>")
+vim.keymap.set("n", "<leader>jcf", ":Git commit --message='refactor: '<Left>")
 
-  { { "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>" },
-  { "x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>" },
-  { { "n", "o" }, "<M-C-A>", "#<cmd>nohlsearch<CR>" },
-  { "x", "<M-C-A>", "<Esc>#gvn<cmd>nohlsearch<CR>" },
+vim.keymap.set({ "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>")
+vim.keymap.set("x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>")
+vim.keymap.set({ "n", "o" }, "<M-C-A>", "#<cmd>nohlsearch<CR>")
+vim.keymap.set("x", "<M-C-A>", "<Esc>#gvn<cmd>nohlsearch<CR>")
 
-  { "n", "<leader>hb", "<cmd>source %<CR>" },
-  { "n", "<leader>az", "<cmd>!keyd reload<CR>" },
-  { "n", "<leader>ab", "<cmd>Lazy<CR>" },
-  { "n", "<leader>ae", "<cmd>Mason<CR>" },
-  { "n", "<leader>ad", "<cmd>Sexplore<CR>" },
+vim.keymap.set("n", "<leader>hb", "<cmd>source %<CR>")
+vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>")
+vim.keymap.set("n", "<leader>ab", "<cmd>Lazy<CR>")
+vim.keymap.set("n", "<leader>ae", "<cmd>Mason<CR>")
+vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
 
-  { "n", "<leader>ah", "<cmd>e /etc/keyd/default.conf<CR>" },
-  { "n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>" },
-  { "n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>" },
-  { "n", "<leader>al", "<cmd>e ~/l<CR>" },
-  { "n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>" },
+vim.keymap.set("n", "<leader>ah", "<cmd>e /etc/keyd/default.conf<CR>")
+vim.keymap.set("n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>")
+vim.keymap.set("n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>")
+vim.keymap.set("n", "<leader>al", "<cmd>e ~/l<CR>")
+vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>")
 
-  { "x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>' },
-  { "n", "<leader>a<CR>", ":let @+=@:<Left><Insert>" },
+vim.keymap.set("x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>')
+vim.keymap.set("n", "<leader>a<CR>", ":let @+=@:<Left><Insert>")
 
-  { { "n", "x", "o" }, "<BS>8", "<Esc>vie*" },
-  { { "n", "x", "o" }, "<BS>9", "<Esc>vie#" },
+vim.keymap.set({ "n", "x", "o" }, "<BS>8", "<Esc>vie*")
+vim.keymap.set({ "n", "x", "o" }, "<BS>9", "<Esc>vie#")
+vim.keymap.set({ "n", "x", "o" }, "<BS>*", "<Esc>viW*")
+vim.keymap.set({ "n", "x", "o" }, "<BS>#", "<Esc>viW#")
 
-  { { "n", "x", "o" }, "<BS>*", "<Esc>viW*" },
-  { { "n", "x", "o" }, "<BS>#", "<Esc>viW#" },
+vim.keymap.set({ "n", "x", "o" }, "|", "/\\V")
+vim.keymap.set({ "n", "x", "o" }, "\\", "?\\V")
 
-  { { "n", "x", "o" }, "|", "/\\V" },
-  { { "n", "x", "o" }, "\\", "?\\V" },
+vim.keymap.set({ "n", "x", "o" }, "<Left>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Right>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Down>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Up>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Del>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, ">", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<", "<nop>")
+vim.keymap.set({ "x", "o" }, "<LeftMouse>", "<nop>")
+vim.keymap.set({ "x", "o" }, "<RightMouse>", "<nop>")
 
-  { { "n", "x", "o" }, "<Left>", "<nop>" },
-  { { "n", "x", "o" }, "<Right>", "<nop>" },
-  { { "n", "x", "o" }, "<Down>", "<nop>" },
-  { { "n", "x", "o" }, "<Up>", "<nop>" },
-  { { "n", "x", "o" }, "<Del>", "<nop>" },
-  { { "n", "x", "o" }, ">", "<nop>" },
-  { { "n", "x", "o" }, "<", "<nop>" },
-  { { "x", "o" }, "<LeftMouse>", "<nop>" },
-  { { "x", "o" }, "<RightMouse>", "<nop>" },
+vim.keymap.set("n", "<M-C-P>", "g+")
+vim.keymap.set("n", "<M-C-N>", "g-")
+vim.keymap.set("i", "<M-C-P>", "<c-o>:later<CR>", { silent = true })
+vim.keymap.set("i", "<M-C-N>", "<c-o>:earlier<CR>", { silent = true })
 
-  { "n", "<M-C-P>", "g+" },
-  { "n", "<M-C-N>", "g-" },
-  { "i", "<M-C-P>", "<c-o>:later<CR>", { silent = true } },
-  { "i", "<M-C-N>", "<c-o>:earlier<CR>", { silent = true } },
+vim.keymap.set("i", " ", "<C-]> <C-g>u")
+vim.keymap.set("i", "-", "-<c-g>u")
+vim.keymap.set("i", "_", "_<c-g>u")
+vim.keymap.set("i", ",", ",<c-g>u")
+vim.keymap.set("i", ".", ".<c-g>u")
+vim.keymap.set("i", ";", ";<c-g>u")
+vim.keymap.set("i", ":", ":<c-g>u")
 
-  { "i", " ", "<C-]> <C-g>u" }, -- expands abbreviations, then adds space with undo break
-  { "i", "-", "-<c-g>u" },
-  { "i", "_", "_<c-g>u" },
-  { "i", ",", ",<c-g>u" },
-  { "i", ".", ".<c-g>u" },
-  { "i", ";", ";<c-g>u" },
-  { "i", ":", ":<c-g>u" },
+vim.keymap.set("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" })
+vim.keymap.set("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search Result" })
+vim.keymap.set({ "x", "o" }, "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
+vim.keymap.set({ "x", "o" }, "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
 
-  { "n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" } },
-  { "n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search Result" } },
-  { { "x", "o" }, "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" } },
-  { { "x", "o" }, "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" } },
+vim.keymap.set({ "n", "i" }, "<M-C-_>", "<C-^>")
+vim.keymap.set("n", "<PageDown>", "<C-d>zz")
+vim.keymap.set("n", "<PageUp>", "<C-u>zz")
 
-  { { "n", "i" }, "<M-C-_>", "<C-^>" },
-  { "n", "<PageDown>", "<C-d>zz" },
-  { "n", "<PageUp>", "<C-u>zz" },
-
-  { "s", "<Del>", "<BS>i" },
-}
-
-for _, map in ipairs(keymaps) do
-  vim.keymap.set(map[1], map[2], map[3], map[4])
-end
+vim.keymap.set("s", "<Del>", "<BS>i")
