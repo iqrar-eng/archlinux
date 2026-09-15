@@ -24,27 +24,40 @@ return {
 
     vim.keymap.set("n", "<leader>ac", function()
       harpoon.ui:toggle_quick_menu(harpoon:list("todo"), harpoon_menu_opts)
-    end)
+    end, { desc = "harpoon list todo" })
 
     vim.keymap.set("n", "<leader>ay", function()
       harpoon.ui:toggle_quick_menu(harpoon:list(), harpoon_menu_opts)
-    end)
+    end, { desc = "harpoon list default" })
 
     ------------------------------------------------
 
     local function setup_select_keys(prefix, list_name)
       for i = 1, 9 do
         local k = prefix .. "<M-" .. i .. ">"
-        vim.keymap.set({ "n", "i" }, k, function()
-          local list = harpoon:list(list_name)
-          if i == 9 then
-            list:select(#list.items)
-            return
-          end
-          local count = vim.v.count
-          local target = count > 0 and (count * i) or i
-          list:select(target)
-        end, { desc = "harpoon (" .. (list_name or "default") .. "): select buffer " .. i .. " (or N×" .. i .. " with count)" })
+        vim.keymap.set(
+          { "n", "i" },
+          k,
+          function()
+            local list = harpoon:list(list_name)
+            if i == 9 then
+              list:select(#list.items)
+              return
+            end
+            local count = vim.v.count
+            local target = count > 0 and (count * i) or i
+            list:select(target)
+          end,
+          {
+            desc = "harpoon ("
+              .. (list_name or "default")
+              .. "): select buffer "
+              .. i
+              .. " (or N×"
+              .. i
+              .. " with count)",
+          }
+        )
       end
     end
 
@@ -108,14 +121,25 @@ return {
     local function setup_move_keys(prefix, list_name)
       for i = 1, 9 do
         local k = prefix .. "<M-" .. i .. ">"
-        vim.keymap.set("n", k, function()
-          local list = harpoon:list(list_name)
-          local from = ensure_harpoon_index(list)
-          local count = vim.v.count > 0 and vim.v.count or 1
-          local to = (i == 9) and #list.items or i
-          harpoon_move_block_to(from, count, to, list)
-          vim.notify(to, vim.log.levels.INFO)
-        end, { desc = "Harpoon (" .. (list_name or "default") .. "): Move current file to slot " .. i .. " (use a count to bring following files along)" })
+        vim.keymap.set(
+          "n",
+          k,
+          function()
+            local list = harpoon:list(list_name)
+            local from = ensure_harpoon_index(list)
+            local count = vim.v.count > 0 and vim.v.count or 1
+            local to = (i == 9) and #list.items or i
+            harpoon_move_block_to(from, count, to, list)
+            vim.notify(to, vim.log.levels.INFO)
+          end,
+          {
+            desc = "Harpoon ("
+              .. (list_name or "default")
+              .. "): Move current file to slot "
+              .. i
+              .. " (use a count to bring following files along)",
+          }
+        )
       end
     end
 
