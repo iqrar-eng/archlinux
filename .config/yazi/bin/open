@@ -1,22 +1,39 @@
 #!/bin/bash
 
 MY_ID=123456
-PATHS=("${@:-$HOME}")
+REPLACE_CURRENT=0
+ARGS=()
+
+for arg in "$@"; do
+  case "$arg" in
+    --current-tab) REPLACE_CURRENT=1 ;;
+    *) ARGS+=("$arg") ;;
+  esac
+done
+
+PATHS=("${ARGS[@]:-$HOME}")
 YAZI_CMD=(kitty --class kitty-yazi -e yazi)
 
-if ya emit-to "$MY_ID" tab_create 2>/dev/null; then
-  first=1
-  for p in "${PATHS[@]}"; do
-    if [ "$first" -eq 1 ]; then
-      first=0
-    else
-      ya emit-to "$MY_ID" tab_create
-    fi
-    if [ -d "$p" ]; then
-      ya emit-to "$MY_ID" cd "$p"
-    else
-      ya emit-to "$MY_ID" reveal "$p"
-    fi
+cd_or_reveal() {
+  if [ -d "$1" ]; then
+    ya emit-to "$MY_ID" cd "$1"
+  else
+    ya emit-to "$MY_ID" reveal "$1"
+  fi
+}
+
+first="${PATHS[0]}"
+
+if [ "$REPLACE_CURRENT" -eq 1 ]; then
+  probe_ok() { cd_or_reveal "$first" 2>/dev/null; }
+else
+  probe_ok() { ya emit-to "$MY_ID" tab_create 2>/dev/null && cd_or_reveal "$first"; }
+fi
+
+if probe_ok; then
+  for p in "${PATHS[@]:1}"; do
+    ya emit-to "$MY_ID" tab_create
+    cd_or_reveal "$p"
   done
 else
   "${YAZI_CMD[@]}" --client-id "$MY_ID" "${PATHS[@]}"

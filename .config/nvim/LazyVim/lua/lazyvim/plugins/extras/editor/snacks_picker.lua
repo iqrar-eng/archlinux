@@ -361,6 +361,26 @@ return {
           files = { hidden = true, follow = true, },
           grep = { hidden = true, regex = false, },
           grep_word = { hidden = true, auto_confirm = true, },
+          git_status = {
+            win = {
+              input = {
+                keys = {
+                  ["<Tab>"] = { "select_and_next", mode = { "n", "s", "i" }, nowait = true },
+                  ["<M-C-_>"] = { "git_stage", mode = { "n", "i" } },
+                },
+              },
+            },
+          },
+          git_diff = {
+            win = {
+              input = {
+                keys = {
+                  ["<Tab>"] = { "select_and_next", mode = { "n", "s", "i" }, nowait = true },
+                  ["<M-C-_>"] = { "git_stage", mode = { "n", "i" } },
+                },
+              },
+            },
+          },
         },
         win = {
           input = {
@@ -409,7 +429,7 @@ return {
               ["<M-1>"] = { function() require("dial.map").manipulate("increment", "normal") end, mode = { "n" }, desc = "Increment", },
               ["<M-4>"] = { function() require("dial.map").manipulate("decrement", "normal") end, mode = { "n" }, desc = "Decrement", },
               ["<C-L>"] = { "focus_list", mode = { "n", "x", "s", "i" } },
-              ["<M-C-_>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
+              ["<M-w>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
               ["<PageUp>"] = { "list_scroll_up", mode = { "n", "x", "s", "i" } },
               ["<PageDown>"] = { "list_scroll_down", mode = { "n", "x", "s", "i" } },
               ["<C-Home>"] = { "list_top", mode = { "n", "x", "s", "i" } },
@@ -469,7 +489,7 @@ return {
               ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
               ["<C-K>"] = { "bufdelete", mode = { "n", "x", "s", "i" } },
               ["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
-              ["<M-C-_>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
+              ["<M-w>"] = { "focus_preview", mode = { "n", "x", "s", "i" } },
             },
           },
           preview = {
@@ -540,13 +560,13 @@ return {
       { "<leader>hd", function() LazyVim.pick("files", { cwd = get_basedir() })() end, desc = "Find Files nth current dir", mode = { "n", "x" } },
       { "<leader>hf", function() LazyVim.pick("grep", { cwd = get_basedir() })() end, desc = "Grep nth current dir", mode = { "n", "x" } },
 
-      { "<leader>jl", function() Snacks.picker.git_log({ cwd = LazyVim.root.git() }) end, desc = "git Log" },
-      { "<leader>jL", function() Snacks.picker.git_log_line({ cwd = LazyVim.root.git() }) end, desc = "git Log Line" },
       { "<leader>js", function() Snacks.picker.git_status({ cwd = LazyVim.root.git() }) end, desc = "git Status" },
-      { "<leader>jS", function() Snacks.picker.git_stash({ cwd = LazyVim.root.git() }) end, desc = "git Stash" },
+      { "<leader>jS", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git(), staged = false, group = true }) end, desc = "git Diff (Origin)" },
       { "<leader>jd", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git() }) end, desc = "git Diff (Hunks)" },
-      { "<leader>jD", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git(), base = "origin" }) end, desc = "git Diff (Origin)" },
+      { "<leader>je", function() Snacks.picker.git_stash({ cwd = LazyVim.root.git() }) end, desc = "git Stash" },
+      { "<leader>jl", function() Snacks.picker.git_log({ cwd = LazyVim.root.git() }) end, desc = "git Log" },
       { "<leader>jf", function() Snacks.picker.git_log_file({ cwd = LazyVim.root.git() }) end, desc = "git Log File" },
+      { "<leader>jF", function() Snacks.picker.git_log_line({ cwd = LazyVim.root.git() }) end, desc = "git Log Line" },
     },
   },
 

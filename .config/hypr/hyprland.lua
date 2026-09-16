@@ -6,6 +6,7 @@ local firefox = "firefox"
 local tmux = "kitty --class kitty-tmux ~/archlinux/.config/tmux/bin/open"
 local clipboard = "copyq --start-server show"
 local fileManager = "~/archlinux/.config/yazi/bin/open"
+local player = "vlc"
 
 ------------------------
 ---- RULES ---
@@ -15,16 +16,19 @@ hl.workspace_rule({ workspace = "1", on_created_empty = firefox })
 hl.workspace_rule({ workspace = "2", on_created_empty = tmux })
 hl.workspace_rule({ workspace = "4", on_created_empty = clipboard })
 hl.workspace_rule({ workspace = "5", on_created_empty = fileManager })
+hl.workspace_rule({ workspace = "6", on_created_empty = player })
 
 -- No border when only one window is open on a workspace (tiled or floating)
 hl.window_rule({ name = "no-border-single-tiled", match = { float = false, workspace = "w[tv1]" }, border_size = 0 })
 hl.window_rule({ name = "no-border-single-floating", match = { float = true, workspace = "f[1]" }, border_size = 0 })
 
 -- Always route these apps to their workspace, no matter where they're launched from
-hl.window_rule({ name = "firefox-to-ws1", match = { class = "firefox" }, workspace = "1" })
-hl.window_rule({ name = "tmux-to-ws2", match = { class = "kitty-tmux" }, workspace = "2" })
-hl.window_rule({ name = "copyq-to-ws4", match = { class = "com.github.hluk.copyq" }, workspace = "4" })
-hl.window_rule({ name = "yazi-to-ws5", match = { class = "kitty-yazi" }, workspace = "5" })
+hl.window_rule({ match = { class = "firefox" }, workspace = "1" })
+hl.window_rule({ match = { class = "kitty-tmux" }, workspace = "2" })
+hl.window_rule({ match = { class = "com.github.hluk.copyq" }, workspace = "4" })
+hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
+hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
+hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 
 -------------------
 ---- AUTOSTART ----
@@ -53,6 +57,10 @@ hl.env("HYPRCURSOR_SIZE", "20")
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
+	xwayland = {
+		force_zero_scaling = true,
+	},
+
 	general = {
 		gaps_in = 0,
 		gaps_out = 0,

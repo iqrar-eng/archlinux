@@ -1,7 +1,6 @@
 .bash_profile
 .bashrc
 .blerc
-.gitconfig
 .config/copyq/copyq-commands.ini
 .config/copyq/copyq.conf
 .config/dunst
@@ -20,6 +19,8 @@
 .config/yazi/init.lua
 .config/yazi/keymap.toml
 .config/yazi/package.toml
+.config/yazi/plugins/parent-arrow.yazi
 .config/yazi/theme.toml
 .config/yazi/yazi.toml
+.gitconfig
 .local/share/applications

@@ -97,6 +97,7 @@ ble-bind -m vi_nmap -f '[ SP' 'my/open-line above'
 
 ble-bind -m vi_nmap -c 'C-o' 'cd -'
 ble-bind -m vi_nmap -c 'C-k' 'cd ..'
+ble-bind -m vi_nmap -c 'SP a c' 'source ~/.bashrc'
 
 # ------------------------------------------------
 

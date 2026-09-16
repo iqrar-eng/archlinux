@@ -55,13 +55,8 @@ function M.open(command, opts)
     opts.cwd = nil
   end
 
-  if not opts.cwd and opts.root == false then
-    opts.cwd = vim.uv.cwd()
-  elseif not opts.cwd then
-    local root = LazyVim.root({ buf = opts.buf })
-    local cwd = vim.uv.cwd()
-    local buf_dir = vim.fn.expand("%:p:h")
-    opts.cwd = (root ~= cwd) and root or buf_dir
+  if not opts.cwd and opts.root ~= false then
+    opts.cwd = LazyVim.root({ buf = opts.buf })
   end
 
   command = M.picker.commands[command] or command

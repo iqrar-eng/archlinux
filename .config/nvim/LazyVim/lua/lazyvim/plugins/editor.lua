@@ -81,6 +81,16 @@ return {
       sort = { "local", "order", "desc", "alphanum", "mod" },
       preset = "helix",
       defaults = {},
+      win = {
+        no_overlap = false,
+        col = math.huge,
+        width = { min = 1, max = math.huge },
+        height = { min = 1, max = math.huge },
+      },
+      layout = {
+        width = { min = vim.o.columns, max = math.huge },
+        spacing = 1,
+      },
       show_help = false,
       replace = {
         -- put latest patterns at the end to avoid conflicts
@@ -89,6 +99,7 @@ return {
           { "^%+", "" },
           { "<[cC]md>", "" },
           { "<[cC][rR]>", "" },
+          { "\n", " ; " },
           { "<[sS]ilent>", "" },
           { "^lua%s+", "" },
           { "^call%s+", "" },

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 paths=(
-  # ".config/vlc"
+  # ".config/"
 
 )
 
@@ -13,17 +13,18 @@ done
 
 # ------------------------------------------------
 
-{
-  fd -H -t l . "$HOME" --max-depth 1
-  fd -H -t l . "$HOME/.config"
-  fd -H -t l '^applications$' "$HOME/.local/share"
-} | while IFS= read -r f; do
+fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
+    target=$(readlink -f "$f")
+    case "$target" in
+        "$HOME"/archlinux/*) ;;
+        *) continue ;;
+    esac
+
     if [ ! -e "$f" ]; then
       rm -rf "$f"
       continue
     fi
     if [ -d "$f" ] && [ -z "$(fd -H . "$f" -L --max-depth 1)" ]; then
-      target=$(readlink -f "$f")
       rm -rf "$f" "$target"
       continue
     fi

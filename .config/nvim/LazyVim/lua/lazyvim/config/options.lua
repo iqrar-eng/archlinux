@@ -77,12 +77,9 @@ vim.o.laststatus = 0
 vim.o.showtabline = 0
 vim.filetype.add({
   pattern = {
-    ["vimiumc.*%.conf"] = "toml",
-    ["/*.rasi"] = "toml",
+    ['.*/keyd/default.conf'] = 'toml',
+    ["dunstrc"] = "conf",
     [".blerc"] = "bash",
-  },
-  filename = {
-    ["/etc/keyd/default.conf"] = "toml",
   },
 })
 vim.o.winborder = "rounded"

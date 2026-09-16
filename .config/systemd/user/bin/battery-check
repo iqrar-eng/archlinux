@@ -1,52 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-BATTERY_PATH="/sys/class/power_supply/BAT0"
 LOW_THRESHOLD=35
 LOW_STATE_FILE="/tmp/battery-low-notified"
-LOW_ID_FILE="/tmp/battery-low-notif-id"
-
-CAPACITY=$(cat "$BATTERY_PATH/capacity")
-STATUS=$(cat "$BATTERY_PATH/status")
-
-send_notification() {
-  local summary="$1"
-  local id_file="$2"
-  local REPLY
-  REPLY=$(dbus-send --session --print-reply \
-    --dest=org.freedesktop.Notifications \
-    /org/freedesktop/Notifications \
-    org.freedesktop.Notifications.Notify \
-    string:"battery-check" \
-    uint32:0 \
-    string:"$summary" \
-    string:"" \
-    string:"" \
-    array:string:"" \
-    dict:string:variant:"" \
-    int32:0)
-  echo "$REPLY" | grep -oP 'uint32 \K[0-9]+' > "$id_file"
-}
-
-close_notification() {
-  local id_file="$1"
-  if [ -f "$id_file" ]; then
-    local NOTIF_ID
-    NOTIF_ID=$(cat "$id_file")
-    dbus-send --session --print-reply \
-      --dest=org.freedesktop.Notifications \
-      /org/freedesktop/Notifications \
-      org.freedesktop.Notifications.CloseNotification \
-      uint32:"$NOTIF_ID"
-    rm -f "$id_file"
-  fi
-}
+CAPACITY=$(cat /sys/class/power_supply/BAT0/capacity)
+STATUS=$(cat /sys/class/power_supply/BAT0/status)
 
 if [ "$CAPACITY" -lt "$LOW_THRESHOLD" ] && [ "$STATUS" != "Charging" ]; then
-  if [ ! -f "$LOW_STATE_FILE" ]; then
-    send_notification "${CAPACITY}% 🪫 🟥" "$LOW_ID_FILE"
-    touch "$LOW_STATE_FILE"
-  fi
+  dunstctl close-all
+  notify-send -u critical "${CAPACITY}%"
+  touch "$LOW_STATE_FILE"
 else
-  close_notification "$LOW_ID_FILE"
+  if [ -f "$LOW_STATE_FILE" ]; then
+    dunstctl close-all
+  fi
   rm -f "$LOW_STATE_FILE"
 fi

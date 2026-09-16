@@ -13,6 +13,7 @@ exfatprogs
 fd
 firefox
 fzf
+ghostscript
 git
 github-cli
 grim
@@ -22,9 +23,11 @@ gvfs-mtp
 gvfs-smb
 htop
 hyprland
+imagemagick
 jq
 keyd
 kitty
+libnotify
 libpulse
 linux
 linux-firmware
@@ -70,7 +73,10 @@ unzip
 usbutils
 uwsm
 vim
+vlc
+vlc-plugins-all
 vulkan-radeon
+wev
 wget
 wireplumber
 wl-clipboard

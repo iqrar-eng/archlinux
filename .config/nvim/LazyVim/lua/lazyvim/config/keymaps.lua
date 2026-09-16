@@ -1,3 +1,15 @@
+-- util
+----------------------------------------------
+
+local function get_nth_path(count)
+  local heads = count > 1 and (count - 1) or 0
+  local modifier = heads > 0 and string.rep(":h", heads) or ""
+  local path = vim.fn.expand("%:p" .. modifier)
+  return heads > 0 and (path .. "/") or path
+end
+
+----------------------------------------------
+
 local function remote_scroll(filetypes, dir)
   return function()
     local count = vim.v.count1
@@ -157,6 +169,20 @@ local function yank_selection_text()
   return text
 end
 
+local presets = {
+  ["a"] = function()
+    return table.concat({
+      "cd " .. LazyVim.root.get({ buf = vim.api.nvim_get_current_buf() }),
+      "npm run dev",
+    }, "\n"),
+      "cd to root + npm run dev"
+  end,
+
+  ["<leader>"] = function()
+    return get_nth_path(vim.v.count), "send % or nth ancestor path"
+  end,
+}
+
 -- main_cmd: command that receives --text <escaped>
 -- post_cmd: optional command run after main_cmd succeeds (&&)
 local function bind_send_text(lhs, main_cmd, post_cmd)
@@ -181,6 +207,17 @@ local function bind_send_text(lhs, main_cmd, post_cmd)
     local text = yank_selection_text()
     vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
   end, { desc = "Send selection text via --text" })
+
+  for key, preset_fn in pairs(presets) do
+    local preset_lhs = lhs .. "u" .. key
+    local _, desc = preset_fn()
+    local function send_preset()
+      local text = preset_fn()
+      vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
+    end
+    vim.keymap.set("n", preset_lhs, send_preset, { desc = desc })
+    vim.keymap.set("x", preset_lhs, send_preset, { desc = desc })
+  end
 end
 
 bind_send_text("<leader>q", "~/archlinux/.config/tmux/bin/slime last --jump --execute", "tmux last-window")
@@ -303,12 +340,6 @@ end, { desc = "Git browser (copy)" })
 
 local explorer_actions = require("snacks.explorer.actions").actions
 local Tree = require("snacks.explorer.tree")
-
-local function get_nth_path(count)
-  local modifier = count > 0 and string.rep(":h", count) or ""
-  local path = vim.fn.expand("%:p" .. modifier)
-  return count > 0 and (path .. "/") or path
-end
 
 local function fake_picker(path)
   local dir = vim.fn.fnamemodify(path, ":h")
@@ -478,12 +509,10 @@ vim.keymap.set("n", "<leader>jr", "<cmd>Git restore %<CR>")
 vim.keymap.set("n", "<leader>jR", "<cmd>Git restore --staged %<CR>")
 
 vim.keymap.set("n", "<leader>jc?", ":Git commit --message=''<Left>")
-vim.keymap.set("n", "<leader>jca", "<cmd>Git commit --message='update'<CR>")
+vim.keymap.set("n", "<leader>jca", "<cmd>Git commit --message='chore: update'<CR>")
 vim.keymap.set("n", "<leader>jcb", "<cmd>Git commit --message='initialize'<CR>")
-vim.keymap.set("n", "<leader>jcc", ":Git commit --message='chore: '<Left>")
 vim.keymap.set("n", "<leader>jcd", ":Git commit --message='feat: '<Left>")
 vim.keymap.set("n", "<leader>jce", ":Git commit --message='fix: '<Left>")
-vim.keymap.set("n", "<leader>jcf", ":Git commit --message='refactor: '<Left>")
 
 vim.keymap.set({ "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>")
 vim.keymap.set("x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>")
@@ -499,16 +528,21 @@ vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
 vim.keymap.set("n", "<leader>ah", "<cmd>e /etc/keyd/default.conf<CR>")
 vim.keymap.set("n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>")
 vim.keymap.set("n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/config/keymaps.lua<CR>")
-vim.keymap.set("n", "<leader>al", "<cmd>e ~/l<CR>")
+vim.keymap.set("n", "<leader>al", "<cmd>e ~/scratch_script<CR>")
 vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>")
+vim.keymap.set("n", "<leader>a,", "<cmd>e ~/archlinux/.config/hypr/bind.lua<CR>")
+vim.keymap.set(
+  "n",
+  "<leader>as",
+  "<cmd>e ~/archlinux/.config/nvim/LazyVim/lua/lazyvim/plugins/extras/editor/snacks_picker.lua<CR>"
+)
 
 vim.keymap.set("x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>')
-vim.keymap.set("n", "<leader>a<CR>", ":let @+=@:<Left><Insert>")
 
-vim.keymap.set({ "n", "x", "o" }, "<BS>8", "<Esc>vie*")
-vim.keymap.set({ "n", "x", "o" }, "<BS>9", "<Esc>vie#")
-vim.keymap.set({ "n", "x", "o" }, "<BS>*", "<Esc>viW*")
-vim.keymap.set({ "n", "x", "o" }, "<BS>#", "<Esc>viW#")
+vim.keymap.set({ "n", "x", "o" }, "<BS>8", "<Esc>vie*", { remap = true })
+vim.keymap.set({ "n", "x", "o" }, "<BS>9", "<Esc>vie#", { remap = true })
+vim.keymap.set({ "n", "x", "o" }, "<BS>*", "<Esc>viW*", { remap = true })
+vim.keymap.set({ "n", "x", "o" }, "<BS>#", "<Esc>viW#", { remap = true })
 
 vim.keymap.set({ "n", "x", "o" }, "|", "/\\V")
 vim.keymap.set({ "n", "x", "o" }, "\\", "?\\V")
