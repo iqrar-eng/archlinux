@@ -14,6 +14,7 @@ pathadd "$HOME/.local/bin"
 pathadd "$HOME/.npm-global/bin"
 pathadd "$HOME/go/bin"
 pathadd "$HOME/.local/share/nvim/mason/bin"
+pathadd "$HOME/.cargo/bin"
 
 # NVM — only once
 export NVM_DIR="$HOME/.nvm"

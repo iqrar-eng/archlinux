@@ -37,6 +37,7 @@ hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
 	hl.exec_cmd("trash-empty -f 30")
+	hl.exec_cmd("batsignal -e -b -p -w 35 -c 20 -d 10 -f 80")
 	hl.exec_cmd("[workspace 1 silent] " .. firefox)
 	hl.exec_cmd("[workspace 2 silent] " .. tmux)
 	hl.exec_cmd("[workspace 4 silent] " .. clipboard)

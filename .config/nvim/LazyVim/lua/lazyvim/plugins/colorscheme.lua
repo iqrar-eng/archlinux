@@ -1,14 +1,5 @@
 return {
-  {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = (function()
-        local state = vim.fn.stdpath("data") .. "/colorscheme"
-        local ok, lines = pcall(vim.fn.readfile, state)
-        return ok and lines[1] or "catppuccin-latte"
-      end)(),
-    },
-  },
+  { "LazyVim/LazyVim", opts = { colorscheme = "catppuccin" } },
 
   {
     "catppuccin/nvim",

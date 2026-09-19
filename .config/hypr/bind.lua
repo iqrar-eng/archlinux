@@ -52,6 +52,16 @@ hl.bind(
 	{ locked = true, repeating = true }
 )
 hl.bind(
+	"SUPER + XF86AudioRaiseVolume",
+	hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 100%"),
+	{ locked = true, repeating = true }
+)
+hl.bind(
+	"SUPER + XF86AudioLowerVolume",
+	hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 50%"),
+	{ locked = true, repeating = true }
+)
+hl.bind(
 	"XF86AudioMute",
 	hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),
 	{ locked = true, repeating = true }
@@ -74,13 +84,7 @@ hl.bind(
 	{ locked = true, repeating = true }
 )
 
-hl.bind(
-	"SHIFT + CTRL + ALT + SUPER + R",
-	hl.dsp.exec_cmd(
-		"grim -t ppm - | satty --filename - --fullscreen --output-filename ~/Pictures/Screenshots/Screenshot_$(date '+%a-%d-%b_%Y%m%d-%H:%M:%S').png"
-	)
-)
-
+hl.bind("SHIFT + CTRL + ALT + SUPER + R", hl.dsp.exec_cmd("normcap"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + T", hl.dsp.exec_cmd("grim - | wl-copy"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + N", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 

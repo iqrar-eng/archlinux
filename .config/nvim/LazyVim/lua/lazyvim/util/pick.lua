@@ -63,60 +63,12 @@ function M.open(command, opts)
   M.picker.open(command, opts)
 end
 
-local ignore_commands = { "grep", "grep_word", "live_grep", "grep_buffers", "undo", "notifications" }
-local function is_ignored(command)
-  if type(command) ~= "string" then
-    return false
-  end
-  for _, name in ipairs(ignore_commands) do
-    if command == name then
-      return true
-    end
-  end
-  return false
-end
-
+---@param command? string
+---@param opts? lazyvim.util.pick.Opts
 function M.wrap(command, opts)
   opts = opts or {}
   return function()
-    local final_opts = vim.deepcopy(opts)
-    local final_command = command
-    local mode = vim.fn.mode()
-    local in_visual = mode == "v" or mode == "V" or mode == "\22"
-    local ignored = is_ignored(final_command)
-    local pattern
-
-    if in_visual then
-      if final_command == "grep" then
-        -- visual selection + grep: let grep_word handle it itself
-        final_command = "grep_word"
-      elseif final_command ~= "grep_word" then
-        local visual = Snacks.picker.util.visual()
-        local visual_pattern = visual and visual.text
-        if visual_pattern then
-          final_opts.pattern = visual_pattern
-        end
-      end
-    elseif not ignored then
-      pattern = vim.fn.expand("<cword>")
-    end
-
-    if pattern and pattern ~= "" then
-      final_opts.pattern = pattern
-      local user_on_show = final_opts.on_show
-      final_opts.on_show = function(picker)
-        if user_on_show then
-          user_on_show(picker)
-        end
-        vim.cmd("stopinsert")
-        vim.cmd("normal! v$gH")
-      end
-    end
-    if type(final_command) == "function" then
-      final_command(final_opts)
-    else
-      LazyVim.pick.open(final_command, final_opts)
-    end
+    LazyVim.pick.open(command, vim.deepcopy(opts))
   end
 end
 

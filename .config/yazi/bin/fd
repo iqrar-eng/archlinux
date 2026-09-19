@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 # Usage: fd [any fd options/args, e.g. -d 2 "$HOME"]
 
-mapfile -t selected < <(fd -H . "$@" | fzf -m)
+if [ "$1" = "--select" ]; then
+  shift
+  for f in "$@"; do
+    ya emit-to "$YAZI_ID" reveal "$f"
+    ya emit-to "$YAZI_ID" toggle --state=on
+  done
+  exit 0
+fi
+
+self="$(realpath "$0")"
+
+mapfile -t selected < <(fd -H . "$@" | fzf -m --bind "alt-enter:become(\"$self\" --select {+})")
 
 [ "${#selected[@]}" -eq 0 ] && exit 0
 

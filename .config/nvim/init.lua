@@ -57,18 +57,5 @@ require("lazy").setup({
 			},
 		},
 	},
-
-	ui = {
-		size = { width = 1, height = 1 },
-		custom_keys = {
-			["a"] = {
-				function(plugin)
-					require("lazy.util").float_term({ "lazygit", "log" }, {
-						cwd = plugin.dir,
-					})
-				end,
-				desc = "Open lazygit log",
-			},
-		},
-	},
+	ui = { size = { width = 1, height = 1 } },
 })

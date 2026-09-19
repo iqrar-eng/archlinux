@@ -1,6 +1,0 @@
-[Unit]
-Description=Battery level check
-
-[Service]
-Type=oneshot
-ExecStart=%h/archlinux/.config/systemd/user/bin/battery-check

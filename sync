@@ -19,7 +19,6 @@ fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
         "$HOME"/archlinux/*) ;;
         *) continue ;;
     esac
-
     if [ ! -e "$f" ]; then
       rm -rf "$f"
       continue
@@ -33,7 +32,9 @@ fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
 
 # ------------------------------------------------
 
-yay -Syu --noconfirm
+yay -Syu --noconfirm                # full system + AUR upgrade
+yay -Rns $(yay -Qtdq) --noconfirm   # remove orphaned packages
+yay -Sc --noconfirm                 # clean package cache
 
 pacman -Qqen > "$HOME/archlinux/pacman.packages"
 pacman -Qqem > "$HOME/archlinux/yay.packages"

@@ -105,7 +105,7 @@ function ble/widget/my/_fzf-cd-from {
   local root="${1:-$HOME}"
   root="${root/#\~/$HOME}"
   local selected
-  selected=$( fd -t d --hidden --base-directory "$root" . 2>/dev/null \
+  selected=$( fd -td --hidden --base-directory "$root" . 2>/dev/null \
       | fzf --preview "ls --color=always -A --group-directories-first '$root'/{}"
     ) || return 0
     [[ -n "$selected" ]] || return 0
