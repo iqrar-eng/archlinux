@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
 
 if [[ "$(gsettings get org.gnome.desktop.interface color-scheme)" == *dark* ]]; then
-  is_dark=0
-else
-  is_dark=1
-fi
-
-if [[ $is_dark -eq 1 ]]; then
-  gnome_scheme="prefer-dark"
-  copyq_theme="$HOME/archlinux/.config/copyq/themes/dark.ini"
-else
   gnome_scheme="prefer-light"
   copyq_theme="$HOME/archlinux/.config/copyq/themes/light.ini"
+else
+  gnome_scheme="prefer-dark"
+  copyq_theme="$HOME/archlinux/.config/copyq/themes/dark.ini"
 fi
 
 gsettings set org.gnome.desktop.interface color-scheme "$gnome_scheme"
-tmux source-file ~/archlinux/.config/tmux/theme.conf
 copyq eval "loadTheme('$copyq_theme')"
+
+tmux source-file ~/archlinux/.config/tmux/theme.conf

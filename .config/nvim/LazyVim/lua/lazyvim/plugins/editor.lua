@@ -53,7 +53,6 @@ return {
     event = "VeryLazy",
     vscode = true,
     opts = {
-      search = { multi_window = false },
       label = { before = true, after = false, rainbow = { enabled = true, shade = 6 } },
       highlight = { backdrop = false },
       modes = {
@@ -93,58 +92,23 @@ return {
       },
       show_help = false,
       replace = {
-        -- put latest patterns at the end to avoid conflicts
         desc = {
           { "<Plug>%(?(.*)%)?", "%1" },
           { "^%+", "" },
           { "<[cC]md>", "" },
           { "<[cC][rR]>", "" },
-          { "\n", " ; " },
           { "<[sS]ilent>", "" },
           { "^lua%s+", "" },
           { "^call%s+", "" },
-          { "inner", "🎯" },
           { "MC:", "🧞‍♂️" },
-          { "^edit ", "󰈔 " },
-          { "clipboard", "📋" },
+          { "inner", "🎯" },
           { "outer", "🌐" },
-          { "^[nN]ext ", "🔵 " },
-          { "^[pP]rev ", "🔴 " },
-          { "[nN]ext$", "🔵 " },
-          { "[pP]rev$", "🔴 " },
+          { "[nN]ext ", "🔵" },
+          { "[pP]rev ", "🔴" },
           { "goto_%a+_start", "🌱" },
           { "goto_%a+_end", "🚩" },
-          { "lhs", "LHS" },
-          { "rhs", "RHS" },
-          { "browser", "🌎" },
-          { "Gitsigns", "❓" },
-          { "Github", " " },
-          { "Google", " " },
-          { "Lazygit", " " },
-          { "git", " 🔎" },
           { "Find Files*", "📁 " },
           { "Grep*", "🔎 " },
-          { "[Dd]eleted?", "🚮" },
-          { "[rR]egister.*", "📚" },
-          { "let", "" },
-        },
-      },
-      icons = {
-        separator = "┃",
-        group = "",
-        keys = {
-          Up = "Up",
-          Down = "Down",
-          Left = "Left",
-          Right = "Right",
-          C = "C-",
-          M = "M-",
-          S = "S-",
-          CR = "CR",
-          Esc = "Esc",
-          BS = "BS",
-          Space = "leader",
-          Tab = "Tab",
         },
       },
     },
@@ -169,9 +133,9 @@ return {
     end,
     keys = {
       {
-        "<leader>j^",
+        "<leader>g^",
         function()
-          require("which-key").show({ keys = "<leader>j", loop = true })
+          require("which-key").show({ keys = "<leader>g", loop = true })
         end,
         desc = "Hydra Mode (which-key)",
       },
@@ -222,6 +186,19 @@ return {
             gs.nav_hunk("prev")
           end
         end, "Prev Hunk")
+        map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
+        map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
+        map({ "n", "x" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
+        map({ "n", "x" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
+        map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
+        map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
+        map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
+        map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
+        map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
+        map("n", "<leader>ghB", function() gs.blame() end, "Blame Buffer")
+        map("n", "<leader>ghd", gs.diffthis, "Diff This")
+        map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
+        map({ "o", "x" }, "iH", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
 
         map("n", ">h", function()
           if vim.wo.diff then
@@ -237,26 +214,12 @@ return {
             gs.nav_hunk("prev", { target = "staged" })
           end
         end, "Prev Hunk")
-
         map("n", ">H", function() gs.nav_hunk("last", { target = "staged" }) end, "Gitsigns Last Hunk")
         map("n", "<H", function() gs.nav_hunk("first", { target = "staged" }) end, "Gitsigns First Hunk")
-
-        map({ "n", "x" }, "<leader>jh", ":Gitsigns stage_hunk<CR>", "Gitsigns Stage Hunk")
-        map("n", "<leader>jH", gs.undo_stage_hunk, "Gitsigns Undo Stage Hunk")
-        map({ "n", "x" }, "<leader>jm", ":Gitsigns reset_hunk<CR>", "Gitsigns Reset Hunk")
-
-        map("n", "<leader>jw", gs.preview_hunk_inline, "Gitsigns Preview Hunk Inline")
         map("n", "<M-p>", gs.preview_hunk, "Gitsigns Preview Hunk Inline")
-
-        map("n", "<leader>jb", function() gs.blame() end, "Gitsigns Blame Buffer")
-        map("n", "<leader>jB", function() gs.blame_line({ full = true }) end, "Gitsigns Blame Line")
-
-        map("n", "<leader>j{", gs.diffthis, "Gitsigns Diff This")
-        map("n", "<leader>j}", function() gs.diffthis("~") end, "Gitsigns Diff This ~")
-
-        map({ "o", "x" }, "iu", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
       end,
     },
   },
+
   { "tpope/vim-fugitive", event = "VeryLazy" },
 }

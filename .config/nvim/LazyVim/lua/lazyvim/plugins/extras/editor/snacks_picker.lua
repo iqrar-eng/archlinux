@@ -117,25 +117,6 @@ return {
         },
         scope = { enabled = false },
       },
-      scope = {
-        keys = {
-          textobject = {
-            id = {
-              min_size = 2, -- minimum size of the scope
-              edge = false, -- inner scope
-              cursor = false,
-              treesitter = { blocks = { enabled = false } },
-              desc = "inner scope",
-            },
-            ad = {
-              cursor = false,
-              min_size = 2, -- minimum size of the scope
-              treesitter = { blocks = { enabled = false } },
-              desc = "full scope",
-            },
-          },
-        },
-      },
       scroll = { enabled = false },
       statuscolumn = { enabled = false }, -- we set this in options.lua
       lazygit = { enabled = false },
@@ -205,18 +186,6 @@ return {
           input = {
             keys = {
               ["<C-c>"] = { "cancel", mode = { "n", "x", "i" } },
-
-              ["<M-'>"] = { "explorer_focus", mode = { "n", "x", "i" } },
-              ["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
-              ["<M-C-S-End>"] = { "explorer_up", mode = { "n", "x", "i" } },
-
-              ["<M-C-S-Y>"] = { "explorer_yank", mode = { "n", "x", "i" } },
-              ["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
-              ["<M-M>"] = { "explorer_paste", mode = { "n", "x", "i" } },
-              ["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
-              ["<M-S-CR>"] = { "explorer_del", mode = { "n", "x", "i" } },
-              ["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
-
               ["/"] = { "/", mode = { "n", "x" }, expr = true, desc = "delete word" },
               ["?"] = { "?", mode = { "n", "x" }, expr = true, desc = "delete word" },
               ["g?"] = "toggle_help_list",
@@ -231,26 +200,21 @@ return {
               ["<C-S-N>"] = { "picker_grep", mode = { "n", "x", "i" } },
               ["<M-w>"] = { "focus_preview", mode = { "n", "x", "i" } },
               ["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
-
               ["<M-2>"] = { "preview_scroll_down", mode = { "n", "x", "s", "i" } },
               ['<M-3>'] = { "preview_scroll_up", mode = { "n", "x", "s", "i" } },
+
+              ["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
+              ["<C-D>"] = { "explorer_yank", mode = { "n", "x", "i" } },
+              ["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
+              ["<M-C-S>"] = { "explorer_paste", mode = { "n", "x", "i" } },
+              ["<M-g>"] = { "explorer_del", mode = { "n", "x", "i" } },
+              ["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
+              ["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
             },
           },
           list = {
             keys = {
               ["<C-c>"] = { "cancel", mode = { "n", "x", "i" } },
-
-              ["<M-'>"] = { "explorer_focus", mode = { "n", "x", "i" } },
-              ["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
-              ["<M-C-S-End>"] = { "explorer_up", mode = { "n", "x", "i" } },
-
-              ["<M-C-S-Y>"] = { "explorer_yank", mode = { "n", "x", "i" } },
-              ["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
-              ["<M-M>"] = { "explorer_paste", mode = { "n", "x", "i" } },
-              ["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
-              ["<M-S-CR>"] = { "explorer_del", mode = { "n", "x", "i" } },
-              ["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
-
               ["/"] = { "/", mode = { "n", "x" }, expr = true, desc = "delete word" },
               ["?"] = { "?", mode = { "n", "x" }, expr = true, desc = "delete word" },
               ["g?"] = "toggle_help_list",
@@ -261,9 +225,16 @@ return {
               ["<C-S-W>"] = { "picker_files", mode = { "n", "x", "i" } },
               ["<C-S-N>"] = { "picker_grep", mode = { "n", "x", "i" } },
               ["<M-w>"] = { "focus_preview", mode = { "n", "x", "i" } },
-
               ["<M-2>"] = { "preview_scroll_down", mode = { "n", "x", "s", "i" } },
               ['<M-3>'] = { "preview_scroll_up", mode = { "n", "x", "s", "i" } },
+
+              ["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
+              ["<C-D>"] = { "explorer_yank", mode = { "n", "x", "i" } },
+              ["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
+              ["<M-C-S>"] = { "explorer_paste", mode = { "n", "x", "i" } },
+              ["<M-g>"] = { "explorer_del", mode = { "n", "x", "i" } },
+              ["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
+              ["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
             },
           },
           preview = {
@@ -292,7 +263,7 @@ return {
       { "<BS>7", function() Snacks.picker.man() end, desc = "Man Pages", mode = { "n", "x" } },
       { "<BS>6", function() Snacks.picker.icons() end, desc = "Icons", mode = { "n", "x" } },
       { "<BS>(", function() Snacks.picker.scratch() end, desc = "Toggle Scratch Buffer" },
-      { "<BS>)", function() Snacks.picker.scratch.select() end, desc = "Select Scratch Buffer" },
+      { "<BS>)", function() Snacks.scratch.open() end, desc = "Select Scratch Buffer" },
       { "<BS>=", function() Snacks.picker.diagnostics() end, desc = "Diagnostics", mode = { "n", "x" } },
       { "<BS>+", function() Snacks.picker.diagnostics_buffer() end, desc = "Buffer Diagnostics", mode = { "n", "x" } },
       { "<leader>av",       function() Snacks.picker.lines()     end, desc = "Buffer Lines"          },
@@ -310,13 +281,15 @@ return {
       { "<leader>hu", function() Snacks.picker.highlights() end, desc = "Highlights", mode = { "n", "x" } },
       { "<leader>hg",  function() Snacks.picker()                 end, desc = "All Pickers"     },
 
-      { "<leader>js", function() Snacks.picker.git_status({ cwd = LazyVim.root.git() }) end, desc = "git Status" },
-      { "<leader>jS", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git(), staged = false, group = true }) end, desc = "git Diff (Origin)" },
-      { "<leader>jd", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git() }) end, desc = "git Diff (Hunks)" },
-      { "<leader>je", function() Snacks.picker.git_stash({ cwd = LazyVim.root.git() }) end, desc = "git Stash" },
-      { "<leader>jl", function() Snacks.picker.git_log({ cwd = LazyVim.root.git() }) end, desc = "git Log" },
-      { "<leader>jf", function() Snacks.picker.git_log_file({ cwd = LazyVim.root.git() }) end, desc = "git Log File" },
-      { "<leader>jF", function() Snacks.picker.git_log_line({ cwd = LazyVim.root.git() }) end, desc = "git Log Line" },
+      -- git
+      { "<leader>gb", function() Snacks.picker.git_branches({ cwd = LazyVim.root.git() }) end, desc = "Git Branches" },
+      { "<leader>gl", function() Snacks.picker.git_log({ cwd = LazyVim.root.git() }) end, desc = "Git Log" },
+      { "<leader>gL", function() Snacks.picker.git_log_line({ cwd = LazyVim.root.git() }) end, desc = "Git Log Line" },
+      { "<leader>gs", function() Snacks.picker.git_status({ cwd = LazyVim.root.git() }) end, desc = "Git Status" },
+      { "<leader>gS", function() Snacks.picker.git_stash({ cwd = LazyVim.root.git() }) end, desc = "Git Stash" },
+      { "<leader>gd", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git() }) end, desc = "Git Diff (Hunks)" },
+      { "<leader>gf", function() Snacks.picker.git_log_file({ cwd = LazyVim.root.git() }) end, desc = "Git Log File" },
+      { "<leader>gD", function() Snacks.picker.git_diff({ cwd = LazyVim.root.git(), staged = false, group = true }) end, desc = "git Diff (Origin)" },
 
       { "<leader>ks", LazyVim.pick("files", { cwd = vim.fn.expand("~/archlinux/") }), desc = "Find Files archlinux", mode = { "n", "x" } },
       { "<leader>kS", LazyVim.pick("grep", { cwd = vim.fn.expand("~/archlinux/") }), desc = "Grep archlinux", mode = { "n", "x" } },
@@ -339,6 +312,10 @@ return {
       { "<leader>kJ", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/javascript") }), desc = "Grep mdn javascript", mode = { "n", "x" } },
       { "<leader>kr", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Find Files react", mode = { "n", "x" } },
       { "<leader>kR", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Grep react", mode = { "n", "x" } },
+      { "<leader>kc", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Find Files typescript-cheatsheets-react", mode = { "n", "x" } },
+      { "<leader>kC", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Grep typescript-cheatsheets-react", mode = { "n", "x" } },
+      { "<leader>kl", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/LazyVim") }), desc = "Find Files LazyVim", mode = { "n", "x" } },
+      { "<leader>kL", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/LazyVim") }), desc = "Grep LazyVim", mode = { "n", "x" } },
     },
   },
 

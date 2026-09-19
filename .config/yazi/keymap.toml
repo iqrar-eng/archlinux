@@ -22,7 +22,7 @@ prepend_keymap = [
 { on = [ "<Space>", "g", "t" ], run = "cd ~/.local/share/Trash/files", desc = "Go to trash" },
 
 { on = [ "<Space>", "g", "a" ], run = "cd ~/archlinux", desc = "Go to archlinux" },
-{ on = [ "<Space>", "g", "m" ], run = "cd ~/phone", desc = "Go to phone" },
+{ on = [ "<Space>", "g", "m" ], run = "cd ~/medical/", desc = "Go to phone" },
 { on = [ "<Space>", "g", "x" ], run = "cd ~/projects", desc = "Go to projects" },
 { on = [ "<Space>", "g", "l" ], run = "cd ~/.local", desc = "Go to .local" },
 { on = [ "<Space>", "g", "p" ], run = "cd ~/personal", desc = "Go to personal" },

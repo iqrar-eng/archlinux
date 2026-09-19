@@ -10,33 +10,25 @@ return {
         n_lines = 1500,
         silent = true,
         mappings = {
+          around_next = "ah",
+          inside_next = "ih",
           around_last = "a<leader>",
           inside_last = "i<leader>",
         },
         custom_textobjects = {
-          ["f"] = ts({ a = "@function.outer", i = "@function.inner" }),
+          u = ai.gen_spec.function_call(), -- u for "Usage"
+          U = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot in function name
+          ["J"] = ts({ a = "@block.outer", i = "@block.inner" }), -- matches ]<Tab>/]x in goto
           ["j"] = ts({ a = "@comment.outer", i = "@comment.inner" }),
-          ["r"] = ai.gen_spec.argument(),
           ["y"] = ts({ a = "@parameter.outer", i = "@parameter.inner" }),
-          ["u"] = function(ai_type)
-            if ai_type == "a" then
-              return { "()%d%d%d%d%-%d%d%-%d%d()" }
-            else
-              return { "()%d%d:%d%d:%d%d()" }
-            end
-          end,
-          ["x"] = ts({ a = "@block.outer", i = "@block.inner" }), -- matches ]<Tab>/]x in goto
-          ["h"] = ts({ a = "@conditional.outer", i = "@conditional.inner" }),
-          ["<Home>"] = ai.gen_spec.function_call({ name_pattern = "[%w_]" }), -- without dot in function name
+          ["Y"] = ts({ a = "@conditional.outer", i = "@conditional.inner" }),
+          ["f"] = ts({ a = "@function.outer", i = "@function.inner" }),
+          ["R"] = ts({ a = "@return.outer", i = "@return.inner" }),
+          ["P"] = ts({ a = "@regex.outer", i = "@regex.inner" }),
+          ["<Home>"] = ts({ a = "@class.outer", i = "@class.inner" }),
           ["<End>"] = ts({ a = "@call.outer", i = "@call.inner" }),
           ["<PageUp>"] = ts({ a = "@attribute.outer", i = "@attribute.inner" }),
           ["<PageDown>"] = ts({ a = "@loop.outer", i = "@loop.inner" }),
-          ["4"] = ts({ a = "@regex.outer", i = "@regex.inner" }),
-          ["3"] = ts({ a = "@return.outer", i = "@return.inner" }),
-
-          ["2"] = { "%.()[%w%-_]+()" }, -- CSS class .main
-          ["1"] = { "#()[%w%-_]+()" }, -- CSS id #main
-          ["9"] = ts({ a = "@class.outer", i = "@class.inner" }),
         },
       }
     end,
@@ -47,48 +39,24 @@ return {
     event = "VeryLazy",
     config = function()
       require("various-textobjs").setup({
-        forwardLooking = {
-          small = 1500,
-          big = 1500,
+        keymaps = {
+          useDefaults = true,
+          disabledDefaults = { "i,", "a,", "r",  "R", "i_", "a_" },
         },
+        forwardLooking = { small = 1500, big = 1500 },
         notify = { whenObjectNotFound = false },
       })
-
-      -- inner/outer objects
-      vim.keymap.set({ "o", "x" }, "ae", '<cmd>lua require("various-textobjs").subword("outer")<CR>', { desc = "outer subword textobj" })
-      vim.keymap.set({ "o", "x" }, "ie", '<cmd>lua require("various-textobjs").subword("inner")<CR>', { desc = "inner subword textobj" })
-
-      vim.keymap.set({ "o", "x" }, "ac", '<cmd>lua require("various-textobjs").key("outer")<CR>', { desc = "outer key textobj" })
-      vim.keymap.set({ "o", "x" }, "ic", '<cmd>lua require("various-textobjs").key("inner")<CR>', { desc = "inner key textobj" })
-
-      vim.keymap.set({ "o", "x" }, "av", '<cmd>lua require("various-textobjs").value("outer")<CR>', { desc = "outer value textobj" })
-      vim.keymap.set({ "o", "x" }, "iv", '<cmd>lua require("various-textobjs").value("inner")<CR>', { desc = "inner value textobj" })
-
-      vim.keymap.set({ "o", "x" }, "ao", '<cmd>lua require("various-textobjs").color("outer")<CR>', { desc = "outer color textobj" })
-      vim.keymap.set({ "o", "x" }, "io", '<cmd>lua require("various-textobjs").color("inner")<CR>', { desc = "inner color textobj" })
-
-      vim.keymap.set({ "o", "x" }, "ag", '<cmd>lua require("various-textobjs").number("outer")<CR>', { desc = "outer number textobj" })
-      vim.keymap.set({ "o", "x" }, "ig", '<cmd>lua require("various-textobjs").number("inner")<CR>', { desc = "inner number textobj" })
-
-      vim.keymap.set({ "o", "x" }, "a<Up>", '<cmd>lua require("various-textobjs").doubleSquareBrackets("outer")<CR>', { desc = "outer doubleSquareBrackets textobj" })
-      vim.keymap.set({ "o", "x" }, "i<Up>", '<cmd>lua require("various-textobjs").doubleSquareBrackets("inner")<CR>', { desc = "inner doubleSquareBrackets textobj" })
-
-      vim.keymap.set({ "o", "x" }, "a<Left>", '<cmd>lua require("various-textobjs").chainMember("outer")<CR>', { desc = "outer chainMember textobj" })
-      vim.keymap.set({ "o", "x" }, "i<Left>", '<cmd>lua require("various-textobjs").chainMember("inner")<CR>', { desc = "inner chainMember textobj" })
-
-      vim.keymap.set({ "o", "x" }, "a<Tab>", '<cmd>lua require("various-textobjs").filepath("outer")<CR>', { desc = "outer filepath textobj" })
-      vim.keymap.set({ "o", "x" }, "i<Tab>", '<cmd>lua require("various-textobjs").filepath("inner")<CR>', { desc = "inner filepath textobj" })
-
-      -- single (one-sided) objects
-      vim.keymap.set({ "o", "x" }, "al", '<cmd>lua require("various-textobjs").entireBuffer()<CR>', { desc = "entireBuffer textobj" })
-      vim.keymap.set({ "o", "x" }, "i<CR>", '<cmd>lua require("various-textobjs").url()<CR>', { desc = "url textobj" })
-      vim.keymap.set({ "o", "x" }, "ia", '<cmd>lua require("various-textobjs").nearEoL()<CR>', { desc = "nearEoL textobj" })
-      vim.keymap.set({ "o", "x" }, "ai", '<cmd>lua require("various-textobjs").visibleInWindow()<CR>', { desc = "visibleInWindow textobj" })
-      vim.keymap.set({ "o", "x" }, "a<CR>", '<cmd>lua require("various-textobjs").emoji()<CR>', { desc = "emoji textobj" })
-      vim.keymap.set({ "o", "x" }, "il", '<cmd>lua require("various-textobjs").lineCharacterwise("inner")<CR>')
       vim.keymap.set({ "o", "x" }, "gl", '<cmd>lua require("various-textobjs").column("both")<CR>')
-      vim.keymap.set({ "o", "x" }, "go", '<cmd>lua require("various-textobjs").column("down")<CR>')
       vim.keymap.set({ "o", "x" }, "gt", '<cmd>lua require("various-textobjs").column("up")<CR>')
+      vim.keymap.set({ "o", "x" }, "iL", '<cmd>lua require("various-textobjs").lineCharacterwise("outer")<CR>')
+      vim.keymap.set({ "o", "x" }, "il", '<cmd>lua require("various-textobjs").lineCharacterwise("inner")<CR>')
+      vim.keymap.set({ "o", "x" }, "al", '<cmd>lua require("various-textobjs").entireBuffer()<CR>')
+      vim.keymap.set(
+        { "o", "x" },
+        "g,",
+        '<cmd>lua require("various-textobjs").nearEoL()<CR>',
+        { desc = "nearEoL textobj" }
+      )
 
       vim.keymap.set("n", "du", function()
         -- select outer indentation

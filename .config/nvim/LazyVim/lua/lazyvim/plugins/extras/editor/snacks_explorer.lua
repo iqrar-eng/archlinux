@@ -9,11 +9,10 @@ return {
             exclude = { ".git", ".github" },
             hidden = true,
             ignored = true,
-            layout = { preset = "my_sidebar", preview = true },
+            layout = { preset = "my_sidebar", },
             icons = { tree = { vertical = "│", middle = "├", last = "└" } },
             layouts = {
               my_sidebar = {
-                preview = "main",
                 layout = {
                   backdrop = false,
                   width = 28,
@@ -21,7 +20,6 @@ return {
                   position = "left",
                   box = "vertical",
                   { win = "list" },
-                  { win = "preview", height = 0.3 },
                 },
               },
             },

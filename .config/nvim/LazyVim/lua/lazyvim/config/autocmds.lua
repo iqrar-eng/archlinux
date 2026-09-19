@@ -3,12 +3,14 @@ local function augroup(name)
 end
 
 -- Highlight on yank
-------------------------------------------------
-
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = augroup("highlight_yank"),
   callback = function()
-    (vim.hl or vim.highlight).on_yank()
+    if vim.fn.has("nvim-0.13") == 1 then
+      vim.hl.hl_op()
+    else
+      (vim.hl or vim.highlight).on_yank()
+    end
   end,
 })
 
@@ -337,9 +339,12 @@ local function redraw_burst()
   end, 120)
 end
 
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter", "WinNew", "WinClosed", "TabEnter", "VimResized" }, {
-  callback = redraw_burst,
-})
+vim.api.nvim_create_autocmd(
+  { "BufEnter", "BufWinEnter", "WinEnter", "WinNew", "WinClosed", "TabEnter", "VimResized" },
+  {
+    callback = redraw_burst,
+  }
+)
 
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "CursorHold", "CursorHoldI" }, {
   callback = function()

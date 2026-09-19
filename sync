@@ -1,14 +1,45 @@
 #!/usr/bin/env bash
 
-paths=(
-  # ".config/"
+yay -Syu --noconfirm                # full system + AUR upgrade
+yay -Rns $(yay -Qtdq) --noconfirm   # remove orphaned packages
+yay -Sc --noconfirm                 # clean package cache
 
+roots=(
+  # ~/projects
+  ~/.src
+)
+find "${roots[@]}" -name .git -type d -print0 | while IFS= read -r -d '' d; do
+  repo="${d%/.git}"
+  echo "==> $repo"
+  git -C "$repo" fetch origin
+  git -C "$repo" reset --hard "origin/$(git -C "$repo" symbolic-ref --short HEAD)"
+  git -C "$repo" pull
+done
+
+repos=(
+  "repos=(
+  "$HOME/hw"
+  "$HOME/archlinux"
+  "$HOME/personal/profile"
 )
 
-for p in "${paths[@]}"; do
-  mkdir -p "$HOME/archlinux/$(dirname "$p")"
-  mv "$HOME/$p" "$HOME/archlinux/$p"
-  ln -sfn "$HOME/archlinux/$p" "$HOME/$p"
+for repo in "${repos[@]}"; do
+  echo "==> $repo"
+  git -C "$repo" add -A
+  git -C "$repo" commit -m "chore: automated update"
+  git -C "$repo" push origin main
+done
+
+$HOME/hw"
+  "$HOME/archlinux"
+  "$HOME/personal/profile"
+)
+
+for repo in "${repos[@]}"; do
+  echo "==> $repo"
+  git -C "$repo" add -A
+  git -C "$repo" commit -m "chore: automated update"
+  git -C "$repo" push origin main
 done
 
 # ------------------------------------------------
@@ -30,23 +61,13 @@ fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
     echo "$f"
   done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
 
-# ------------------------------------------------
-
-yay -Syu --noconfirm                # full system + AUR upgrade
-yay -Rns $(yay -Qtdq) --noconfirm   # remove orphaned packages
-yay -Sc --noconfirm                 # clean package cache
-
 pacman -Qqen > "$HOME/archlinux/pacman.packages"
 pacman -Qqem > "$HOME/archlinux/yay.packages"
 
-roots=(
-  # ~/projects
-  ~/.src
-)
-find "${roots[@]}" -name .git -type d -print0 | while IFS= read -r -d '' d; do
-  repo="${d%/.git}"
-  echo "==> $repo"
-  git -C "$repo" fetch origin
-  git -C "$repo" reset --hard "origin/$(git -C "$repo" symbolic-ref --short HEAD)"
-  git -C "$repo" pull
-done
+# ------------------------------------------------
+
+USB="/run/media/iqrar/IQRAR_USB"
+if [ -e "$USB" ]; then
+  rm -rf "$USB/personal"
+  cp -r "$HOME/personal" "$USB"
+fi
