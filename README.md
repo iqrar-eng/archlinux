@@ -8,6 +8,7 @@ Personal reproducible Arch Linux development environment
 ### Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/restore -o x
-bash x
+curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/restore -o r
+chmod +x r
+r
 ```

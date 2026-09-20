@@ -32,21 +32,21 @@ done
 # ------------------------------------------------
 
 fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
-    target=$(readlink -f "$f")
-    case "$target" in
-        "$HOME"/archlinux/*) ;;
-        *) continue ;;
-    esac
-    if [ ! -e "$f" ]; then
-      rm -rf "$f"
-      continue
-    fi
-    if [ -d "$f" ] && [ -z "$(fd -H . "$f" -L --max-depth 1)" ]; then
-      rm -rf "$f" "$target"
-      continue
-    fi
-    echo "$f"
-  done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
+  target=$(readlink -f "$f")
+  case "$target" in
+      "$HOME"/archlinux/*) ;;
+      *) continue ;;
+  esac
+  if [ ! -e "$f" ]; then
+    rm -rf "$f"
+    continue
+  fi
+  if [ -d "$f" ] && [ -z "$(fd -H . "$f" -L --max-depth 1)" ]; then
+    rm -rf "$f" "$target"
+    continue
+  fi
+  echo "$f"
+done | sed "s|^$HOME/||" > "$HOME/archlinux/symlinks"
 
 pacman -Qqen > "$HOME/archlinux/pacman.packages"
 pacman -Qqem > "$HOME/archlinux/yay.packages"
@@ -57,4 +57,6 @@ USB="/run/media/iqrar/IQRAR_USB"
 if [ -e "$USB" ]; then
   rm -rf "$USB/personal"
   cp -r "$HOME/personal" "$USB"
+else
+  echo "$USB not accessible"
 fi

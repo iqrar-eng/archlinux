@@ -41,22 +41,19 @@ return {
       require("various-textobjs").setup({
         keymaps = {
           useDefaults = true,
-          disabledDefaults = { "i,", "a,", "r",  "R", "i_", "a_" },
+          disabledDefaults = { "i,", "a,", "r", "R", "L", "!", "|", "n", "Q", "C", "i_", "a_" },
         },
         forwardLooking = { small = 1500, big = 1500 },
         notify = { whenObjectNotFound = false },
       })
-      vim.keymap.set({ "o", "x" }, "gl", '<cmd>lua require("various-textobjs").column("both")<CR>')
+      vim.keymap.set({ "o", "x" }, "go", '<cmd>lua require("various-textobjs").column("down")<CR>')
       vim.keymap.set({ "o", "x" }, "gt", '<cmd>lua require("various-textobjs").column("up")<CR>')
+      vim.keymap.set({ "o", "x" }, "gl", '<cmd>lua require("various-textobjs").column("both")<CR>')
       vim.keymap.set({ "o", "x" }, "iL", '<cmd>lua require("various-textobjs").lineCharacterwise("outer")<CR>')
       vim.keymap.set({ "o", "x" }, "il", '<cmd>lua require("various-textobjs").lineCharacterwise("inner")<CR>')
       vim.keymap.set({ "o", "x" }, "al", '<cmd>lua require("various-textobjs").entireBuffer()<CR>')
-      vim.keymap.set(
-        { "o", "x" },
-        "g,",
-        '<cmd>lua require("various-textobjs").nearEoL()<CR>',
-        { desc = "nearEoL textobj" }
-      )
+      vim.keymap.set({ "o", "x" }, "aO", '<cmd>lua require("various-textobjs").restOfIndentation()<CR>')
+      vim.keymap.set({ "o", "x" }, "iO", '<cmd>lua require("various-textobjs").url()<CR>')
 
       vim.keymap.set("n", "du", function()
         -- select outer indentation
