@@ -332,7 +332,6 @@ end, { desc = "Git browser (copy)" })
 
 vim.keymap.set("n", "<leader>ga", "<cmd>Git add %<CR>")
 vim.keymap.set("n", "<leader>gA", "<cmd>Git add -A<CR>")
-vim.keymap.set("n", "<leader>gp", "<cmd>Git pull<CR>")
 vim.keymap.set("n", "<leader>gr", "<cmd>Git restore %<CR>")
 vim.keymap.set("n", "<leader>gR", "<cmd>Git restore --staged %<CR>")
 
