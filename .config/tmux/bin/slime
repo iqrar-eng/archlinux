@@ -1,18 +1,11 @@
 #!/usr/bin/env bash
 
-# Sends clipboard (or --text arg) into a tmux pane, vim-slime style.
-# Useful for piping text/commands from elsewhere (e.g. a Wayland clipboard)
-# into a running tmux session/pane, optionally executing it and jumping focus.
-#
-# Reference impl this was adapted from:
-# https://github.com/jpalardy/vim-slime/blob/main/autoload/slime/targets/tmux.vim
-
-EXECUTE=0        # 1 = press Enter after pasting (actually "run" the text)
-CANCEL=1         # 1 = send Ctrl-C before pasting (clears any partial input in target pane)
-JUMP=0           # 1 = after pasting, switch Hyprland focus to workspace "2"
-TARGET_PANE=""   # tmux target (-t value); empty = current pane
-TEXT_ARG=""      # text passed explicitly via --text, bypassing clipboard
-USE_TEXT_ARG=0   # 1 = use TEXT_ARG instead of reading clipboard
+EXECUTE=0
+CANCEL=1
+JUMP=0
+TARGET_PANE="2"
+TEXT_ARG=""
+USE_TEXT_ARG=0
 
 args=("$@")
 i=0
@@ -27,48 +20,22 @@ while [[ $i -lt ${#args[@]} ]]; do
       i=$((i + 1))
       TEXT_ARG="${args[$i]:-}"
       ;;
-    last|--last)
-      TARGET_PANE="last"
-      ;;
     *)
-      # Anything else is treated as an explicit tmux target (pane/window id).
       TARGET_PANE="$arg"
       ;;
   esac
   i=$((i + 1))
 done
 
-# --- Figure out how to invoke tmux ---
-# If we're already inside tmux, $TMUX encodes "socket_path,pid,session".
-# We must reuse that same socket (via -S or -L) so we control the *correct*
-# tmux server, not just whichever `tmux` resolves to by default.
 if [[ -n "${TMUX:-}" ]]; then
   SOCKET_PATH="${TMUX%%,*}"
   if [[ "$SOCKET_PATH" == /* ]]; then
-    TMUX_CMD="tmux -S $SOCKET_PATH"   # absolute path -> use -S
+    TMUX_CMD="tmux -S $SOCKET_PATH"
   else
-    TMUX_CMD="tmux -L $SOCKET_PATH"   # bare name -> use -L (default socket dir)
+    TMUX_CMD="tmux -L $SOCKET_PATH"
   fi
 else
   TMUX_CMD="tmux"
-fi
-
-# --- Resolve "last" pane target ---
-# tmux's own '{last}' format only refers to the last *pane*, so if the
-# last-active window happens to be an nvim window, we deliberately clear
-# TARGET_PANE (meaning: paste into the *current* pane instead) rather than
-# blindly sending text into a running nvim buffer.
-if [[ "$TARGET_PANE" == "last" ]]; then
-  if $TMUX_CMD display-message -p -t '{last}' '#{pane_id}' >/dev/null 2>&1; then
-    last_window_name="$($TMUX_CMD display-message -p -t '{last}' '#{window_name}')"
-    if [[ "$last_window_name" == "nvim" ]]; then
-      TARGET_PANE=""
-    else
-      TARGET_PANE='{last}'
-    fi
-  else
-    exit 1
-  fi
 fi
 
 target_args=()
@@ -96,4 +63,5 @@ fi
 
 if [[ "$JUMP" -eq 1 ]]; then
   hyprctl dispatch "hl.dsp.focus({ workspace = "2" })" >/dev/null
+  tmux select-window "${target_args[@]}"
 fi

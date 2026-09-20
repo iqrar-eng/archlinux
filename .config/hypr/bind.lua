@@ -108,20 +108,20 @@ hl.bind("SHIFT + CTRL + ALT + SUPER + P", hl.dsp.exec_cmd("~/archlinux/.local/bi
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + A",
 	hl.dsp.exec_cmd(
-		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime last --execute --jump && tmux last-window"
+		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime --execute --jump"
 	)
 )
-hl.bind("SHIFT + CTRL + ALT + SUPER + B", hl.dsp.exec_cmd("~/archlinux/.config/tmux/bin/slime --execute last"))
+hl.bind("SHIFT + CTRL + ALT + SUPER + B", hl.dsp.exec_cmd("~/archlinux/.config/tmux/bin/slime --execute"))
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + C",
 	hl.dsp.exec_cmd(
-		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime last --jump && tmux last-window"
+		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime --jump"
 	)
 )
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + Q",
 	hl.dsp.exec_cmd(
-		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime last --jump --no-cancel && tmux last-window"
+		"tmux switch-client -t \"$(tmux display-message -p '#S'):nvim\" && ~/archlinux/.config/tmux/bin/slime --jump --no-cancel"
 	)
 )
 

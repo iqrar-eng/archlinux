@@ -105,7 +105,6 @@ return {
           else
             require("aerial").close()
           end
-          vim.notify("Aerial auto-open: " .. tostring(aerial_state.auto))
         end,
         desc = "Toggle Aerial auto-open",
       },

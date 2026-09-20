@@ -77,7 +77,7 @@ vim.o.laststatus = 0
 vim.o.showtabline = 0
 vim.filetype.add({
   pattern = {
-    ['.*/keyd/default.conf'] = 'toml',
+    [".*/keyd/default.conf"] = "toml",
     ["dunstrc"] = "conf",
     [".blerc"] = "bash",
   },

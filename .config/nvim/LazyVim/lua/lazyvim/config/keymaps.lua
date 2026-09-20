@@ -8,7 +8,7 @@ local function remote_scroll(filetypes, dir)
       if vim.tbl_contains(filetypes, vim.bo[buf].filetype) then
         local cur_win = vim.api.nvim_get_current_win()
         vim.api.nvim_set_current_win(win)
-        vim.api.nvim_feedkeys(count .. dir, "n", false)
+        vim.api.nvim_feedkeys(count .. dir, "m", false)
 
         vim.defer_fn(function()
           if vim.api.nvim_win_is_valid(win) then
@@ -26,8 +26,13 @@ end
 
 vim.keymap.set("n", "<C-PageDown>", remote_scroll({ "snacks_picker_list" }, "j"), {})
 vim.keymap.set("n", "<C-PageUp>", remote_scroll({ "snacks_picker_list" }, "k"), {})
+vim.keymap.set("n", "<C-S-PageDown>", remote_scroll({ "snacks_picker_list" }, "G"), {})
+vim.keymap.set("n", "<C-S-PageUp>", remote_scroll({ "snacks_picker_list" }, "gg"), {})
+
 vim.keymap.set("n", "<M-C-S-Home>", remote_scroll({ "undotree", "aerial" }, "j"), {})
 vim.keymap.set("n", "<C-G>", remote_scroll({ "undotree", "aerial" }, "k"), {})
+vim.keymap.set("n", "<C-U>", "9999g-")
+vim.keymap.set("n", "<M-C-S-Right>", "9999g+")
 
 ------------------------------------------------
 
@@ -189,8 +194,11 @@ local presets = {
   ["a"] = function()
     return table.concat({
       "cd " .. LazyVim.root.get({ buf = vim.api.nvim_get_current_buf() }),
+      "git add -A",
+      "git commit --message='chore: update'",
+      "git push",
     }, "\n"),
-      "cd to root"
+      "git add -A, commit, push root dir"
   end,
 
   ["<leader>"] = function()
@@ -239,10 +247,10 @@ local function bind_send_text(lhs, main_cmd, post_cmd)
   end)
 end
 
-bind_send_text("<leader>q", "~/archlinux/.config/tmux/bin/slime last --jump --execute", "tmux last-window")
-bind_send_text("<leader>w", "~/archlinux/.config/tmux/bin/slime last --execute")
-bind_send_text("<leader>r", "~/archlinux/.config/tmux/bin/slime last --jump", "tmux last-window")
-bind_send_text("<leader>m", "~/archlinux/.config/tmux/bin/slime last --jump --no-cancel", "tmux last-window")
+bind_send_text("<leader>q", "~/archlinux/.config/tmux/bin/slime --jump --execute")
+bind_send_text("<leader>w", "~/archlinux/.config/tmux/bin/slime --execute")
+bind_send_text("<leader>r", "~/archlinux/.config/tmux/bin/slime --jump")
+bind_send_text("<leader>m", "~/archlinux/.config/tmux/bin/slime --jump --no-cancel")
 
 ----------------------------------------------
 
