@@ -193,7 +193,7 @@ end
 local presets = {
   ["a"] = function()
     return table.concat({
-      "cd " .. LazyVim.root.get({ buf = vim.api.nvim_get_current_buf() }),
+      "cd " .. LazyVim.root.git(),
       "git add -A",
       "git commit --message='chore: update'",
       "git push",
