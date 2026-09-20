@@ -9,8 +9,8 @@ makepkg -si
 cd ..
 rm -rf yay
 
-curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/pacman.packages | sudo pacman -S --needed --noconfirm -
-curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/yay.packages | yay -S --needed --noconfirm -
+curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/generated/pacman.packages | sudo pacman -S --needed --noconfirm -
+curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/generated/yay.packages | yay -S --needed --noconfirm -
 
 # ------------------------------------------------
 
@@ -22,7 +22,7 @@ while IFS= read -r p; do
   rm -rf "$p"
   mkdir -p "$(dirname "$p")" "$HOME/archlinux/$(dirname "$p")"
   ln -sfn "$HOME/archlinux/$p" "$p"
-done < "$HOME/archlinux/symlinks"
+done < "$HOME/archlinux/generated/symlinks"
 popd
 
 sudo rm -rf "/etc/keyd/default.conf"

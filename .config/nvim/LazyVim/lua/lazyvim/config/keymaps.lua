@@ -208,7 +208,7 @@ local presets = {
 
 local function bind_presets(lhs, presets, send_preset)
   for key, preset_fn in pairs(presets) do
-    local preset_lhs = lhs .. "u" .. key
+    local preset_lhs = lhs .. "p" .. key
     local _, desc = preset_fn()
     vim.keymap.set("n", preset_lhs, function()
       local text = preset_fn()

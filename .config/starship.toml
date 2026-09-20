@@ -1,8 +1,0 @@
-# https://starship.rs/config/
-
-format = """ """
-right_format = """$all"""
-
-[cmd_duration]
-show_notifications = true
-format = '[$duration](bold yellow) '
