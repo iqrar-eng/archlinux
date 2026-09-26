@@ -26,7 +26,7 @@ function ble/widget/my/complete-accept-nth-and-exec {
 local k
 for k in vi_imap auto_complete menu_complete; do
   ble-bind -m "$k" -f 'C-]'  'my/complete-accept-nth-and-exec'
-  ble-bind -m "$k" -f 'M-C-S-home' 'my/complete-accept-nth 1'
+  ble-bind -m "$k" -f 'C-y' 'my/complete-accept-nth 1'
   ble-bind -m "$k" -f 'M-w'     'my/complete-accept-nth 2'
   ble-bind -m "$k" -f 'M-y'     'my/complete-accept-nth 3'
   ble-bind -m "$k" -f 'M-r'      'my/complete-accept-nth 4'
@@ -237,7 +237,7 @@ ble-bind -m vi_imap -f C-S-a 'my/imap-d-BBW' # gE
 ble-bind -m vi_imap -f M-C-h 'kill-forward-uword' # W
 ble-bind -m vi_imap -f M-C-e 'kill-backward-uword' # B
 
-ble-bind -m vi_imap -f C-u 'kill-forward-eword'    # e respects _
+ble-bind -m vi_imap -f M-C-u 'kill-forward-eword'    # e respects _
 ble-bind -m vi_imap -f M-C-S-right 'kill-backward-eword'    # b respects _
 
 ble-bind -m vi_imap -f M-C-S-up 'kill-forward-fword'  # E respects /

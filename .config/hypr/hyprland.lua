@@ -18,15 +18,9 @@ hl.workspace_rule({ workspace = "4", on_created_empty = clipboard })
 hl.workspace_rule({ workspace = "5", on_created_empty = fileManager })
 hl.workspace_rule({ workspace = "6", on_created_empty = player })
 
--- No border when only one window is open on a workspace (tiled or floating)
-hl.window_rule({ name = "no-border-single-tiled", match = { float = false, workspace = "w[tv1]" }, border_size = 0 })
-hl.window_rule({ name = "no-border-single-floating", match = { float = true, workspace = "f[1]" }, border_size = 0 })
-
--- Always route these apps to their workspace, no matter where they're launched from
 hl.window_rule({ match = { class = "firefox" }, workspace = "1" })
 hl.window_rule({ match = { class = "kitty-tmux" }, workspace = "2" })
 hl.window_rule({ match = { class = "com.github.hluk.copyq" }, workspace = "4" })
-hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
 hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
 hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 
@@ -38,9 +32,6 @@ hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 hl.on("hyprland.start", function()
 	hl.exec_cmd("trash-empty -f 30")
 	hl.exec_cmd("batsignal -e -b -p -w 35 -c 20 -d 10 -f 80")
-	hl.exec_cmd("[workspace 1 silent] " .. firefox)
-	hl.exec_cmd("[workspace 2 silent] " .. tmux)
-	hl.exec_cmd("[workspace 4 silent] " .. clipboard)
 end)
 
 -------------------------------
@@ -63,7 +54,8 @@ hl.config({
 	},
 
 	general = {
-		gaps_in = 0,
+		border_size = 0,
+		gaps_in = 1,
 		gaps_out = 0,
 	},
 
@@ -81,11 +73,8 @@ hl.config({
 		force_split = 2,
 	},
 
-	ecosystem = {
-		no_donation_nag = true,
-	},
-
 	misc = {
+		focus_on_activate = true,
 		force_default_wallpaper = false,
 		disable_splash_rendering = true,
 		disable_hyprland_logo = true,

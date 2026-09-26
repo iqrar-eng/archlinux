@@ -8,4 +8,6 @@ require("session"):setup({
 })
 
 -- https://github.com/dedukun/relative-motions.yazi
+-- current version mismatch workaround: ( remove in future )
+-- sed -i 's/ya\.mgr_emit(/ya.emit(/g' ~/.config/yazi/plugins/relative-motions.yazi/main.lua
 require("relative-motions"):setup({ show_numbers = "relative", show_motion = true, enter_mode = "first" })

@@ -1,13 +1,11 @@
 #!/bin/bash
 
 MY_ID=123456
-REPLACE_CURRENT=0
 ARGS=()
 
 for arg in "$@"; do
   case "$arg" in
-    --current-tab) REPLACE_CURRENT=1 ;;
-    *) ARGS+=("$arg") ;;
+  *) ARGS+=("$arg") ;;
   esac
 done
 
@@ -24,11 +22,7 @@ cd_or_reveal() {
 
 first="${PATHS[0]}"
 
-if [ "$REPLACE_CURRENT" -eq 1 ]; then
-  probe_ok() { cd_or_reveal "$first" 2>/dev/null; }
-else
-  probe_ok() { ya emit-to "$MY_ID" tab_create 2>/dev/null && cd_or_reveal "$first"; }
-fi
+probe_ok() { ya emit-to "$MY_ID" tab_create 2>/dev/null && cd_or_reveal "$first"; }
 
 if probe_ok; then
   for p in "${PATHS[@]:1}"; do

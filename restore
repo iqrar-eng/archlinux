@@ -22,7 +22,7 @@ while IFS= read -r p; do
   rm -rf "$p"
   mkdir -p "$(dirname "$p")" "$HOME/archlinux/$(dirname "$p")"
   ln -sfn "$HOME/archlinux/$p" "$p"
-done < "$HOME/archlinux/generated/symlinks"
+done <"$HOME/archlinux/generated/symlinks"
 popd
 
 sudo rm -rf "/etc/keyd/default.conf"
@@ -34,14 +34,14 @@ sudo ln -sfn "$HOME/archlinux/etc/keyd/default.conf" "/etc/keyd/default.conf"
 # Set the charge type to Long_Life mode ( 80% threshold )
 # https://linrunner.de/tlp/installation/arch.html
 # https://linrunner.de/tlp/settings/battery.html#start-stop-charge-thresh-batx
-sudo tee /etc/tlp.conf > /dev/null << 'EOF'
+sudo tee /etc/tlp.conf >/dev/null <<'EOF'
 # https://linrunner.de/tlp/settings/bc-vendors.html#lenovo-non-thinkpad-series
 START_CHARGE_THRESH_BAT0=0  # dummy value
 STOP_CHARGE_THRESH_BAT0=1
 EOF
 
 sudo mkdir -p /etc/systemd/system/getty@tty1.service.d
-sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf > /dev/null << 'EOF'
+sudo tee /etc/systemd/system/getty@tty1.service.d/override.conf >/dev/null <<'EOF'
 [Service]
 ExecStart=
 ExecStart=-/usr/bin/agetty --autologin iqrar --noclear %I $TERM
@@ -92,11 +92,9 @@ git -C "$HOME/.src/typescript-cheatsheets-react" sparse-checkout set --no-cone \
   'docs'
 git -C "$HOME/.src/typescript-cheatsheets-react" checkout
 
-git -C "$HOME/.src" clone https://github.com/LazyVim/LazyVim.git LazyVim
-
 # ------------------------------------------------
 
-rm x
+rm x &>/dev/null
 echo "done 100%"
 
 trap 'echo; exit 1' INT

@@ -101,7 +101,7 @@ hl.bind("SHIFT + CTRL + ALT + SUPER + G", paste_slot(1))
 hl.bind("SHIFT + CTRL + ALT + SUPER + H", paste_slot(2))
 hl.bind("SHIFT + CTRL + ALT + SUPER + I", paste_slot(3))
 
-hl.bind("SHIFT + CTRL + ALT + SUPER + S", hl.dsp.exec_cmd("systemctl suspend"))
+hl.bind("XF86Favorites", hl.dsp.exec_cmd("systemctl suspend"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + O", hl.dsp.exec_cmd("~/archlinux/.local/bin/poweroff"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + P", hl.dsp.exec_cmd("~/archlinux/.local/bin/logout"))
 
@@ -127,10 +127,10 @@ hl.bind(
 
 hl.bind("SHIFT + CTRL + ALT + SUPER + F", hl.dsp.exec_cmd("~/archlinux/.local/bin/clipboard-run-and-copy"))
 hl.bind("SHIFT + CTRL + ALT + SUPER + M", hl.dsp.exec_cmd("~/archlinux/.local/bin/toggle-theme"))
-hl.bind("XF86Favorites", hl.dsp.exec_cmd("/home/iqrar/archlinux/.config/hypr/bin/toggle-archangel"))
+hl.bind("SHIFT + CTRL + ALT + SUPER + S", hl.dsp.exec_cmd("/home/iqrar/archlinux/.config/hypr/bin/toggle-archangel"))
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + U",
 	hl.dsp.exec_cmd(
-		'[float; size 1100 600; center] kitty --config NONE --class kitty-wifi-popup -o remember_window_size=no -o confirm_os_window_close=0 -o font_family="JetBrainsMono Nerd Font" --single-instance --instance-group=wifi-popup sh -c "nmcli device wifi list ; nmtui-connect"'
+		'[float; size 1100 600; center] kitty --class kitty-wifi-popup sh -c "nmcli device wifi list ; nmtui-connect"'
 	)
 )

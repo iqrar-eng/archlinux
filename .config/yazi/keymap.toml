@@ -15,8 +15,6 @@ prepend_keymap = [
 { on = [ "M", "t" ], run = "plugin gvfs -- automount-when-cd", desc = "Enable automount when cd to device under cwd" },
 { on = [ "M", "T" ], run = "plugin gvfs -- automount-when-cd --disabled", desc = "Disable automount when cd to device under cwd" },
 
-{ on = [ "<Space>", "g", "i" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Documents/"' --confirm''', desc = "Go to MTP: Internal storage" },
-{ on = [ "<Space>", "g", "w" ], run = '''shell 'bash ~/archlinux/.config/yazi/bin/goto-mtp "Internal storage/Android/media/com.whatsapp/WhatsApp/Media/WhatsApp Documents"' --confirm''', desc = "Go to MTP: WhatsApp Documents" },
 { on = [ "<Space>", "g", "r" ], run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"', desc = "git rev-parse --show-toplevel" },
 { on = [ "<Space>", "g", "u" ], run = "reveal /run/media/iqrar/IQRAR_USB/my/phone", desc = "Go to IQRAR_USB: phone" },
 { on = [ "<Space>", "g", "t" ], run = "cd ~/.local/share/Trash/files", desc = "Go to trash" },
@@ -27,9 +25,6 @@ prepend_keymap = [
 { on = [ "<Space>", "g", "l" ], run = "cd ~/.local", desc = "Go to .local" },
 { on = [ "<Space>", "g", "p" ], run = "cd ~/personal", desc = "Go to personal" },
 { on = [ "<Space>", "g", "s" ], run = "cd ~/Pictures", desc = "Go to Pictures" },
-
-{ on = [ "<Space>", "z" ], run = 'shell "~/archlinux/.config/yazi/bin/fd \"$PWD\"" --block', desc = "Fuzzy-find PWD" },
-{ on = [ "<Space>", "s" ], run = 'shell "~/archlinux/.config/yazi/bin/fd \"$HOME\"" --block', desc = "Fuzzy-find HOME" },
 
 { on = [ "<Space>", "o" ], run = "open --hovered",               desc = "Always open the hovered file" },
 { on = [ "<Space>", "O" ], run = "open --interactive --hovered", desc = "Open hovered file interactively" },
@@ -46,8 +41,6 @@ prepend_keymap = [
 { on = [ "<Space>", "c", "D" ], run = "copy dirurl --hovered",           desc = "Copy hovered directory URL" },
 { on = [ "<Space>", "c", "f" ], run = "copy filename --hovered",         desc = "Copy hovered filename" },
 { on = [ "<Space>", "c", "n" ], run = "copy name_without_ext --hovered", desc = "Copy hovered filename without extension" },
-
-{ on = [ "<Space>", "f" ], run = 'search_do --via=fd --args=', desc = "Flat view" },
 
 { on = "<Tab>", run = [ "toggle", "arrow 1" ], desc = "Toggle the current selection state" },
 { on = "<S-Tab>", run = [ "toggle", "arrow -1" ], desc = "Toggle the current selection state" },
@@ -76,29 +69,4 @@ prepend_keymap = [
 { on = [ "7" ], run = "plugin relative-motions 7", desc = "Move in relative steps" },
 { on = [ "8" ], run = "plugin relative-motions 8", desc = "Move in relative steps" },
 { on = [ "9" ], run = "plugin relative-motions 9", desc = "Move in relative steps" },
-]
-
-[input]
-
-prepend_keymap = [
-{ on = "X", run = [ "delete --cut", "move -1 --in-operating" ],         desc = "Cut current character" },
-{ on = [ "\"", "H", "d" ], run = "delete",                              desc = "Delete selected characters without cutting to clipboard" },
-{ on = [ "\"", "H", "D" ], run = [ "delete", "move eol" ],               desc = "Delete until EOL without cutting" },
-{ on = [ "\"", "H", "c" ], run = [ "delete", "--insert" ],               desc = "Delete and enter insert mode without cutting" },
-{ on = [ "\"", "H", "C" ], run = [ "delete --insert", "move eol" ],      desc = "Delete until EOL and enter insert mode without cutting" },
-{ on = [ "\"", "H", "x" ], run = [ "delete", "move 1 --in-operating" ],  desc = "Delete current character without cutting" },
-{ on = [ "\"", "H", "X" ], run = [ "delete", "move -1 --in-operating" ],  desc = "Delete current character without cutting" },
-
-{ on = "<S-Home>",         run = "kill bol",      desc = "Kill backwards to the BOL" },
-{ on = "<S-End>",         run = "kill eol",      desc = "Kill forwards to the EOL" },
-]
-
-[cmp]
-
-prepend_keymap = [
-{ on = "<A-C-S-Home>",   run = "close --submit",                             desc = "Submit the completion" }, # default
-{ on = "<C-c>", run = [ "close", "input:close" ], desc = "Complete and submit the input" }, # default
-
-{ on = "<S-Tab>", run = "arrow prev", desc = "Previous item" }, # default
-{ on = "<Tab>", run = "arrow next", desc = "Next item" }, # default
 ]
