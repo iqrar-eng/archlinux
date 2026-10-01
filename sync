@@ -46,7 +46,7 @@ fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
     continue
   fi
   echo "$f"
-done | sed "s|^$HOME/||" >"$HOME/archlinux/generated/symlinks"
+done | sed "s|^$HOME/||" | sort >"$HOME/archlinux/generated/symlinks"
 
 pacman -Qqen >"$HOME/archlinux/generated/pacman.packages"
 pacman -Qqem >"$HOME/archlinux/generated/yay.packages"

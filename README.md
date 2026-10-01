@@ -1,6 +1,6 @@
 # archlinux
 
-Personal Reproducible archlinux development environment built around scripts over unnecessary GUI interaction.
+Personal reproducible Arch Linux setup built around minimal GUI interaction and [ThePrimeagen's](https://www.youtube.com/@ThePrimeTimeagen) philosophy of a keyboard-driven, terminal-centric, scriptable workflow.
 
 ## Installation
 
