@@ -42,7 +42,7 @@ return {
 						end
 					end,
 				})
-				:map("<leader>aS")
+				:map("<leader>as")
 		end,
 	},
 }

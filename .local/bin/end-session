@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+hyprctl dispatch 'hl.dsp.focus({ workspace = "5" })'
+sleep 0.4
+hyprctl dispatch 'hl.dsp.send_shortcut({ key = "Q" })'
+
+pkill -f firefox
+
+~/.config/tmux/plugins/tmux-resurrect/scripts/save.sh

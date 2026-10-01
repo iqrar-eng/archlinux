@@ -14,13 +14,7 @@ return {
 		opts = {
 			picker = {
 				sources = {
-					explorer = {
-						exclude = { ".git", ".github" },
-						hidden = true,
-						ignored = true,
-						icons = { tree = { vertical = "│", middle = "├", last = "└" } },
-						layouts = { sidebar = { layout = { width = 35 } } },
-					},
+					explorer = { hidden = true, ignored = true },
 				},
 			},
 		},

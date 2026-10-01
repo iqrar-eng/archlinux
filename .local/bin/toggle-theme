@@ -3,12 +3,19 @@
 if [[ "$(gsettings get org.gnome.desktop.interface color-scheme)" == *dark* ]]; then
   gnome_scheme="prefer-light"
   copyq_theme="$HOME/archlinux/.config/copyq/themes/light.ini"
+  nvim_theme="light"
 else
   gnome_scheme="prefer-dark"
   copyq_theme="$HOME/archlinux/.config/copyq/themes/dark.ini"
+  nvim_theme="dark"
 fi
 
 gsettings set org.gnome.desktop.interface color-scheme "$gnome_scheme"
 copyq eval "loadTheme('$copyq_theme')"
 
 tmux source-file ~/archlinux/.config/tmux/theme.conf
+
+for sock in /run/user/1000/nvim.*.*; do
+  [[ -e "$sock" ]] || continue
+  nvim --server "$sock" --remote-send "<cmd>se bg=$nvim_theme<CR>"
+done

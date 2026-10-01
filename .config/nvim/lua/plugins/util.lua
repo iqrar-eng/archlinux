@@ -8,10 +8,13 @@ return {
 			vim.api.nvim_create_autocmd("VimEnter", {
 				group = vim.api.nvim_create_augroup("restore_session", { clear = true }),
 				callback = function()
-					vim.cmd("silent! windo e")
+					vim.o.background = vim.fn
+						.system("gsettings get org.gnome.desktop.interface color-scheme")
+						:match("dark") and "dark" or "light"
 					-- Only load session if nvim was started with no arguments
 					if vim.fn.argc() == 0 then
 						require("persistence").load({ last = true })
+						vim.cmd("silent! windo e")
 					end
 				end,
 				nested = true,

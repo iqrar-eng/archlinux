@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-pkill -f firefox
-tmux info &>/dev/null && "$HOME/.tmux/plugins/tmux-resurrect/scripts/save.sh"
-systemctl poweroff

@@ -53,45 +53,20 @@ local function make_harpoon_picker_source(list_name)
 		win = {
 			input = {
 				keys = {
-					["<C-K>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
+					["<C-x>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
 				},
 			},
 		},
 	}
 end
 
-local function up(path, count)
-	for _ = 1, count do
-		path = vim.fn.fnamemodify(path, ":h")
-	end
-	return path
-end
-
-local function get_basedir()
-	local count = vim.v.count
-	local buf_path = vim.api.nvim_buf_get_name(0)
-	local base = buf_path ~= "" and vim.fn.fnamemodify(buf_path, ":h") or vim.uv.cwd()
-	return count > 1 and up(base, count - 1) or base
-end
-
 return {
 	{
 		"folke/snacks.nvim",
 		opts = {
-			scratch = {
-				autowrite = false, -- prevent the callback that re-hides the buffer
-				win_by_ft = { lua = { keys = { ["source"] = false } } },
-			},
+			scratch = { autowrite = false, win_by_ft = { lua = { keys = { ["source"] = false } } } },
+			styles = { scratch = { position = "current", keys = { q = false } } },
 			input = { win = { b = { completion = true } } },
-			styles = {
-				scratch = { position = "current", keys = { q = false } },
-				input = {
-					keys = {
-						i_ctrl_c = { "<C-c>", "cancel", mode = "i" },
-						n_ctrl_c = { "<C-c>", "cancel", mode = "n" },
-					},
-				},
-			},
 			indent = {
 				indent = {
 					hl = {
@@ -132,25 +107,6 @@ return {
 					-- new one (see snacks/picker/init.lua:M.pick). Since this action runs from
 					-- inside a grep picker, that would just close us with nothing replacing it.
 					-- Call the constructor .new( ... ) to stack a new grep picker on top instead.
-					picker_grep = function(picker, item)
-						if item then
-							require("snacks.picker.core.picker").new({
-								source = "grep",
-								cwd = Snacks.picker.util.dir(item),
-							})
-						end
-					end,
-
-					picker_files = function(picker, item)
-						if not item then
-							return
-						end
-						require("snacks.picker.core.picker").new({
-							source = "files",
-							cwd = Snacks.picker.util.dir(item),
-						})
-					end,
-
 					picker_grep_root = function(picker, item)
 						if not item then
 							return
@@ -243,99 +199,60 @@ return {
 				sources = {
 					harpoon = make_harpoon_picker_source(nil), -- default list
 					harpoon_todo = make_harpoon_picker_source("todo"),
+					harpoon_bookmark = make_harpoon_picker_source("bookmark"),
 					lines = { layout = { preview = "top", preset = "custom_layout" } },
 					todo_comments = { hidden = true },
 					explorer = { hidden = true, ignored = true },
 					files = { hidden = true, follow = true },
-					grep = { hidden = true, regex = false },
-					grep_word = { hidden = true, auto_confirm = true },
+					grep = { hidden = true, regex = false, follow = true },
+					grep_word = { hidden = true, auto_confirm = true, follow = true },
 				},
         -- stylua: ignore
 				win = {
 					input = {
 						keys = {
-							["<C-J>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
-							["<C-c>"] = { "cancel", mode = { "n", "x", "i" } },
+              ["<M-7>"] = { "preview_scroll_up", mode = { "i", "n" } },
+							["<M-9>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
 							["/"] = { "/", mode = { "n", "x" }, expr = true, desc = "delete word" },
 							["?"] = { "?", mode = { "n", "x" }, expr = true, desc = "delete word" },
-							["g?"] = "toggle_help_list",
-							["<M-1>"] = { function() require("dial.map").manipulate("increment", "normal") end, mode = { "n" }, desc = "Increment", },
-							["<M-4>"] = { function() require("dial.map").manipulate("decrement", "normal") end, mode = { "n" }, desc = "Decrement", },
-							["<C-L>"] = { "focus_list", mode = { "n", "x", "i" } },
-							["<PageUp>"] = { "list_scroll_up", mode = { "n", "x", "i" } },
-							["<PageDown>"] = { "list_scroll_down", mode = { "n", "x", "i" } },
-							["<C-Home>"] = { "list_top", mode = { "n", "x", "i" } },
-							["<C-End>"] = { "list_bottom", mode = { "n", "x", "i" } },
-							["<M-w>"] = { "focus_preview", mode = { "n", "x", "i" } },
-							["<M-9>"] = { "<C-A>", mode = { "i" }, expr = true, desc = "delete word" },
+              ["<M-8>"] = { "focus_list", mode = { "n", "x", "i" } },
 
-              ["<C-F>"] = { "picker_grep_current_selected", mode = { "n", "x", "s", "i" } },
-              ["<C-S-W>"] = { "picker_files", mode = { "n", "x", "s", "i" } },
-              ["<C-S-N>"] = { "picker_grep", mode = { "n", "x", "s", "i" } },
-              ["<M-C-C>"] = { "picker_files_root", mode = { "n", "x", "s", "i" } },
-              ["<M-C-D>"] = { "picker_grep_root", mode = { "n", "x", "s", "i" } },
+              ["<M-3>"] = { "picker_grep_current_selected", mode = { "n", "x", "s", "i" } },
+              ["<M-1>"] = { "picker_files_root", mode = { "n", "x", "s", "i" } },
+              ["<M-2>"] = { "picker_grep_root", mode = { "n", "x", "s", "i" } },
 
-							["<M-2>"] = { "preview_scroll_down", mode = { "n", "x", "s", "i" } },
-							["<M-3>"] = { "preview_scroll_up", mode = { "n", "x", "s", "i" } },
-              ["<M-5>"] = { vim.fn["repeat"]({ "preview_scroll_left" }, 130), mode = { "n", "x", "s", "i" }, },
-              ["<M-8>"] = { vim.fn["repeat"]({ "preview_scroll_right" }, 130), mode = { "n", "x", "s", "i" }, },
-              ["<M-6>"] = { vim.fn["repeat"]({ "preview_scroll_down" }, 999), mode = { "n", "x", "s", "i" }, },
-              ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
-
-							["<M-'>"] = { "explorer_focus", mode = { "n", "x", "s", "i" } },
-							["<M-m>"] = { "explorer_move", mode = { "n", "x", "s", "i" } },
-							["<M-C-S-End>"] = { "explorer_up", mode = { "n", "x", "s", "i" } },
-							["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
-							["<C-D>"] = { "explorer_yank", mode = { "n", "x", "i" } },
-							["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
-							["<M-C-S>"] = { "explorer_paste", mode = { "n", "x", "i" } },
-							["<M-g>"] = { "explorer_del", mode = { "n", "x", "i" } },
-							["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
-							["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
+							["<C-S-M>"] = { "explorer_move", mode = { "n", "x", "i" } },
+							["<C-S-Y>"] = { "explorer_yank", mode = { "n", "x", "i" } },
+							["<C-S-O>"] = { "explorer_open", mode = { "n", "x", "i" } },
+							["<C-S-P>"] = { "explorer_paste", mode = { "n", "x", "i" } },
+							["<C-S-D>"] = { "explorer_del", mode = { "n", "x", "i" } },
+							["<C-S-A>"] = { "explorer_add", mode = { "n", "x", "i" } },
+							["<C-S-R>"] = { "explorer_rename", mode = { "n", "x", "i" } },
 						},
 					},
 					list = {
 						keys = {
-							["<C-J>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
-							["<C-c>"] = { "cancel", mode = { "n", "x", "i" } },
+              ["<M-6>"] = { "preview_scroll_up", mode = { "i", "n" } },
+							["<M-4>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
 							["/"] = { "/", mode = { "n", "x" }, expr = true, desc = "delete word" },
 							["?"] = { "?", mode = { "n", "x" }, expr = true, desc = "delete word" },
-							["g?"] = "toggle_help_list",
-							["<PageUp>"] = "list_scroll_up",
-							["<PageDown>"] = "list_scroll_down",
-							["<C-Home>"] = "list_top",
-							["<C-End>"] = "list_bottom",
-							["<M-w>"] = { "focus_preview", mode = { "n", "x", "i" } },
 
-              ["<C-F>"] = { "picker_grep_current_selected", mode = { "n", "x", "s", "i" } },
-              ["<C-S-W>"] = { "picker_files", mode = { "n", "x", "s", "i" } },
-              ["<C-S-N>"] = { "picker_grep", mode = { "n", "x", "s", "i" } },
-              ["<M-C-C>"] = { "picker_files_root", mode = { "n", "x", "s", "i" } },
-              ["<M-C-D>"] = { "picker_grep_root", mode = { "n", "x", "s", "i" } },
+              ["<M-3>"] = { "picker_grep_current_selected", mode = { "n", "x", "s", "i" } },
+              ["<M-1>"] = { "picker_files_root", mode = { "n", "x", "s", "i" } },
+              ["<M-2>"] = { "picker_grep_root", mode = { "n", "x", "s", "i" } },
 
-							["<M-2>"] = { "preview_scroll_down", mode = { "n", "x", "s", "i" } },
-							["<M-3>"] = { "preview_scroll_up", mode = { "n", "x", "s", "i" } },
-              ["<M-5>"] = { vim.fn["repeat"]({ "preview_scroll_left" }, 130), mode = { "n", "x", "s", "i" }, },
-              ["<M-8>"] = { vim.fn["repeat"]({ "preview_scroll_right" }, 130), mode = { "n", "x", "s", "i" }, },
-              ["<M-6>"] = { vim.fn["repeat"]({ "preview_scroll_down" }, 999), mode = { "n", "x", "s", "i" }, },
-              ["<M-7>"] = { vim.fn["repeat"]({ "preview_scroll_up" }, 999), mode = { "n", "x", "s", "i" }, },
-
-							["<M-'>"] = { "explorer_focus", mode = { "n", "x", "s", "i" } },
-							["<M-m>"] = { "explorer_move", mode = { "n", "x", "s", "i" } },
-							["<M-C-S-End>"] = { "explorer_up", mode = { "n", "x", "s", "i" } },
-							["<M-m>"] = { "explorer_move", mode = { "n", "x", "i" } },
-							["<C-D>"] = { "explorer_yank", mode = { "n", "x", "i" } },
-							["<M-C-Y>"] = { "explorer_open", mode = { "n", "x", "i" } },
-							["<M-C-S>"] = { "explorer_paste", mode = { "n", "x", "i" } },
-							["<M-g>"] = { "explorer_del", mode = { "n", "x", "i" } },
-							["<M-n>"] = { "explorer_add", mode = { "n", "x", "i" } },
-							["<M-N>"] = { "explorer_rename", mode = { "n", "x", "i" } },
+							["<C-S-M>"] = { "explorer_move", mode = { "n", "x", "i" } },
+							["<C-S-Y>"] = { "explorer_yank", mode = { "n", "x", "i" } },
+							["<C-S-O>"] = { "explorer_open", mode = { "n", "x", "i" } },
+							["<C-S-P>"] = { "explorer_paste", mode = { "n", "x", "i" } },
+							["<C-S-D>"] = { "explorer_del", mode = { "n", "x", "i" } },
+							["<C-S-A>"] = { "explorer_add", mode = { "n", "x", "i" } },
+							["<C-S-R>"] = { "explorer_rename", mode = { "n", "x", "i" } },
 						},
-					},
-					preview = {
-						keys = {
-							["<C-c>"] = { "cancel", mode = { "n", "x", "i" } },
-							["<C-L>"] = { "focus_list", mode = { "n", "x", "i" } },
+						wo = {
+							number = true,
+              relativenumber = true,
+							numberwidth = 1,
 						},
 					},
 				},
@@ -373,12 +290,11 @@ return {
       { "<leader>kc", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Find Files typescript-cheatsheets-react", mode = { "n", "x" } },
       { "<leader>kC", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Grep typescript-cheatsheets-react", mode = { "n", "x" } },
 
-      { "<leader>ae", function() LazyVim.pick("files", { cwd = get_basedir() })() end, desc = "Find Files nth current dir", mode = { "n", "x" } },
-      { "<leader>aE", function() LazyVim.pick("grep", { cwd = get_basedir() })() end, desc = "Grep nth current dir", mode = { "n", "x" } },
       { "<leader>ax", LazyVim.pick("live_grep", { cwd = vim.fn.stdpath("config") }), desc = "Grep Config File" },
-      { "<leader>aY", function() Snacks.picker.harpoon() end, desc = "Harpoon Picker", mode = { "n", "x" } },
-      { "<leader>aC", function() Snacks.picker.harpoon_todo() end, desc = "Harpoon Picker (todo)", mode = { "n", "x" } },
-      { "<leader>aA", function() require("aerial").snacks_picker() end, desc = "aerial picker", mode = { "n", "x" } },
+      { "<leader>aY", function() Snacks.picker.harpoon() end, desc = "harpoon Picker" },
+      { "<leader>aC", function() Snacks.picker.harpoon_todo() end, desc = "harpoon Picker (todo)" },
+      { "<leader>aF", function() Snacks.picker.harpoon_bookmark() end, desc = "harpoon Picker (bookmark)" },
+      { "<leader>aA", function() require("aerial").snacks_picker() end, desc = "aerial picker" },
       { "<leader>aG",  function() Snacks.picker()                 end, desc = "All Pickers"     },
     },
 	},

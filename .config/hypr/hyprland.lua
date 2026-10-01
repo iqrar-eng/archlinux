@@ -31,7 +31,8 @@ hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
 	hl.exec_cmd("trash-empty -f 30")
-	hl.exec_cmd("batsignal -e -b -p -w 35 -c 20 -d 10 -f 80")
+	hl.exec_cmd("batsignal -e -b -p -w 35 -c 20 -d 10 -f 90")
+	hl.exec_cmd(clipboard)
 end)
 
 -------------------------------
@@ -69,12 +70,10 @@ hl.config({
 
 	-- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
 	dwindle = {
-		preserve_split = true, -- You probably want this
 		force_split = 2,
 	},
 
 	misc = {
-		focus_on_activate = true,
 		force_default_wallpaper = false,
 		disable_splash_rendering = true,
 		disable_hyprland_logo = true,

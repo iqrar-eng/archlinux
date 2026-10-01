@@ -32,3 +32,5 @@ if probe_ok; then
 else
   "${YAZI_CMD[@]}" --client-id "$MY_ID" "${PATHS[@]}"
 fi
+
+hyprctl dispatch 'hl.dsp.focus({ workspace = "5" })' >/dev/null

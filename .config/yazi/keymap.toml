@@ -26,22 +26,6 @@ prepend_keymap = [
 { on = [ "<Space>", "g", "p" ], run = "cd ~/personal", desc = "Go to personal" },
 { on = [ "<Space>", "g", "s" ], run = "cd ~/Pictures", desc = "Go to Pictures" },
 
-{ on = [ "<Space>", "o" ], run = "open --hovered",               desc = "Always open the hovered file" },
-{ on = [ "<Space>", "O" ], run = "open --interactive --hovered", desc = "Open hovered file interactively" },
-{ on = [ "<Space>", "d" ],  run = "remove --hovered",                       desc = "Trash the hovered file only" },
-{ on = [ "<Space>", "D" ],  run = "remove --permanently --hovered",         desc = "Permanently delete the hovered file only" },
-{ on = [ "<Space>", "r" ],      run = "rename --hovered --cursor=before_ext", desc = "Always rename the hovered file" },
-{ on = [ "<Space>", "a" ], run = "create --force",            desc = "Create, overwrite destination without confirmation" },
-{ on = [ "<Space>", "p" ], run = "paste --follow",         desc = "Paste, copying symlink targets rather than the links" },
-{ on = [ "<Space>", "P" ], run = "paste --force --follow", desc = "Paste, overwrite destination and copy symlink targets" },
-
-{ on = [ "<Space>", "c", "c" ], run = "copy path --hovered",             desc = "Copy hovered path" },
-{ on = [ "<Space>", "c", "C" ], run = "copy url --hovered",              desc = "Copy hovered URL" },
-{ on = [ "<Space>", "c", "d" ], run = "copy dirpath --hovered",          desc = "Copy hovered directory path" },
-{ on = [ "<Space>", "c", "D" ], run = "copy dirurl --hovered",           desc = "Copy hovered directory URL" },
-{ on = [ "<Space>", "c", "f" ], run = "copy filename --hovered",         desc = "Copy hovered filename" },
-{ on = [ "<Space>", "c", "n" ], run = "copy name_without_ext --hovered", desc = "Copy hovered filename without extension" },
-
 { on = "<Tab>", run = [ "toggle", "arrow 1" ], desc = "Toggle the current selection state" },
 { on = "<S-Tab>", run = [ "toggle", "arrow -1" ], desc = "Toggle the current selection state" },
 
@@ -69,4 +53,6 @@ prepend_keymap = [
 { on = [ "7" ], run = "plugin relative-motions 7", desc = "Move in relative steps" },
 { on = [ "8" ], run = "plugin relative-motions 8", desc = "Move in relative steps" },
 { on = [ "9" ], run = "plugin relative-motions 9", desc = "Move in relative steps" },
+
+{ on = [ "q" ], run = "plugin autosession -- save-and-quit", desc = "Save session and quit" },
 ]

@@ -55,35 +55,17 @@ export FZF_DEFAULT_OPTS="
 --info inline-right
 --multi
 --cycle
---scrollbar='█'
 --layout=reverse
 --walker-skip .git,node_modules,target
---bind 'ctrl-d:execute-silent(realpath -- {} | wl-copy)'
---bind 'ctrl-k:execute-silent(realpath -- {} | sed \"s|^$HOME|~|\" | wl-copy)'
---bind 'ctrl-]:execute-silent(printf %s {+} | wl-copy)'
---bind 'alt-x:forward-word'
---bind 'alt-e:backward-word'
---bind 'ctrl-alt-shift-left:forward-subword'
---bind 'alt-g:backward-subword'
---bind 'ctrl-alt-shift-up:kill-word'
---bind 'ctrl-y:backward-kill-word'
---bind 'ctrl-alt-e:kill-subword'
---bind 'ctrl-alt-h:backward-kill-subword'
+--bind 'alt-y:execute-silent(realpath -- {} | wl-copy)'
+--bind 'alt-c:execute-silent(printf %s {+} | wl-copy)'
 --bind 'shift-end:kill-line'
 --bind 'alt-p:toggle-preview'
 --bind 'ctrl-a:toggle-all'
---bind 'alt-2:preview-page-down'
---bind 'alt-3:preview-page-up'
---bind 'alt-7:preview-top'
---bind 'alt-6:preview-bottom'
+--bind 'ctrl-d:preview-page-down'
+--bind 'ctrl-u:preview-page-up'
 --bind 'ctrl-home:first'
 --bind 'ctrl-end:last'
---bind 'ctrl-up:prev-history'
---bind 'ctrl-down:next-history'
---bind 'ctrl-alt-shift-home:execute(/home/iqrar/archlinux/.config/tmux/bin/vim-fzf-focus {})'
---bind 'focus:transform-preview-label:echo {}'
---preview-window 'top:70%:noborder'
---bind 'ctrl-p:change-preview-window(right:border-left|up:noborder)+refresh-preview'
 --preview '
     printf \"\033_Ga=d,q=1\033\\\\\"
     if [ -d {} ]; then

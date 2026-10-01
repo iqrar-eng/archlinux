@@ -56,7 +56,6 @@ return {
 					},
 				},
 				documentation = {
-					auto_show_delay_ms = 200,
 					window = {
 						max_width = 120,
 						max_height = 50,

@@ -50,46 +50,10 @@ return {
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
-		opts_extend = { "spec" },
-		opts = {
-			sort = { "local", "order", "desc", "alphanum", "mod" },
-			preset = "helix",
-			defaults = {},
-			win = {
-				no_overlap = false,
-				col = math.huge,
-				width = { min = 1, max = math.huge },
-				height = { min = 1, max = math.huge },
-			},
-			layout = {
-				width = { min = vim.o.columns, max = math.huge },
-				spacing = 1,
-			},
-			show_help = false,
-			replace = {
-				desc = {
-					{ "<Plug>%(?(.*)%)?", "%1" },
-					{ "^%+", "" },
-					{ "<[cC]md>", "" },
-					{ "<[cC][rR]>", "" },
-					{ "<[sS]ilent>", "" },
-					{ "^lua%s+", "" },
-					{ "^call%s+", "" },
-					{ "^e ", "📃" },
-					{ "MC:", "🧞‍♂️" },
-					{ "Find Files*", "📁" },
-					{ "Grep*", "🔎" },
-				},
-			},
-		},
+		opts = { sort = { "local", "order", "desc", "alphanum", "mod" } },
 		config = function(_, opts)
 			local wk = require("which-key")
 			wk.setup(opts)
-
-			if not vim.tbl_isempty(opts.defaults) then
-				LazyVim.warn("which-key: opts.defaults is deprecated. Please use opts.spec instead.")
-				wk.add(opts.defaults)
-			end
 
 			local sort_with_desc = { "manual", "desc" }
 			local sort_without_desc = { "alphanum" }

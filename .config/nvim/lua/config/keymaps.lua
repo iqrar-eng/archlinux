@@ -1,5 +1,3 @@
-----------------------------------------------
-
 local function remote_scroll(filetypes, dir)
 	return function()
 		local count = vim.v.count1
@@ -30,30 +28,14 @@ local function remote_scroll(filetypes, dir)
 	end
 end
 
-vim.keymap.set("n", "<C-PageDown>", remote_scroll({ "snacks_picker_list" }, "j"), {})
-vim.keymap.set("n", "<C-PageUp>", remote_scroll({ "snacks_picker_list" }, "k"), {})
-vim.keymap.set("n", "<C-S-PageDown>", remote_scroll({ "snacks_picker_list" }, "G"), {})
-vim.keymap.set("n", "<C-S-PageUp>", remote_scroll({ "snacks_picker_list" }, "gg"), {})
-
 vim.keymap.set("n", "<C-H>", remote_scroll({ "undotree", "aerial" }, "j"), {})
-vim.keymap.set("n", "<C-S>", remote_scroll({ "undotree", "aerial" }, "k"), {})
-vim.keymap.set("n", "<leader>aP", "9999g-")
-vim.keymap.set("n", "<leader>aN", "9999g+")
+vim.keymap.set("n", "<C-L>", remote_scroll({ "undotree", "aerial" }, "k"), {})
+vim.keymap.set("n", "<C-J>", remote_scroll({ "snacks_picker_list" }, "j"), {})
+vim.keymap.set("n", "<C-K>", remote_scroll({ "snacks_picker_list" }, "k"), {})
 
 ------------------------------------------------
 
-vim.keymap.set("n", "<C-Q>", function()
-	local explorer = Snacks.picker.get({ source = "explorer" })[1]
-	if explorer then
-		explorer:close()
-	end
-	vim.defer_fn(function()
-		vim.cmd("w")
-	end, 100)
-	vim.defer_fn(function()
-		vim.cmd("qa!")
-	end, 200)
-end, { desc = "Quit nvim" })
+vim.keymap.set("n", "<M-q>", ":wa<CR>:qall!<CR>", { desc = "Quit nvim" })
 
 vim.keymap.set("n", "<leader>a<CR>", function()
 	vim.cmd("RenderMarkdown toggle")
@@ -70,22 +52,6 @@ vim.keymap.set("n", "<esc>", function()
 	vim.cmd("noh")
 	return "<esc>"
 end, { expr = true, desc = "Escape and Clear hlsearch" })
-
-------------------------------------------------
-
-vim.keymap.set("x", "<M-2>", function()
-	vim.cmd("normal! " .. ("jojo"):rep(vim.v.count1))
-end, { silent = true, desc = "visual move down" })
-vim.keymap.set("x", "<M-3>", function()
-	vim.cmd("normal! " .. ("koko"):rep(vim.v.count1))
-end, { silent = true, desc = "visual move up" })
-
-vim.keymap.set("x", "<M-4>", function()
-	vim.cmd("normal! " .. ("lolo"):rep(vim.v.count1))
-end, { silent = true, desc = "visual move right" })
-vim.keymap.set("x", "<M-1>", function()
-	vim.cmd("normal! " .. ("hoho"):rep(vim.v.count1))
-end, { silent = true, desc = "visual move left" })
 
 vim.keymap.set("x", "x", function()
 	vim.cmd("normal! " .. ("joko"):rep(vim.v.count1))
@@ -106,23 +72,6 @@ vim.keymap.set("n", "<leader>av", function()
 		vim.notify("chmod +x " .. file, vim.log.levels.INFO)
 	end
 end, { desc = "toggle chmod +x/-x" })
-
-vim.keymap.set("n", "<leader>a]", function()
-	vim.cmd("normal! mz")
-	vim.cmd("put ='------------------------------------------------'")
-	vim.cmd("normal gcc")
-	vim.cmd("put =''")
-	vim.cmd("normal! =k`z")
-	vim.cmd("undojoin")
-end, { silent = true, desc = "separator below" })
-
-vim.keymap.set("n", "<leader>a[", function()
-	vim.cmd("normal! mz")
-	vim.cmd("put! ='stylua: ignore'")
-	vim.cmd("normal gcc")
-	vim.cmd("normal! ==`z")
-	vim.cmd("undojoin")
-end, { silent = true, desc = "stylua: ignore above" })
 
 vim.keymap.set({ "n", "x" }, "j", "v:count > 1 ? \"m'\" . v:count . 'j' : 'j'", { expr = true })
 vim.keymap.set({ "n", "x" }, "k", "v:count > 1 ? \"m'\" . v:count . 'k' : 'k'", { expr = true })
@@ -261,36 +210,9 @@ vim.keymap.set("n", "<leader>ypv", function()
 	vim.fn.jobstart(cmd, { detach = true })
 end, { desc = "file_uri" })
 
-------------------------------------------------
-
-vim.keymap.set("i", "<C-S-End><Del>", '<C-Home><C-v><Esc>"zd<C-End>', { remap = true, silent = true })
-vim.keymap.set("c", "<S-End><Del><BS>", '<c-f>"zD<C-c>')
-vim.keymap.set({ "c", "i" }, "<S-Home><BS>", "<C-u>")
-
-vim.keymap.set("i", "<C-Del>", function()
-	local col = vim.fn.col(".")
-	if col == 1 then
-		return '<esc>"zdei'
-	else
-		return '<esc>l"zdei'
-	end
-end, { expr = true })
-vim.keymap.set("c", "<C-Del>", '<c-f>"zde<C-c>')
-
-vim.keymap.set("i", "<S-End><Del>", function()
-	local col = vim.fn.col(".")
-	if col == 1 then
-		return '<esc>"zd$a'
-	else
-		return '<esc>l"zd$a'
-	end
-end, { expr = true })
-vim.keymap.set("c", "<S-End><Del>", '<c-f>"zD<C-c>')
-
 ----------------------------------------------
 
-vim.keymap.set("n", "<leader>Ga", "<cmd>Git add %<CR>")
-vim.keymap.set("n", "<leader>GA", "<cmd>Git add -A<CR>")
+vim.keymap.set("n", "<leader>Ga", "<cmd>Git add -A<CR>")
 
 vim.keymap.set("n", "]j", "<cmd>Gitsigns nav_hunk next --target=staged<CR>", { desc = "GitSigns Next Hunk" })
 vim.keymap.set("n", "[j", "<cmd>Gitsigns nav_hunk prev --target=staged<CR>", { desc = "GitSigns Prev Hunk" })
@@ -300,40 +222,18 @@ vim.keymap.set("n", "[J", "<cmd>Gitsigns nav_hunk first --target=staged<CR>", { 
 vim.keymap.set("n", "<M-p>", "<cmd>Gitsigns preview_hunk<CR>")
 vim.keymap.set("n", "<leader>Gr", "<cmd>Gitsigns reset_buffer_index<CR>")
 
-vim.keymap.set({ "n", "o" }, "<M-C-D>", "*<cmd>nohlsearch<CR>")
-vim.keymap.set("x", "<M-C-D>", "<Esc>*gvn<cmd>nohlsearch<CR>")
-vim.keymap.set({ "n", "o" }, "<M-C-A>", "#<cmd>nohlsearch<CR>")
-vim.keymap.set("x", "<M-C-A>", "<Esc>#gvn<cmd>nohlsearch<CR>")
-
-vim.keymap.set("n", "<leader>ab", "<cmd>source %<CR>")
 vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>")
 vim.keymap.set("n", "<leader>aX", "<cmd>LazyExtras<CR>")
 vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
+vim.keymap.set("x", "<leader>ao", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>')
 
-vim.keymap.set("n", "<leader>at", "<cmd>e ~/.bashrc<CR>")
-vim.keymap.set("n", "<leader>au", "<cmd>e ~/.blerc<CR>")
-vim.keymap.set("n", "<leader>ah", "<cmd>e /etc/keyd/default.conf<CR>")
-vim.keymap.set("n", "<leader>aj", "<cmd>e ~/personal/profiles.md<CR>")
-vim.keymap.set("n", "<leader>ak", "<cmd>e ~/archlinux/.config/nvim/lua/config/keymaps.lua<CR>")
-vim.keymap.set("n", "<leader>al", "<cmd>e ~/.scratch<CR>")
-vim.keymap.set("n", "<leader>an", "<cmd>e ~/archlinux/.config/hypr/hyprland.lua<CR>")
-vim.keymap.set("n", "<leader>a,", "<cmd>e ~/archlinux/.config/hypr/bind.lua<CR>")
-vim.keymap.set("n", "<leader>as", "<cmd>e ~/archlinux/.config/nvim/lua/plugins/snacks_picker.lua<CR>")
+vim.keymap.set("n", "<leader>aT", "9999g+")
+vim.keymap.set("n", "<leader>aB", "9999g-")
 
-vim.keymap.set("x", "<leader>o", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>')
+vim.keymap.set("n", "<C-F>", "<nop>")
 
-vim.keymap.set("i", " ", "<C-]> <C-g>u")
-vim.keymap.set("i", "-", "-<c-g>u")
-vim.keymap.set("i", "_", "_<c-g>u")
-vim.keymap.set("i", ",", ",<c-g>u")
-vim.keymap.set("i", ".", ".<c-g>u")
-vim.keymap.set("i", ";", ";<c-g>u")
-vim.keymap.set("i", ":", ":<c-g>u")
+vim.keymap.set("n", "<C-D>", "<C-d>zz")
+vim.keymap.set("n", "<C-U>", "<C-u>zz")
 
-vim.keymap.set("n", "n", "'Nn'[v:searchforward].'zv'", { expr = true, desc = "Next Search Result" })
-vim.keymap.set("n", "N", "'nN'[v:searchforward].'zv'", { expr = true, desc = "Prev Search Result" })
-vim.keymap.set({ "x", "o" }, "n", "'Nn'[v:searchforward]", { expr = true, desc = "Next Search Result" })
-vim.keymap.set({ "x", "o" }, "N", "'nN'[v:searchforward]", { expr = true, desc = "Prev Search Result" })
-
-vim.keymap.set("n", "<PageDown>", "<C-d>zz")
-vim.keymap.set("n", "<PageUp>", "<C-u>zz")
+vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "insert stylua: ignore", remap = true })
+vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "ip separator", remap = true })

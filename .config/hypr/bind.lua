@@ -102,8 +102,11 @@ hl.bind("SHIFT + CTRL + ALT + SUPER + H", paste_slot(2))
 hl.bind("SHIFT + CTRL + ALT + SUPER + I", paste_slot(3))
 
 hl.bind("XF86Favorites", hl.dsp.exec_cmd("systemctl suspend"))
-hl.bind("SHIFT + CTRL + ALT + SUPER + O", hl.dsp.exec_cmd("~/archlinux/.local/bin/poweroff"))
-hl.bind("SHIFT + CTRL + ALT + SUPER + P", hl.dsp.exec_cmd("~/archlinux/.local/bin/logout"))
+hl.bind("SHIFT + CTRL + ALT + SUPER + O", hl.dsp.exec_cmd("~/archlinux/.local/bin/end-session && systemctl poweroff"))
+hl.bind(
+	"SHIFT + CTRL + ALT + SUPER + P",
+	hl.dsp.exec_cmd("~/archlinux/.local/bin/end-session && loginctl terminate-user $USER")
+)
 
 hl.bind(
 	"SHIFT + CTRL + ALT + SUPER + A",
