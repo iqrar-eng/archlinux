@@ -56,6 +56,7 @@ polkit-kde-agent
 poppler
 power-profiles-daemon
 python-gobject
+python-pip
 qt5-wayland
 qt6-wayland
 ripgrep
@@ -72,6 +73,7 @@ ttf-jetbrains-mono-nerd
 ttf-nerd-fonts-symbols
 unzip
 usbutils
+uv
 uwsm
 vim
 vlc

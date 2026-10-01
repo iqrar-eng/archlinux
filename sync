@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-yay -Syu --noconfirm                # full system + AUR upgrade
-yay -Rns $(yay -Qtdq) --noconfirm   # remove orphaned packages
-yay -Sc --noconfirm                 # clean package cache
+yay -Syu --noconfirm              # full system + AUR upgrade
+yay -Rns $(yay -Qtdq) --noconfirm # remove orphaned packages
+yay -Sc --noconfirm               # clean package cache
 
 roots=(
   # ~/projects
@@ -34,8 +34,8 @@ done
 fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
   target=$(readlink -f "$f")
   case "$target" in
-      "$HOME"/archlinux/*) ;;
-      *) continue ;;
+  "$HOME"/archlinux/*) ;;
+  *) continue ;;
   esac
   if [ ! -e "$f" ]; then
     rm -rf "$f"
@@ -46,10 +46,10 @@ fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
     continue
   fi
   echo "$f"
-done | sed "s|^$HOME/||" > "$HOME/archlinux/generated/symlinks"
+done | sed "s|^$HOME/||" >"$HOME/archlinux/generated/symlinks"
 
-pacman -Qqen > "$HOME/archlinux/generated/pacman.packages"
-pacman -Qqem > "$HOME/archlinux/generated/yay.packages"
+pacman -Qqen >"$HOME/archlinux/generated/pacman.packages"
+pacman -Qqem >"$HOME/archlinux/generated/yay.packages"
 
 # ------------------------------------------------
 
