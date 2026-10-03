@@ -13,7 +13,7 @@ return {
 					})
 				end,
 				mode = { "n", "x" },
-				desc = "root",
+				desc = "grug-far: root",
 			},
 
 			{
@@ -24,7 +24,7 @@ return {
 					})
 				end,
 				mode = { "n", "x" },
-				desc = "current file",
+				desc = "grug-far: current file",
 			},
 		},
 	},

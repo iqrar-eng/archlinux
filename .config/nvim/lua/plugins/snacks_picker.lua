@@ -1,64 +1,62 @@
-local function make_harpoon_picker_source(list_name)
-	return {
-		finder = function(opts, ctx)
-			local list = require("harpoon"):list(list_name)
-			local files = {}
-			for idx = 1, list:length() do
-				local item = list:get(idx)
-				if item then
-					table.insert(files, {
-						text = item.value,
-						file = item.value,
-						idx = idx,
-					})
+local harpoon_source = {
+	finder = function(opts, ctx)
+		local list = require("harpoon"):list(opts.harpoon_list)
+		local files = {}
+		for idx = 1, list:length() do
+			local item = list:get(idx)
+			if item then
+				table.insert(files, {
+					text = item.value,
+					file = item.value,
+					idx = idx,
+				})
+			end
+		end
+		return files
+	end,
+	format = "file",
+	preview = "file",
+	confirm = "jump",
+	actions = {
+		harpoon_remove = function(picker)
+			local items = picker:selected({ fallback = true })
+			if #items == 0 then
+				return
+			end
+
+			local harpoon = require("harpoon")
+			local list = harpoon:list(picker.opts.harpoon_list)
+
+			-- remove by VALUE, not by cached idx — idx can be stale/duplicated
+			local values_to_remove = {}
+			for _, it in ipairs(items) do
+				values_to_remove[it.file] = true
+			end
+
+			-- walk the underlying items high-to-low and splice them out directly
+			-- (list:remove_at leaves holes in some harpoon2 versions when the
+			-- internal table already has gaps; rebuilding is the reliable fix)
+			local kept = {}
+			for i = 1, list:length() do
+				local item = list:get(i)
+				if item and not values_to_remove[item.value] then
+					table.insert(kept, item)
 				end
 			end
-			return files
+
+			list.items = kept
+			harpoon:sync()
+			picker:find()
 		end,
-		format = "file",
-		preview = "file",
-		confirm = "jump",
-		actions = {
-			harpoon_remove = function(picker)
-				local items = picker:selected({ fallback = true })
-				if #items == 0 then
-					return
-				end
-
-				local harpoon = require("harpoon")
-				local list = harpoon:list(list_name)
-
-				-- remove by VALUE, not by cached idx — idx can be stale/duplicated
-				local values_to_remove = {}
-				for _, it in ipairs(items) do
-					values_to_remove[it.file] = true
-				end
-
-				-- walk the underlying items high-to-low and splice them out directly
-				-- (list:remove_at leaves holes in some harpoon2 versions when the
-				-- internal table already has gaps; rebuilding is the reliable fix)
-				local kept = {}
-				for i = 1, list:length() do
-					local item = list:get(i)
-					if item and not values_to_remove[item.value] then
-						table.insert(kept, item)
-					end
-				end
-
-				list.items = kept
-				harpoon:sync()
-				picker:find()
-			end,
-		},
-		win = {
-			input = {
-				keys = {
-					["<C-x>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
-				},
+	},
+	win = {
+		input = {
+			keys = {
+				["<C-x>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
 			},
 		},
-	}
-end
+	},
+}
 
 return {
 	{
@@ -174,7 +172,7 @@ return {
 						local content = table.concat(chunks, "\n\n")
 						local line_count = select(2, content:gsub("\n", "\n")) + 1
 						if line_count > 500 then
-							local tmpfile = vim.fn.tempname() .. "_large_file.txt"
+							local tmpfile = vim.fn.tempname() .. "_large_ai_context"
 							vim.fn.writefile(vim.split(content, "\n"), tmpfile)
 							local uri_list = "file://" .. tmpfile .. "\n"
 							local gnome = "copy\n" .. uri_list
@@ -195,11 +193,16 @@ return {
 							)
 						end
 					end,
+
+					explorer_open = function(picker)
+						for _, item in ipairs(picker:selected({ fallback = true })) do
+							vim.ui.open(Snacks.picker.util.path(item))
+						end
+						picker.list:set_selected()
+					end,
 				},
 				sources = {
-					harpoon = make_harpoon_picker_source(nil), -- default list
-					harpoon_todo = make_harpoon_picker_source("todo"),
-					harpoon_bookmark = make_harpoon_picker_source("bookmark"),
+					harpoon = harpoon_source,
 					lines = { layout = { preview = "top", preset = "custom_layout" } },
 					todo_comments = { hidden = true },
 					explorer = { hidden = true, ignored = true },
@@ -252,7 +255,7 @@ return {
 						wo = {
 							number = true,
               relativenumber = true,
-							numberwidth = 1,
+              numberwidth = 1,
 						},
 					},
 				},
@@ -270,6 +273,10 @@ return {
       { "<leader>kT", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.local/share/Trash/files/") }), desc = "Grep Trash", mode = { "n", "x" } },
       { "<leader>kl", LazyVim.pick("files", { cwd = vim.fn.expand("~/.local/share/nvim/lazy/LazyVim") }), desc = "Find Files LazyVim", mode = { "n", "x" } },
       { "<leader>kL", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.local/share/nvim/lazy/LazyVim") }), desc = "Grep LazyVim", mode = { "n", "x" } },
+      { "<leader>kp", LazyVim.pick("files", { cwd = vim.fn.expand("~/personal") }), desc = "Find Files personal", mode = { "n", "x" } },
+      { "<leader>kP", LazyVim.pick("grep", { cwd = vim.fn.expand("~/personal") }), desc = "Grep personal", mode = { "n", "x" } },
+      { "<leader>km", LazyVim.pick("files", { cwd = vim.fn.expand("~/medical") }), desc = "Find Files medical", mode = { "n", "x" } },
+      { "<leader>kM", LazyVim.pick("grep", { cwd = vim.fn.expand("~/medical") }), desc = "Grep medical", mode = { "n", "x" } },
 
       { "<leader>kq", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/prisma/apps/docs/content/docs/") }), desc = "Find Files prisma", mode = { "n", "x" } },
       { "<leader>kQ", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/prisma/apps/docs/content/docs/") }), desc = "Grep prisma", mode = { "n", "x" } },
@@ -292,8 +299,7 @@ return {
 
       { "<leader>ax", LazyVim.pick("live_grep", { cwd = vim.fn.stdpath("config") }), desc = "Grep Config File" },
       { "<leader>aY", function() Snacks.picker.harpoon() end, desc = "harpoon Picker" },
-      { "<leader>aC", function() Snacks.picker.harpoon_todo() end, desc = "harpoon Picker (todo)" },
-      { "<leader>aF", function() Snacks.picker.harpoon_bookmark() end, desc = "harpoon Picker (bookmark)" },
+      { "<leader>aC", function() Snacks.picker.harpoon({ harpoon_list = "todo" }) end, desc = "harpoon Picker (todo)" },
       { "<leader>aA", function() require("aerial").snacks_picker() end, desc = "aerial picker" },
       { "<leader>aG",  function() Snacks.picker()                 end, desc = "All Pickers"     },
     },

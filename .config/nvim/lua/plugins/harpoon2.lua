@@ -38,15 +38,7 @@ return {
 					local count = vim.v.count
 					local target = count > 0 and (count * i) or i
 					list:select(target)
-				end, {
-					desc = "harpoon ("
-						.. (list_name or "default")
-						.. "): select buffer "
-						.. i
-						.. " (or N×"
-						.. i
-						.. " with count)",
-				})
+				end)
 			end
 		end
 
@@ -135,14 +127,10 @@ return {
 					local last_start = list._length - count + 1
 					local to = math.min((i == 9) and last_start or i, last_start)
 					harpoon_shift_block(from, count, to, list)
-					vim.notify(to, vim.log.levels.INFO)
-				end, {
-					desc = "Harpoon ("
-						.. (list_name or "default")
-						.. "): Shift current file's block to slot "
-						.. i
-						.. " (use a count to bring following files along)",
-				})
+					require("noice").redirect(function()
+						print(to)
+					end, { { view = "mini", filter = { event = "msg_show" } } })
+				end)
 			end
 		end
 
@@ -150,11 +138,9 @@ return {
 
 		setup_move_keys("y", nil)
 		setup_move_keys("c", "todo")
-		setup_move_keys("d", "bookmark")
 
 		setup_select_keys("", nil)
 		setup_select_keys("<C-c>", "todo")
-		setup_select_keys("<C-f>", "bookmark")
 
 		vim.keymap.set("n", "<leader>ay", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list(), harpoon_menu_opts)
@@ -163,10 +149,6 @@ return {
 		vim.keymap.set("n", "<leader>ac", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list("todo"), harpoon_menu_opts)
 		end, { desc = "harpoon list todo" })
-
-		vim.keymap.set("n", "<leader>af", function()
-			harpoon.ui:toggle_quick_menu(harpoon:list("bookmark"), harpoon_menu_opts)
-		end, { desc = "harpoon list bookmark" })
 
 		vim.keymap.set("n", "<M-C-4>", function()
 			harpoon:list():next({ ui_nav_wrap = true })
@@ -180,13 +162,6 @@ return {
 		end)
 		vim.keymap.set("n", "<M-C-1>", function()
 			harpoon:list("todo"):prev({ ui_nav_wrap = true })
-		end)
-
-		vim.keymap.set("n", "<M-C-5>", function()
-			harpoon:list("bookmark"):next({ ui_nav_wrap = true })
-		end)
-		vim.keymap.set("n", "<M-C-6>", function()
-			harpoon:list("bookmark"):prev({ ui_nav_wrap = true })
 		end)
 	end,
 }

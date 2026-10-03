@@ -20,7 +20,7 @@ prepend_keymap = [
 { on = [ "<Space>", "g", "t" ], run = "cd ~/.local/share/Trash/files", desc = "Go to trash" },
 
 { on = [ "<Space>", "g", "a" ], run = "cd ~/archlinux", desc = "Go to archlinux" },
-{ on = [ "<Space>", "g", "m" ], run = "cd ~/medical/", desc = "Go to phone" },
+{ on = [ "<Space>", "g", "m" ], run = "cd ~/medical", desc = "Go to medical" },
 { on = [ "<Space>", "g", "x" ], run = "cd ~/projects", desc = "Go to projects" },
 { on = [ "<Space>", "g", "l" ], run = "cd ~/.local", desc = "Go to .local" },
 { on = [ "<Space>", "g", "p" ], run = "cd ~/personal", desc = "Go to personal" },
@@ -53,6 +53,4 @@ prepend_keymap = [
 { on = [ "7" ], run = "plugin relative-motions 7", desc = "Move in relative steps" },
 { on = [ "8" ], run = "plugin relative-motions 8", desc = "Move in relative steps" },
 { on = [ "9" ], run = "plugin relative-motions 9", desc = "Move in relative steps" },
-
-{ on = [ "q" ], run = "plugin autosession -- save-and-quit", desc = "Save session and quit" },
 ]

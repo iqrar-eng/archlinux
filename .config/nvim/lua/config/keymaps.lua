@@ -115,11 +115,7 @@ local presets = {
 	["a"] = function()
 		return table.concat({
 			"cd " .. LazyVim.root.git(),
-			"git add -A",
-			"git commit --message='chore: update'",
-			"git push",
-		}, "\n"),
-			"git add -A, commit, push root dir"
+		}, "\n"), "git add -A, commit, push root dir"
 	end,
 
 	["<leader>"] = function()
@@ -213,6 +209,8 @@ end, { desc = "file_uri" })
 ----------------------------------------------
 
 vim.keymap.set("n", "<leader>Ga", "<cmd>Git add -A<CR>")
+vim.keymap.set("n", "<leader>Gp", "<cmd>Git push<CR>")
+vim.keymap.set("n", "<leader>Gcu", "<cmd>Git commit --message='chore: update'<CR>")
 
 vim.keymap.set("n", "]j", "<cmd>Gitsigns nav_hunk next --target=staged<CR>", { desc = "GitSigns Next Hunk" })
 vim.keymap.set("n", "[j", "<cmd>Gitsigns nav_hunk prev --target=staged<CR>", { desc = "GitSigns Prev Hunk" })
@@ -225,15 +223,13 @@ vim.keymap.set("n", "<leader>Gr", "<cmd>Gitsigns reset_buffer_index<CR>")
 vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>")
 vim.keymap.set("n", "<leader>aX", "<cmd>LazyExtras<CR>")
 vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
-vim.keymap.set("x", "<leader>ao", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>')
+vim.keymap.set("x", "<leader>ao", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>', { desc = "delete empty lines" })
 
 vim.keymap.set("n", "<leader>aT", "9999g+")
 vim.keymap.set("n", "<leader>aB", "9999g-")
 
-vim.keymap.set("n", "<C-F>", "<nop>")
-
 vim.keymap.set("n", "<C-D>", "<C-d>zz")
 vim.keymap.set("n", "<C-U>", "<C-u>zz")
 
-vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "insert stylua: ignore", remap = true })
-vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "ip separator", remap = true })
+vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "paste stylua: ignore", remap = true })
+vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "paste separator", remap = true })

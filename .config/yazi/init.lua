@@ -10,5 +10,3 @@ require("session"):setup({
 -- current version mismatch workaround: ( remove in future )
 -- sed -i 's/ya\.mgr_emit(/ya.emit(/g' ~/.config/yazi/plugins/relative-motions.yazi/main.lua
 require("relative-motions"):setup({ show_numbers = "relative", show_motion = true, enter_mode = "first" })
-
-require("autosession"):setup()
