@@ -115,7 +115,7 @@ local presets = {
 	["a"] = function()
 		return table.concat({
 			"cd " .. LazyVim.root.git(),
-		}, "\n"), "git add -A, commit, push root dir"
+		}, "\n"), "cd root"
 	end,
 
 	["<leader>"] = function()
@@ -209,7 +209,7 @@ end, { desc = "file_uri" })
 ----------------------------------------------
 
 vim.keymap.set("n", "<leader>Ga", "<cmd>Git add -A<CR>")
-vim.keymap.set("n", "<leader>Gp", "<cmd>Git push<CR>")
+vim.keymap.set("n", "<leader>Gp", "<cmd>Git! push<CR>")
 vim.keymap.set("n", "<leader>Gcu", "<cmd>Git commit --message='chore: update'<CR>")
 
 vim.keymap.set("n", "]j", "<cmd>Gitsigns nav_hunk next --target=staged<CR>", { desc = "GitSigns Next Hunk" })
