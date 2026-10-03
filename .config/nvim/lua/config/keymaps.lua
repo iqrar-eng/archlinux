@@ -62,6 +62,11 @@ end, { silent = true, desc = "visual extend/shrink horizontally" })
 
 ------------------------------------------------
 
+vim.keymap.set({ "n", "x" }, "<leader>ae", function()
+	local root = LazyVim.root.git() or LazyVim.root.get()
+	Snacks.explorer({ cwd = root, focus = false })
+end, { expr = true, desc = "Toggle explorer" })
+
 vim.keymap.set("n", "<leader>av", function()
 	local file = vim.fn.expand("%")
 	if vim.fn.executable(file) == 1 then
@@ -111,29 +116,6 @@ local function yank_selection_text()
 	return text
 end
 
-local presets = {
-	["a"] = function()
-		return table.concat({
-			"cd " .. LazyVim.root.git(),
-		}, "\n"), "cd root"
-	end,
-
-	["<leader>"] = function()
-		return vim.fn.expand("%:p"), "current file"
-	end,
-}
-
-local function bind_presets(lhs, presets, send_preset)
-	for key, preset_fn in pairs(presets) do
-		local preset_lhs = lhs .. "p" .. key
-		local _, desc = preset_fn()
-		vim.keymap.set("n", preset_lhs, function()
-			local text = preset_fn()
-			send_preset(text)
-		end, { desc = desc })
-	end
-end
-
 -- main_cmd: command that receives --text <escaped>
 -- post_cmd: optional command run after main_cmd succeeds (&&)
 local function bind_send_text(lhs, main_cmd, post_cmd)
@@ -158,10 +140,6 @@ local function bind_send_text(lhs, main_cmd, post_cmd)
 		local text = yank_selection_text()
 		vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
 	end, { desc = "Send selection text via --text" })
-
-	bind_presets(lhs, presets, function(text)
-		vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
-	end)
 end
 
 bind_send_text("<leader>z", "~/archlinux/.config/tmux/bin/slime --jump --execute")
@@ -189,28 +167,15 @@ local function bind_send(lhs)
 	vim.keymap.set("x", lhs, function()
 		send_content(yank_selection_text())
 	end, { desc = "Send selection to browser" })
-	bind_presets(lhs, presets, send_content)
 end
 
 bind_send("<leader>y")
 
-vim.keymap.set("n", "<leader>ypv", function()
-	local cmd =
-		"hyprctl dispatch 'hl.dsp.focus({ workspace = \"1\" })' && sleep 1.8 && ~/archlinux/.config/hypr/bin/paste"
-	local tmp_path = "/tmp/ai_context_" .. os.date("%H-%M-%S")
-	vim.cmd("silent! w " .. tmp_path)
-	local uri = "file://" .. tmp_path
-	local job = vim.fn.jobstart({ "wl-copy", "--type", "text/uri-list" }, { stdin = "pipe" })
-	vim.fn.chansend(job, uri)
-	vim.fn.chanclose(job, "stdin")
-	vim.fn.jobstart(cmd, { detach = true })
-end, { desc = "file_uri" })
-
 ----------------------------------------------
 
-vim.keymap.set("n", "<leader>Ga", "<cmd>Git add -A<CR>")
-vim.keymap.set("n", "<leader>Gp", ":silent! Git! push<CR>")
-vim.keymap.set("n", "<leader>Gcu", "<cmd>Git commit --message='chore: update'<CR>")
+vim.keymap.set("n", "<leader>gma", "<cmd>Git add -A<CR>")
+vim.keymap.set("n", "<leader>gmp", ":Git push<CR>")
+vim.keymap.set("n", "<leader>gmcu", "<cmd>Git commit --message='chore: update'<CR>")
 
 vim.keymap.set("n", "]j", "<cmd>Gitsigns nav_hunk next --target=staged<CR>", { desc = "GitSigns Next Hunk" })
 vim.keymap.set("n", "[j", "<cmd>Gitsigns nav_hunk prev --target=staged<CR>", { desc = "GitSigns Prev Hunk" })
@@ -218,7 +183,7 @@ vim.keymap.set("n", "]J", "<cmd>Gitsigns nav_hunk last --target=staged<CR>", { d
 vim.keymap.set("n", "[J", "<cmd>Gitsigns nav_hunk first --target=staged<CR>", { desc = "GitSigns First Hunk" })
 
 vim.keymap.set("n", "<M-p>", "<cmd>Gitsigns preview_hunk<CR>")
-vim.keymap.set("n", "<leader>Gr", "<cmd>Gitsigns reset_buffer_index<CR>")
+vim.keymap.set("n", "<leader>gmr", "<cmd>Gitsigns reset_buffer_index<CR>")
 
 vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>")
 vim.keymap.set("n", "<leader>aX", "<cmd>LazyExtras<CR>")

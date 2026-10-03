@@ -7,10 +7,7 @@ return {
 			{
 				"<leader>ag",
 				function()
-					local ext = vim.bo.buftype == "" and vim.fn.expand("%:e")
-					require("grug-far").open({
-						prefills = { paths = LazyVim.root.get(), flags = "-iFH" },
-					})
+					require("grug-far").open({ prefills = { paths = LazyVim.root.get(), flags = "-iFH" } })
 				end,
 				mode = { "n", "x" },
 				desc = "grug-far: root",
@@ -19,9 +16,7 @@ return {
 			{
 				"<leader>am",
 				function()
-					require("grug-far").open({
-						prefills = { paths = vim.fn.expand("%"), flags = "-iFH" },
-					})
+					require("grug-far").open({ prefills = { paths = vim.fn.expand("%"), flags = "-iFH" } })
 				end,
 				mode = { "n", "x" },
 				desc = "grug-far: current file",
@@ -51,19 +46,24 @@ return {
 		"folke/which-key.nvim",
 		event = "VeryLazy",
 		opts = { sort = { "local", "order", "desc", "alphanum", "mod" } },
-		config = function(_, opts)
-			local wk = require("which-key")
-			wk.setup(opts)
-
-			local sort_with_desc = { "manual", "desc" }
-			local sort_without_desc = { "alphanum" }
-			local sort_state = true
-
-			vim.keymap.set("n", "<leader>aw", function()
-				sort_state = not sort_state
-				require("which-key.config").options.sort = sort_state and sort_with_desc or sort_without_desc
-				vim.notify("which-key sort: " .. (sort_state and "desc" or "key"))
-			end, { desc = "Toggle which-key sort order" })
-		end,
+		keys = {
+			{
+				"<leader>aw",
+				function()
+					local cfg = require("which-key.config")
+					local is_key_sort = vim.deep_equal(cfg.options.sort, { "alphanum" })
+					cfg.options.sort = is_key_sort and { "manual", "desc" } or { "alphanum" }
+					vim.notify("which-key sort: " .. (is_key_sort and "desc" or "key"))
+				end,
+				desc = "Toggle which-key sort order",
+			},
+			{
+				"<leader>gm<leader>",
+				function()
+					require("which-key").show({ keys = "<leader>g", loop = true })
+				end,
+				desc = "Git Hydra Mode (which-key)",
+			},
+		},
 	},
 }

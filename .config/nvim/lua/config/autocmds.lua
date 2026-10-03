@@ -4,8 +4,18 @@ end
 
 ------------------------------------------------
 
+vim.schedule(function()
+	if vim.fn.argc() == 0 then
+		require("persistence").load({ last = true })
+	end
+	vim.o.background = vim.fn.system("gsettings get org.gnome.desktop.interface color-scheme"):match("dark") and "dark"
+		or "light"
+	local root = LazyVim.root.git() or LazyVim.root.get()
+	Snacks.explorer({ cwd = root, focus = false })
+end)
+
 vim.api.nvim_create_autocmd({ "LspAttach", "BufEnter" }, {
-	group = vim.api.nvim_create_augroup("SnacksExplorerRoot", { clear = true }),
+	group = augroup("SnacksExplorerRoot"),
 	callback = function(args)
 		local buf = args.buf
 		if vim.bo[buf].buftype ~= "" then

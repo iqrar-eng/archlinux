@@ -235,8 +235,8 @@ return {
 					},
 					list = {
 						keys = {
-              ["<M-6>"] = { "preview_scroll_up", mode = { "i", "n" } },
-							["<M-4>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
+              ["<M-7>"] = { "preview_scroll_up", mode = { "i", "n" } },
+							["<M-9>"] = { "yank_preview", mode = { "n", "x", "s", "i" } },
 							["/"] = { "/", mode = { "n", "x" }, expr = true, desc = "delete word" },
 							["?"] = { "?", mode = { "n", "x" }, expr = true, desc = "delete word" },
 
