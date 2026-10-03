@@ -209,7 +209,7 @@ end, { desc = "file_uri" })
 ----------------------------------------------
 
 vim.keymap.set("n", "<leader>Ga", "<cmd>Git add -A<CR>")
-vim.keymap.set("n", "<leader>Gp", ":Git! push<CR>")
+vim.keymap.set("n", "<leader>Gp", ":sil Git! push")
 vim.keymap.set("n", "<leader>Gcu", "<cmd>Git commit --message='chore: update'<CR>")
 
 vim.keymap.set("n", "]j", "<cmd>Gitsigns nav_hunk next --target=staged<CR>", { desc = "GitSigns Next Hunk" })
