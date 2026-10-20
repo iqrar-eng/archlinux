@@ -1,6 +1,6 @@
 # archlinux
 
-Personal reproducible Arch Linux setup built around minimal GUI interaction and [ThePrimeagen's](https://www.youtube.com/@ThePrimeTimeagen) philosophy of a keyboard-driven, terminal-centric, scriptable workflow.
+Personal reproducible Arch Linux setup focused on a keyboard-driven, terminal-first workflow with minimal GUI use.
 
 ## Installation
 

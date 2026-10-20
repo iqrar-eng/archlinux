@@ -1,4 +1,5 @@
 _cacache/
+.archive/
 .cache/
 .cargo/
 .copilot/

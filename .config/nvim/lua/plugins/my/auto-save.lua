@@ -5,13 +5,13 @@ local excluded_filetypes = {
 }
 
 local excluded_filenames = {
-	-- "do-not-autosave-me.lua"
+	"do-not-autosave-me.lua",
 }
 
 local function save_condition(buf)
 	if
 		vim.tbl_contains(excluded_filetypes, vim.fn.getbufvar(buf, "&filetype"))
-		-- or vim.tbl_contains(excluded_filenames, vim.fn.expand("%:t"))
+		or vim.tbl_contains(excluded_filenames, vim.fn.expand("%:t"))
 	then
 		return false
 	end

@@ -62,34 +62,51 @@ export FZF_DEFAULT_OPTS="
 --bind 'shift-end:kill-line'
 --bind 'alt-p:toggle-preview'
 --bind 'ctrl-a:toggle-all'
---bind 'ctrl-d:preview-page-down'
---bind 'ctrl-u:preview-page-up'
+--bind 'ctrl-f:preview-page-down'
+--bind 'alt-7:preview-page-up'
 --bind 'ctrl-home:first'
 --bind 'ctrl-end:last'
 --preview '
-    printf \"\033_Ga=d,q=1\033\\\\\"
-    if [ -d {} ]; then
-        ls --color=always -A --group-directories-first {}
-    else
-        tmp=\"/tmp/fzf_preview\"
-        case \$(basename {}) in
-            *.pdf)
-                pdftoppm -q -f 1 -l 1 -jpeg -jpegopt quality=60 -scale-to-x 1000 -scale-to-y -1 -singlefile {} \$tmp && \\
-                kitty icat --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 \$tmp.jpg
+printf \"\\033_Ga=d,q=1\\033\\\\\"
+if [ -d {} ]; then
+    eza -aTL 2 --group-directories-first --color=always --icons=always {}
+    exit 0
+fi
+tmp=/tmp/fzf_preview
+name=\$(basename {})
+place=\"\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0\"
+case \"\$name\" in
+    *.pdf)
+        pdftoppm -q -f 1 -l 1 -jpeg -jpegopt quality=60 -scale-to-x 1000 -scale-to-y -1 -singlefile {} \"\$tmp\" && \
+        kitty icat --transfer-mode=memory --stdin=no --place=\"\$place\" \"\$tmp.jpg\"
+        ;;
+    *.doc|*.docx|*.xls|*.xlsx|*.ppt|*.pptx|*.odt|*.ods|*.odp)
+        libreoffice --convert-to jpg --outdir /tmp {} >/dev/null 2>&1 && \
+        mv \"/tmp/\${name%.*}.jpg\" \"\$tmp\" && \
+        kitty icat --transfer-mode=memory --stdin=no --place=\"\$place\" \"\$tmp\"
+        ;;
+    *.djvu)
+        ddjvu -format=ppm -page=1 -size 1000x-1 -aspect=yes {} \"\$tmp\" 2>/dev/null && \
+        kitty icat --transfer-mode=memory --stdin=no --place=\"\$place\" \"\$tmp\"
+        ;;
+    *)
+        case \$(file -b --mime-type {}) in
+            image/vnd.djvu) bat -p {} --color=always 2>/dev/null ;;
+            image/*) kitty icat --transfer-mode=memory --stdin=no --place=\"\$place\" {} ;;
+            video/*)
+                dur=\$(ffprobe -v quiet -select_streams v -show_entries format=duration -of csv=p=0 {})
+                dur=\${dur%.*}
+                ffmpeg -v quiet -hwaccel auto -threads 1 -an -sn -dn \
+                    -ss \$(( \${dur:-0} * 5 / 100 )) -skip_frame nokey -i {} \
+                    -vframes 1 -q:v 9 -vf scale=1000:-2 -f image2 -y \"\$tmp.jpg\" && \
+                kitty icat --transfer-mode=memory --stdin=no --place=\"\$place\" \"\$tmp.jpg\"
                 ;;
-            *)
-                if file --mime-type {} | grep -qP \"image/(?!vnd\\.djvu)\"; then
-                    kitty icat --transfer-mode=memory --stdin=no --place=\${FZF_PREVIEW_COLUMNS}x\${FZF_PREVIEW_LINES}@0x0 {}
-                else
-                  cat -n -- {} 2>/dev/null
-                fi
-                ;;
+            *) bat -p {} --color=always 2>/dev/null ;;
         esac
-    fi
+        ;;
+esac
 '
 "
-
-export FZF_CTRL_R_OPTS="--no-preview"
 
 eval "$(starship init bash)"
 eval "$(zoxide init bash --cmd cd)"

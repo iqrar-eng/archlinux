@@ -35,36 +35,25 @@ vim.keymap.set("n", "<C-K>", remote_scroll({ "snacks_picker_list" }, "k"), {})
 
 ------------------------------------------------
 
-vim.keymap.set("n", "<M-q>", ":wa<CR>:qall!<CR>", { desc = "Quit nvim" })
-
-vim.keymap.set("n", "<leader>a<CR>", function()
-	vim.cmd("RenderMarkdown toggle")
-	vim.schedule(function()
-		vim.o.conceallevel = vim.o.conceallevel == 0 and 2 or 0
-	end)
-end, { desc = "Toggle render-markdown + conceal (buffer)" })
-
 vim.keymap.set("n", "<esc>", function()
 	local cc_map = vim.fn.maparg("<C-c>", "n", false, true)
 	if type(cc_map) == "table" and cc_map.desc == "Stop exchange" and cc_map.callback then
 		cc_map.callback()
 	end
 	vim.cmd("noh")
+	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
+	vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
 	return "<esc>"
 end, { expr = true, desc = "Escape and Clear hlsearch" })
 
 vim.keymap.set("x", "x", function()
 	vim.cmd("normal! " .. ("joko"):rep(vim.v.count1))
 end, { silent = true, desc = "visual extend/shrink vertically" })
-vim.keymap.set("x", "z", function()
-	vim.cmd("normal! " .. ("loho"):rep(vim.v.count1))
-end, { silent = true, desc = "visual extend/shrink horizontally" })
 
 ------------------------------------------------
 
-vim.keymap.set({ "n", "x" }, "<leader>ae", function()
-	local root = LazyVim.root.git() or LazyVim.root.get()
-	Snacks.explorer({ cwd = root, focus = false })
+vim.keymap.set("n", "<leader>fe", function()
+	Snacks.explorer({ focus = false })
 end, { expr = true, desc = "Toggle explorer" })
 
 vim.keymap.set("n", "<leader>av", function()
@@ -182,19 +171,20 @@ vim.keymap.set("n", "[j", "<cmd>Gitsigns nav_hunk prev --target=staged<CR>", { d
 vim.keymap.set("n", "]J", "<cmd>Gitsigns nav_hunk last --target=staged<CR>", { desc = "GitSigns Last Hunk" })
 vim.keymap.set("n", "[J", "<cmd>Gitsigns nav_hunk first --target=staged<CR>", { desc = "GitSigns First Hunk" })
 
-vim.keymap.set("n", "<M-p>", "<cmd>Gitsigns preview_hunk<CR>")
 vim.keymap.set("n", "<leader>gmr", "<cmd>Gitsigns reset_buffer_index<CR>")
 
-vim.keymap.set("n", "<leader>az", "<cmd>!keyd reload<CR>")
+vim.keymap.set("n", "<leader>ak", '<cmd>!keyd reload<CR><cmd>echo "keyd reloaded"<CR>')
 vim.keymap.set("n", "<leader>aX", "<cmd>LazyExtras<CR>")
 vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
 vim.keymap.set("x", "<leader>ao", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>', { desc = "delete empty lines" })
 
+vim.keymap.set({ "o", "x" }, "iL", "il")
+
 vim.keymap.set("n", "<leader>aT", "9999g+")
 vim.keymap.set("n", "<leader>aB", "9999g-")
 
-vim.keymap.set("n", "<C-D>", "<C-d>zz")
-vim.keymap.set("n", "<C-U>", "<C-u>zz")
+vim.keymap.set({ "n", "x", "o" }, "<Right>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Down>", "<nop>")
 
-vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "paste stylua: ignore", remap = true })
-vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "paste separator", remap = true })
+vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "snippet stylua: ignore", remap = true })
+vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "snippet separator", remap = true })

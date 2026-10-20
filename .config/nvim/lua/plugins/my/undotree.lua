@@ -3,10 +3,11 @@ return {
 		"mbbill/undotree",
 		cmd = "UndotreeToggle",
 		keys = {
-			{ "<leader>au", "<cmd>UndotreeToggle<CR>", desc = "Toggle Undotree " },
+			{ "<leader>au", "<cmd>UndotreeToggle<CR>", desc = "toggle Undotree " },
 		},
 		config = function()
 			vim.g.undotree_WindowLayout = 3
+			vim.g.undotree_HelpLine = 0
 			vim.g.undotree_DiffAutoOpen = 0
 			vim.cmd([[
 				function! g:Undotree_CustomMap()

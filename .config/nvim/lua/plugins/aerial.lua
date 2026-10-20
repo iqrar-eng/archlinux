@@ -18,7 +18,7 @@ return {
 			},
 		},
 		keys = {
-			{ "<leader>at", "<cmd>AerialToggle!<cr>", desc = "Toggle Aerial (Symbols)" },
+			{ "<leader>cs", "<cmd>AerialToggle!<cr>", desc = "toggle Aerial (Symbols)" },
 		},
 	},
 }

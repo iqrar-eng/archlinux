@@ -7,7 +7,7 @@ return {
 			{
 				"<leader>ag",
 				function()
-					require("grug-far").open({ prefills = { paths = LazyVim.root.get(), flags = "-iFH" } })
+					require("grug-far").open({ prefills = { flags = "-iF --hidden" } })
 				end,
 				mode = { "n", "x" },
 				desc = "grug-far: root",
@@ -16,28 +16,10 @@ return {
 			{
 				"<leader>am",
 				function()
-					require("grug-far").open({ prefills = { paths = vim.fn.expand("%"), flags = "-iFH" } })
+					require("grug-far").open({ prefills = { paths = vim.fn.expand("%"), flags = "-iF" } })
 				end,
 				mode = { "n", "x" },
 				desc = "grug-far: current file",
-			},
-		},
-	},
-
-	{
-		"folke/flash.nvim",
-		event = "VeryLazy",
-		vscode = true,
-		opts = {
-			label = { before = true, after = false, rainbow = { enabled = true, shade = 6 } },
-			highlight = { backdrop = false },
-			modes = {
-				search = { enabled = true, highlight = { backdrop = false } },
-				char = {
-					autohide = true,
-					search = { wrap = true },
-					highlight = { backdrop = false },
-				},
 			},
 		},
 	},
@@ -55,7 +37,7 @@ return {
 					cfg.options.sort = is_key_sort and { "manual", "desc" } or { "alphanum" }
 					vim.notify("which-key sort: " .. (is_key_sort and "desc" or "key"))
 				end,
-				desc = "Toggle which-key sort order",
+				desc = "toggle which-key sort order",
 			},
 			{
 				"<leader>gm<leader>",

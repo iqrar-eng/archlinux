@@ -136,19 +136,12 @@ return {
 
 		-- Section: Mappings
 
-		setup_move_keys("y", nil)
-		setup_move_keys("c", "todo")
-
 		setup_select_keys("", nil)
-		setup_select_keys("<C-c>", "todo")
+		setup_move_keys("y", nil)
 
 		vim.keymap.set("n", "<leader>ay", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list(), harpoon_menu_opts)
 		end, { desc = "harpoon list default" })
-
-		vim.keymap.set("n", "<leader>ac", function()
-			harpoon.ui:toggle_quick_menu(harpoon:list("todo"), harpoon_menu_opts)
-		end, { desc = "harpoon list todo" })
 
 		vim.keymap.set("n", "<M-C-4>", function()
 			harpoon:list():next({ ui_nav_wrap = true })
@@ -157,11 +150,38 @@ return {
 			harpoon:list():prev({ ui_nav_wrap = true })
 		end)
 
+		---------------------------------------------
+
+		vim.keymap.set("n", "<C-Q>", "<nop>")
+		setup_select_keys("<C-Q>", "quickfix")
+		setup_move_keys("q", "quickfix")
+
+		vim.keymap.set("n", "<leader>aq", function()
+			harpoon.ui:toggle_quick_menu(harpoon:list("quickfix"), harpoon_menu_opts)
+		end, { desc = "harpoon list quickfix" })
+
+		vim.keymap.set("n", "<M-C-6>", function()
+			harpoon:list("quickfix"):next({ ui_nav_wrap = true })
+		end)
+		vim.keymap.set("n", "<M-C-5>", function()
+			harpoon:list("quickfix"):prev({ ui_nav_wrap = true })
+		end)
+
+		---------------------------------------------
+
+		vim.keymap.set("n", "<C-Z>", "<nop>")
+		setup_select_keys("<C-Z>", "bookmarks")
+		setup_move_keys("z", "bookmarks")
+
+		vim.keymap.set("n", "<leader>az", function()
+			harpoon.ui:toggle_quick_menu(harpoon:list("bookmarks"), harpoon_menu_opts)
+		end, { desc = "harpoon list bookmarks" })
+
 		vim.keymap.set("n", "<M-C-2>", function()
-			harpoon:list("todo"):next({ ui_nav_wrap = true })
+			harpoon:list("bookmarks"):next({ ui_nav_wrap = true })
 		end)
 		vim.keymap.set("n", "<M-C-1>", function()
-			harpoon:list("todo"):prev({ ui_nav_wrap = true })
+			harpoon:list("bookmarks"):prev({ ui_nav_wrap = true })
 		end)
 	end,
 }

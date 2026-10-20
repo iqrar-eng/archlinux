@@ -8,6 +8,12 @@ return {
 					return vim.fn.line("$")
 				end,
 			})
+
+			opts.sections.lualine_a = {
+				function()
+					return vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
+				end,
+			}
 		end,
 	},
 }

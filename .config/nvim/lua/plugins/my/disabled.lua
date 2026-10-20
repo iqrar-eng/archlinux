@@ -21,4 +21,12 @@ return {
 			},
 		},
 	},
+
+	{
+		"folke/flash.nvim",
+		keys = function()
+			return {}
+		end,
+		opts = { modes = { char = { enabled = false } } },
+	},
 }

@@ -6,7 +6,7 @@ local firefox = "firefox"
 local tmux = "kitty --class kitty-tmux ~/archlinux/.config/tmux/bin/open"
 local clipboard = "copyq --start-server show"
 local fileManager = "~/archlinux/.config/yazi/bin/open"
-local player = "vlc"
+local player = "mpv"
 
 ------------------------
 ---- RULES ---
@@ -22,7 +22,7 @@ hl.window_rule({ match = { class = "firefox" }, workspace = "1" })
 hl.window_rule({ match = { class = "kitty-tmux" }, workspace = "2" })
 hl.window_rule({ match = { class = "com.github.hluk.copyq" }, workspace = "4" })
 hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
-hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
+hl.window_rule({ match = { class = "mpv" }, workspace = "6" })
 
 -------------------
 ---- AUTOSTART ----
@@ -31,7 +31,7 @@ hl.window_rule({ match = { class = "vlc" }, workspace = "6" })
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
 	hl.exec_cmd("trash-empty -f 30")
-	hl.exec_cmd("batsignal -e -b -p -w 35 -c 20 -d 10 -f 90")
+	hl.exec_cmd("batsignal -e -b -w 35 -c 20 -d 10 -f 90")
 	hl.exec_cmd(clipboard)
 end)
 
@@ -74,6 +74,7 @@ hl.config({
 	},
 
 	misc = {
+		focus_on_activate = true,
 		force_default_wallpaper = false,
 		disable_splash_rendering = true,
 		disable_hyprland_logo = true,

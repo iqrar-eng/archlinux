@@ -21,11 +21,10 @@ repos=(
   "$HOME/archlinux"
   "$HOME/personal/profile"
 )
-
 for repo in "${repos[@]}"; do
   printf "\n==> %s\n" "$repo"
   git -C "$repo" add -A
-  git -C "$repo" commit -m "chore: automated update"
+  git -C "$repo" commit -m "chore: routine update"
   git -C "$repo" push origin main
 done
 
@@ -54,9 +53,17 @@ pacman -Qqem >"$HOME/archlinux/generated/yay.packages"
 # ------------------------------------------------
 
 USB="/run/media/iqrar/IQRAR_USB"
-if [ -e "$USB" ]; then
-  rm -rf "$USB/personal"
-  cp -r "$HOME/personal" "$USB"
-else
-  echo "$USB not accessible"
+if [ ! -e "$USB" ]; then
+  udisksctl mount -b "/dev/disk/by-label/IQRAR_USB" 2>/dev/null &&
+    echo "USB accessible, continuing with the rest of the script..." &&
+    rm -rf "$USB/personal" &&
+    cp -r "$HOME/personal" "$USB"
+fi
+
+MTP=$(find "/run/user/1000/gvfs/" -maxdepth 1 -iname 'mtp:host=*')
+if [ ! -e "$MTP" ]; then
+  gio mount "$(gio mount -li | grep -m1 -oP 'activation_root=\Kmtp://\S+')" 2>/dev/null &&
+    echo "MTP accessible, continuing with the rest of the script..." &&
+    rm -rf "$MTP/Internal storage/personal" &&
+    cp -r "$HOME/personal" "$MTP/Internal storage"
 fi

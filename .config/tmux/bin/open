@@ -2,28 +2,21 @@
 
 term_flag=0
 for arg in "$@"; do
-    if [[ "$arg" == "--term" ]]; then
-        term_flag=1
-    fi
+  if [[ "$arg" == "--term" ]]; then
+    term_flag=1
+  fi
 done
 
-tmux_running=$(pgrep tmux)
-session_name=$(tmux display-message -p "#S")
-
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -d -s main -n nvim "nvim"
-    tmux new-window -t main
-    tmux select-window -t main:1
-    tmux attach-session -t main
+if [[ -z $TMUX ]] && [[ -z $(pgrep tmux) ]]; then
+  tmux new "nvim" \; neww -d \; neww -d
 else
-    tmux attach-session -t main
+  tmux attach
 fi
 
+tmux switch-client -t :1
+
 if [[ $term_flag -eq 1 ]]; then
-    tmux switch-client -t "$session_name:1"
-    tmux last-window
-else
-    tmux switch-client -t "$session_name:1"
+  tmux last-window
 fi
 
 hyprctl dispatch 'hl.dsp.focus({ workspace = "2" })' >/dev/null
