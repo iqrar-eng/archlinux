@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+curl https://raw.githubusercontent.com/CogentRedTester/mpv-scripts/refs/heads/master/keep-session.lua \
+  -o ~/archlinux/.config/mpv/scripts/keep-session.lua
+
+ya pkg upgrade --discard
+nvim --headless "+Lazy! sync" +qa

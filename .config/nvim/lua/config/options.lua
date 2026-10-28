@@ -1,4 +1,5 @@
 vim.g.snacks_animate = false
+vim.g.autoformat = false
 
 local opt = vim.opt
 

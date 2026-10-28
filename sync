@@ -1,35 +1,5 @@
 #!/usr/bin/env bash
 
-yay -Syu --noconfirm              # full system + AUR upgrade
-yay -Rns $(yay -Qtdq) --noconfirm # remove orphaned packages
-yay -Sc --noconfirm               # clean package cache
-
-roots=(
-  # ~/projects
-  ~/.src
-)
-find "${roots[@]}" -name .git -type d -print0 | while IFS= read -r -d '' d; do
-  repo="${d%/.git}"
-  printf "\n==> %s\n" "$repo"
-  git -C "$repo" fetch origin
-  git -C "$repo" reset --hard "origin/$(git -C "$repo" symbolic-ref --short HEAD)"
-  git -C "$repo" pull
-done
-
-repos=(
-  "$HOME/hw"
-  "$HOME/archlinux"
-  "$HOME/personal/profile"
-)
-for repo in "${repos[@]}"; do
-  printf "\n==> %s\n" "$repo"
-  git -C "$repo" add -A
-  git -C "$repo" commit -m "chore: routine update"
-  git -C "$repo" push origin main
-done
-
-# ------------------------------------------------
-
 fd -H -t l -E 'archlinux/*' . "$HOME" | while IFS= read -r f; do
   target=$(readlink -f "$f")
   case "$target" in
@@ -52,18 +22,47 @@ pacman -Qqem >"$HOME/archlinux/generated/yay.packages"
 
 # ------------------------------------------------
 
+yay -Syu --noconfirm              # full system + AUR upgrade
+yay -Rns $(yay -Qtdq) --noconfirm # remove orphaned packages
+yay -Sc --noconfirm               # clean package cache
+
+repos=(
+  "$HOME/hw"
+  "$HOME/archlinux"
+  "$HOME/personal/profile"
+)
+for repo in "${repos[@]}"; do
+  printf "\n==> %s\n" "$repo"
+  git -C "$repo" add -A
+  git -C "$repo" commit -m "chore: routine update"
+  git -C "$repo" push origin main
+done
+
+roots=(
+  # ~/projects
+  ~/.src
+)
+find "${roots[@]}" -name .git -type d -print0 | while IFS= read -r -d '' d; do
+  repo="${d%/.git}"
+  printf "\n==> %s\n" "$repo"
+  git -C "$repo" fetch origin
+  git -C "$repo" reset --hard "origin/$(git -C "$repo" symbolic-ref --short HEAD)"
+  git -C "$repo" pull
+done
+
+~/archlinux/util/common
+
+# ------------------------------------------------
+
 USB="/run/media/iqrar/IQRAR_USB"
-if [ ! -e "$USB" ]; then
-  udisksctl mount -b "/dev/disk/by-label/IQRAR_USB" 2>/dev/null &&
-    echo "USB accessible, continuing with the rest of the script..." &&
-    rm -rf "$USB/personal" &&
-    cp -r "$HOME/personal" "$USB"
+if [ -e "$USB" ] || udisksctl mount -b "/dev/disk/by-label/IQRAR_USB"; then
+  rm -rf "$USB/personal"
+  cp -r "$HOME/personal" "$USB"
 fi
 
 MTP=$(find "/run/user/1000/gvfs/" -maxdepth 1 -iname 'mtp:host=*')
-if [ ! -e "$MTP" ]; then
-  gio mount "$(gio mount -li | grep -m1 -oP 'activation_root=\Kmtp://\S+')" 2>/dev/null &&
-    echo "MTP accessible, continuing with the rest of the script..." &&
-    rm -rf "$MTP/Internal storage/personal" &&
-    cp -r "$HOME/personal" "$MTP/Internal storage"
+if [ -e "$MTP" ] || gio mount "$(gio mount -li | grep -m1 -oP 'activation_root=\Kmtp://\S+')"; then
+  echo "MTP accessible..."
+  rm -rf "$MTP/Internal storage/personal"
+  cp -r "$HOME/personal" "$MTP/Internal storage"
 fi

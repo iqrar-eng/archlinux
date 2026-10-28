@@ -37,10 +37,6 @@ require("lazy").setup({
 		enabled = false,
 		notify = false, -- get a notification when changes are found
 	},
-	checker = {
-		enabled = false, -- check for plugin updates periodically
-		notify = false, -- notify on update
-	}, -- automatically check for plugin updates
 	performance = {
 		rtp = {
 			-- disable some rtp plugins

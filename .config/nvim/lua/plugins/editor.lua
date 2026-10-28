@@ -27,7 +27,10 @@ return {
 	{
 		"folke/which-key.nvim",
 		event = "VeryLazy",
-		opts = { sort = { "local", "order", "desc", "alphanum", "mod" } },
+		opts = {
+			sort = { "local", "order", "desc", "alphanum", "mod" },
+			triggers = { { "<auto>", mode = "nisotc" } },
+		},
 		keys = {
 			{
 				"<leader>aw",
@@ -44,7 +47,7 @@ return {
 				function()
 					require("which-key").show({ keys = "<leader>g", loop = true })
 				end,
-				desc = "Git Hydra Mode (which-key)",
+				desc = "Hydra Mode (which-key)",
 			},
 		},
 	},

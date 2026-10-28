@@ -5,5 +5,5 @@ Personal reproducible Arch Linux setup focused on a keyboard-driven, terminal-fi
 ## Installation
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/iqrar-eng/archlinux/main/restore)
+bash <(curl https://raw.githubusercontent.com/iqrar-eng/archlinux/main/restore)
 ```

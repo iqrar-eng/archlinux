@@ -1,56 +1,31 @@
+vim.keymap.set({ "n", "x", "o" }, "<Right>", "<nop>")
+vim.keymap.set({ "n", "x", "o" }, "<Down>", "<nop>")
+
 local function remote_scroll(filetypes, dir)
 	return function()
 		local count = vim.v.count1
-		local original_win = vim.api.nvim_get_current_win()
 		for _, win in ipairs(vim.api.nvim_list_wins()) do
 			local buf = vim.api.nvim_win_get_buf(win)
 			if vim.tbl_contains(filetypes, vim.bo[buf].filetype) then
 				vim.api.nvim_set_current_win(win)
-				vim.api.nvim_feedkeys(count .. dir, "m", false)
-
-				vim.defer_fn(function()
-					if vim.api.nvim_win_is_valid(win) then
-						vim.api.nvim_set_current_win(win)
-						local keys = vim.api.nvim_replace_termcodes("<CR>", true, false, true)
-						vim.api.nvim_feedkeys(keys, "m", false)
-					end
-
-					vim.defer_fn(function()
-						if vim.api.nvim_win_is_valid(original_win) then
-							vim.api.nvim_set_current_win(original_win)
-						end
-					end, 10)
-				end, 50)
-
+				vim.api.nvim_feedkeys(count .. dir .. "\r", "m", false)
 				return
 			end
 		end
 	end
 end
 
-vim.keymap.set("n", "<C-H>", remote_scroll({ "undotree", "aerial" }, "j"), {})
-vim.keymap.set("n", "<C-L>", remote_scroll({ "undotree", "aerial" }, "k"), {})
-vim.keymap.set("n", "<C-J>", remote_scroll({ "snacks_picker_list" }, "j"), {})
-vim.keymap.set("n", "<C-K>", remote_scroll({ "snacks_picker_list" }, "k"), {})
+vim.keymap.set("n", "<C-PageDown>", remote_scroll({ "snacks_picker_list" }, "j"))
+vim.keymap.set("n", "<C-PageUp>", remote_scroll({ "snacks_picker_list" }, "k"))
 
-------------------------------------------------
+vim.keymap.set("n", "<C-S-H>", "<cmd>AerialNext<CR>")
+vim.keymap.set("n", "<C-S-L>", "<cmd>AerialPrev<CR>")
 
-vim.keymap.set("n", "<esc>", function()
-	local cc_map = vim.fn.maparg("<C-c>", "n", false, true)
-	if type(cc_map) == "table" and cc_map.desc == "Stop exchange" and cc_map.callback then
-		cc_map.callback()
-	end
-	vim.cmd("noh")
-	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
-	vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
-	return "<esc>"
-end, { expr = true, desc = "Escape and Clear hlsearch" })
+vim.keymap.set("n", "<C-S-J>", "g-")
+vim.keymap.set("n", "<C-S-K>", "g+")
 
-vim.keymap.set("x", "x", function()
-	vim.cmd("normal! " .. ("joko"):rep(vim.v.count1))
-end, { silent = true, desc = "visual extend/shrink vertically" })
-
-------------------------------------------------
+vim.keymap.set("n", "<leader>aT", "9999g+")
+vim.keymap.set("n", "<leader>aB", "9999g-")
 
 vim.keymap.set("n", "<leader>fe", function()
 	Snacks.explorer({ focus = false })
@@ -71,7 +46,7 @@ vim.keymap.set({ "n", "x" }, "j", "v:count > 1 ? \"m'\" . v:count . 'j' : 'j'", 
 vim.keymap.set({ "n", "x" }, "k", "v:count > 1 ? \"m'\" . v:count . 'k' : 'k'", { expr = true })
 
 vim.keymap.set({ "n", "x" }, "-", "v:count > 1 ? \"m'\" . v:count . '-' : '-'", { expr = true })
-vim.keymap.set({ "n", "x" }, "+", "v:count > 1 ? \"m'\" . v:count . '+' : '+'", { expr = true })
+vim.keymap.set({ "n", "x" }, "<CR>", "v:count > 1 ? \"m'\" . v:count . '+' : '+'", { expr = true })
 
 vim.keymap.set({ "n", "x" }, "<Home>", function()
 	return vim.v.count > 1 and ("m'" .. vim.v.count .. "gk$") or "0"
@@ -80,6 +55,11 @@ end, { expr = true })
 vim.keymap.set({ "n", "x" }, "<End>", function()
 	return vim.v.count > 1 and ("m'" .. vim.v.count .. "gj$") or "$"
 end, { expr = true })
+
+vim.keymap.set("n", "<C-L>", function()
+	local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
+	vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
+end, { expr = true, desc = "Escape and Clear hlsearch" })
 
 ------------------------------------------------
 
@@ -105,36 +85,38 @@ local function yank_selection_text()
 	return text
 end
 
--- main_cmd: command that receives --text <escaped>
--- post_cmd: optional command run after main_cmd succeeds (&&)
-local function bind_send_text(lhs, main_cmd, post_cmd)
-	local function build(text)
-		local cmd = main_cmd .. " --text " .. vim.fn.shellescape(text)
-		if post_cmd then
-			cmd = cmd .. " && " .. post_cmd
+local SLIME = "~/archlinux/.config/tmux/bin/slime"
+local function bind_send_text(lhs, flags, desc)
+	local function send(text, count)
+		local cmd = SLIME
+		if count > 0 then
+			cmd = cmd .. " " .. count
 		end
-		return cmd
+		cmd = cmd .. " " .. flags .. " --text " .. vim.fn.shellescape(text)
+		vim.fn.jobstart({ "sh", "-c", cmd }, { detach = true })
 	end
 
 	local global_name = "SlimeBrowserSendTextOp_" .. lhs:gsub("[^%w]", "_")
-	_G[global_name] = function(type)
-		local text = yank_motion_text(type)
-		vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
-	end
+
 	vim.keymap.set("n", lhs, function()
+		local count = vim.v.count
+		_G[global_name] = function(type)
+			send(yank_motion_text(type), count)
+		end
 		vim.o.operatorfunc = "v:lua." .. global_name
-		return "g@"
-	end, { expr = true, desc = "Send motion text via --text" })
+		return (count > 0 and "<Esc>" or "") .. "g@"
+	end, { expr = true, desc = desc })
+
 	vim.keymap.set("x", lhs, function()
-		local text = yank_selection_text()
-		vim.fn.jobstart({ "sh", "-c", build(text) }, { detach = true })
-	end, { desc = "Send selection text via --text" })
+		local count = vim.v.count
+		send(yank_selection_text(), count)
+	end, { desc = desc })
 end
 
-bind_send_text("<leader>z", "~/archlinux/.config/tmux/bin/slime --jump --execute")
-bind_send_text("<leader>v", "~/archlinux/.config/tmux/bin/slime --execute")
-bind_send_text("<leader>r", "~/archlinux/.config/tmux/bin/slime --jump")
-bind_send_text("<leader>m", "~/archlinux/.config/tmux/bin/slime --jump --no-cancel")
+bind_send_text("<leader>hq", "--jump --execute", "Slime: send, jump and execute")
+bind_send_text("<leader>hw", "--execute", "Slime: send and execute")
+bind_send_text("<leader>hr", "--jump", "Slime: send and jump")
+bind_send_text("<leader>hm", "--jump --no-cancel", "Slime: send, jump, no cancel")
 
 ----------------------------------------------
 
@@ -158,7 +140,7 @@ local function bind_send(lhs)
 	end, { desc = "Send selection to browser" })
 end
 
-bind_send("<leader>y")
+bind_send("<leader>he")
 
 ----------------------------------------------
 
@@ -173,18 +155,20 @@ vim.keymap.set("n", "[J", "<cmd>Gitsigns nav_hunk first --target=staged<CR>", { 
 
 vim.keymap.set("n", "<leader>gmr", "<cmd>Gitsigns reset_buffer_index<CR>")
 
+---------------------------------------------
+
 vim.keymap.set("n", "<leader>ak", '<cmd>!keyd reload<CR><cmd>echo "keyd reloaded"<CR>')
 vim.keymap.set("n", "<leader>aX", "<cmd>LazyExtras<CR>")
 vim.keymap.set("n", "<leader>ad", "<cmd>Sexplore<CR>")
 vim.keymap.set("x", "<leader>ao", ':g#^$#normal! "_dd<CR><Cmd>noh<CR>', { desc = "delete empty lines" })
 
 vim.keymap.set({ "o", "x" }, "iL", "il")
-
-vim.keymap.set("n", "<leader>aT", "9999g+")
-vim.keymap.set("n", "<leader>aB", "9999g-")
-
-vim.keymap.set({ "n", "x", "o" }, "<Right>", "<nop>")
-vim.keymap.set({ "n", "x", "o" }, "<Down>", "<nop>")
-
 vim.keymap.set("n", "<leader>a[", "istylua: ignore<Esc>[ ==gcc", { desc = "snippet stylua: ignore", remap = true })
 vim.keymap.set("n", "<leader>a]", "o<C-o>48i-<Esc>==gcc] ", { desc = "snippet separator", remap = true })
+
+vim.keymap.set(
+	"n",
+	"<leader>ac",
+	'<cmd>!tmux neww -c "$(pwd)"<cr><cmd>!tmux neww -c "$(pwd)" "npm run dev"<cr>',
+	{ desc = "tmux neww (cwd) ; nmp run dev" }
+)

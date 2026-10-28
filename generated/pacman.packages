@@ -2,6 +2,7 @@ amd-ucode
 base
 base-devel
 bash-completion
+bat
 batsignal
 bluez
 bluez-utils
@@ -12,6 +13,7 @@ copyq
 dunst
 efibootmgr
 exfatprogs
+eza
 fd
 firefox
 fzf
@@ -37,7 +39,7 @@ make
 man-db
 man-pages
 mkinitcpio
-neovim
+mpv
 network-manager-applet
 networkmanager
 nodejs
@@ -59,6 +61,7 @@ python-gobject
 python-pip
 qt5-wayland
 qt6-wayland
+resvg
 ripgrep
 rust
 slurp
@@ -76,8 +79,6 @@ usbutils
 uv
 uwsm
 vim
-vlc
-vlc-plugins-all
 vulkan-radeon
 wev
 wget

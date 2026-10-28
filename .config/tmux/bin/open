@@ -8,7 +8,7 @@ for arg in "$@"; do
 done
 
 if [[ -z $TMUX ]] && [[ -z $(pgrep tmux) ]]; then
-  tmux new "nvim" \; neww -d \; neww -d
+  tmux new \; send-keys nvim Enter \; neww -d
 else
   tmux attach
 fi

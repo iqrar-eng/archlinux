@@ -24,6 +24,8 @@ hl.window_rule({ match = { class = "com.github.hluk.copyq" }, workspace = "4" })
 hl.window_rule({ match = { class = "kitty-yazi" }, workspace = "5" })
 hl.window_rule({ match = { class = "mpv" }, workspace = "6" })
 
+hl.window_rule({ match = { workspace = "w[tv1]" }, border_size = 0, rounding = 0 })
+
 -------------------
 ---- AUTOSTART ----
 -------------------
@@ -55,15 +57,30 @@ hl.config({
 	},
 
 	general = {
-		border_size = 0,
-		gaps_in = 1,
+		gaps_in = 0,
 		gaps_out = 0,
+		border_size = 2,
+		col = {
+			active_border = {
+				colors = {
+					"rgba(8f00ffff)",
+					"rgba(4b00ffff)",
+					"rgba(0066ffff)",
+					"rgba(00ff40ff)",
+					"rgba(ffee00ff)",
+					"rgba(ff7a00ff)",
+					"rgba(ff0000ff)",
+					"rgba(8f00ffff)",
+				},
+				angle = 45,
+			},
+		},
 	},
 
 	decoration = {
 		rounding = 0,
-		shadow = { enabled = false },
-		blur = { enabled = false },
+    shadow = { enabled = false },
+    blur = { enabled = false },
 	},
 
 	animations = { enabled = false },
@@ -74,6 +91,7 @@ hl.config({
 	},
 
 	misc = {
+		on_focus_under_fullscreen = 1,
 		focus_on_activate = true,
 		force_default_wallpaper = false,
 		disable_splash_rendering = true,
@@ -81,7 +99,7 @@ hl.config({
 	},
 
 	input = {
-		sensitivity = 0.7,
+		sensitivity = 1,
 		touchpad = {
 			natural_scroll = true,
 		},

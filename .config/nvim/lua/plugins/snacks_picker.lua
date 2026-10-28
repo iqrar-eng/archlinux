@@ -1,63 +1,3 @@
-local harpoon_source = {
-	finder = function(opts, ctx)
-		local list = require("harpoon"):list(opts.harpoon_list)
-		local files = {}
-		for idx = 1, list:length() do
-			local item = list:get(idx)
-			if item then
-				table.insert(files, {
-					text = item.value,
-					file = item.value,
-					idx = idx,
-				})
-			end
-		end
-		return files
-	end,
-	format = "file",
-	preview = "file",
-	confirm = "jump",
-	actions = {
-		harpoon_remove = function(picker)
-			local items = picker:selected({ fallback = true })
-			if #items == 0 then
-				return
-			end
-
-			local harpoon = require("harpoon")
-			local list = harpoon:list(picker.opts.harpoon_list)
-
-			-- remove by VALUE, not by cached idx — idx can be stale/duplicated
-			local values_to_remove = {}
-			for _, it in ipairs(items) do
-				values_to_remove[it.file] = true
-			end
-
-			-- walk the underlying items high-to-low and splice them out directly
-			-- (list:remove_at leaves holes in some harpoon2 versions when the
-			-- internal table already has gaps; rebuilding is the reliable fix)
-			local kept = {}
-			for i = 1, list:length() do
-				local item = list:get(i)
-				if item and not values_to_remove[item.value] then
-					table.insert(kept, item)
-				end
-			end
-
-			list.items = kept
-			harpoon:sync()
-			picker:find()
-		end,
-	},
-	win = {
-		input = {
-			keys = {
-				["<C-x>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
-			},
-		},
-	},
-}
-
 return {
 	{
 		"folke/snacks.nvim",
@@ -87,6 +27,15 @@ return {
 							width = 0,
 							min_width = 0,
 							height = 0,
+						},
+					},
+					sidebar = {
+						layout = {
+							position = "left",
+							width = 40,
+							box = "vertical",
+							{ win = "list", border = "none" },
+							{ win = "preview", title = "{preview}", height = 0.4, border = "top" },
 						},
 					},
 				},
@@ -161,7 +110,7 @@ return {
 						end
 						local content = table.concat(chunks, "\n\n")
 						local line_count = select(2, content:gsub("\n", "\n")) + 1
-						if line_count > 500 then
+						if line_count > 400 then
 							local tmpfile = vim.fn.tempname() .. "_large_ai_context"
 							vim.fn.writefile(vim.split(content, "\n"), tmpfile)
 							local uri_list = "file://" .. tmpfile .. "\n"
@@ -192,7 +141,65 @@ return {
 					end,
 				},
 				sources = {
-					harpoon = harpoon_source,
+					harpoon = {
+						finder = function(opts, ctx)
+							local list = require("harpoon"):list(opts.harpoon_list)
+							local files = {}
+							for idx = 1, list:length() do
+								local item = list:get(idx)
+								if item then
+									table.insert(files, {
+										text = item.value,
+										file = item.value,
+										idx = idx,
+									})
+								end
+							end
+							return files
+						end,
+						format = "file",
+						preview = "file",
+						confirm = "jump",
+						actions = {
+							harpoon_remove = function(picker)
+								local items = picker:selected({ fallback = true })
+								if #items == 0 then
+									return
+								end
+
+								local harpoon = require("harpoon")
+								local list = harpoon:list(picker.opts.harpoon_list)
+
+								-- remove by VALUE, not by cached idx — idx can be stale/duplicated
+								local values_to_remove = {}
+								for _, it in ipairs(items) do
+									values_to_remove[it.file] = true
+								end
+
+								-- walk the underlying items high-to-low and splice them out directly
+								-- (list:remove_at leaves holes in some harpoon2 versions when the
+								-- internal table already has gaps; rebuilding is the reliable fix)
+								local kept = {}
+								for i = 1, list:length() do
+									local item = list:get(i)
+									if item and not values_to_remove[item.value] then
+										table.insert(kept, item)
+									end
+								end
+
+								list.items = kept
+								harpoon:sync()
+								picker:find()
+							end,
+						},
+						win = {
+							input = {
+								keys = {
+									["<C-x>"] = { "harpoon_remove", mode = { "n", "x", "i" } },
+								},
+							},
+						},
+					},
 					todo_comments = { hidden = true },
 					explorer = { hidden = true, ignored = true },
 					files = { hidden = true, follow = true },
@@ -253,58 +260,55 @@ return {
 		-- stylua: ignore
 		keys = {
 		  { "<leader>gms", function() Snacks.picker.git_diff({ staged = false, group = true }) end, desc = "Git Status" },
-		  { "<leader>ax", LazyVim.pick("live_grep", { cwd = vim.fn.stdpath("config") }), desc = "Grep Config File" },
 		  { "<leader>aY", function() Snacks.picker.harpoon() end, desc = "harpoon Picker" },
 		  { "<leader>aQ", function() Snacks.picker.harpoon({ harpoon_list = "quickfix" }) end, desc = "harpoon Picker (quickfix)" },
 		  { "<leader>aZ", function() Snacks.picker.harpoon({ harpoon_list = "bookmarks" }) end, desc = "harpoon Picker (bookmarks)" },
 		  { "<leader>aA", function() require("aerial").snacks_picker() end, desc = "aerial picker" },
 		  { "<leader>aG",  function() Snacks.picker()                 end, desc = "All Pickers"     },
-
-		  { "<leader>kf", LazyVim.pick("files", { cwd = vim.fn.expand("~") }), desc = "Find $HOME" },
-		  { "<leader>kF", LazyVim.pick("live_grep", { cwd = vim.fn.expand("~") }), desc = "Grep $HOME" },
-		  { "<leader>k<C-F>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~") }), desc = "Visual selection or word $HOME", mode = { "n", "x" } },
-		  { "<leader>ks", LazyVim.pick("files", { cwd = vim.fn.expand("~/archlinux/") }), desc = "Find archlinux", mode = { "n", "x" } },
-		  { "<leader>kS", LazyVim.pick("grep", { cwd = vim.fn.expand("~/archlinux/") }), desc = "Grep archlinux", mode = "n" },
-		  { "<leader>k<C-S>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/archlinux/") }), desc = "grep_word archlinux", mode = { "n", "x" } },
-		  { "<leader>kt", LazyVim.pick("files", { cwd = vim.fn.expand("~/.local/share/Trash/files/") }), desc = "Find Trash", mode = { "n", "x" } },
-		  { "<leader>kT", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.local/share/Trash/files/") }), desc = "Grep Trash", mode = "n" },
-		  { "<leader>k<C-T>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.local/share/Trash/files/") }), desc = "grep_word Trash", mode = { "n", "x" } },
-		  { "<leader>kl", LazyVim.pick("files", { cwd = vim.fn.expand("~/.local/share/nvim/lazy/LazyVim") }), desc = "Find LazyVim", mode = { "n", "x" } },
-		  { "<leader>kL", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.local/share/nvim/lazy/LazyVim") }), desc = "Grep LazyVim", mode = "n" },
-		  { "<leader>k<C-L>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.local/share/nvim/lazy/LazyVim") }), desc = "grep_word LazyVim", mode = { "n", "x" } },
-		  { "<leader>kp", LazyVim.pick("files", { cwd = vim.fn.expand("~/personal") }), desc = "Find personal", mode = { "n", "x" } },
-		  { "<leader>kP", LazyVim.pick("grep", { cwd = vim.fn.expand("~/personal") }), desc = "Grep personal", mode = "n" },
-		  { "<leader>k<C-P>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/personal") }), desc = "grep_word personal", mode = { "n", "x" } },
-		  { "<leader>km", LazyVim.pick("files", { cwd = vim.fn.expand("~/medical") }), desc = "Find medical", mode = { "n", "x" } },
-		  { "<leader>kM", LazyVim.pick("grep", { cwd = vim.fn.expand("~/medical") }), desc = "Grep medical", mode = "n" },
-		  { "<leader>k<C-M>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/medical") }), desc = "grep_word medical", mode = { "n", "x" } },
-		  { "<leader>kq", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/prisma/apps/docs/content/docs/") }), desc = "Find prisma", mode = { "n", "x" } },
-		  { "<leader>kQ", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/prisma/apps/docs/content/docs/") }), desc = "Grep prisma", mode = "n" },
-		  { "<leader>k<C-Q>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/prisma/apps/docs/content/docs/") }), desc = "grep_word prisma", mode = { "n", "x" } },
-		  { "<leader>kb", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/better-auth/docs/content/docs") }), desc = "Find better-auth", mode = { "n", "x" } },
-		  { "<leader>kB", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/better-auth/docs/content/docs") }), desc = "Grep better-auth", mode = "n" },
-		  { "<leader>k<C-B>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/better-auth/docs/content/docs") }), desc = "grep_word better-auth", mode = { "n", "x" } },
-		  { "<leader>kx", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/next.js/docs/01-app") }), desc = "Find next.js", mode = { "n", "x" } },
-		  { "<leader>kX", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/next.js/docs/01-app") }), desc = "Grep next.js", mode = "n" },
-		  { "<leader>k<C-X>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/next.js/docs/01-app") }), desc = "grep_word next.js", mode = { "n", "x" } },
-		  { "<leader>kd", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/node/doc/api") }), desc = "Find node", mode = { "n", "x" } },
-		  { "<leader>kD", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/node/doc/api") }), desc = "Grep node", mode = "n" },
-		  { "<leader>k<C-D>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/node/doc/api") }), desc = "grep_word node", mode = { "n", "x" } },
-		  { "<leader>ka", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/api") }), desc = "Find mdn api", mode = { "n", "x" } },
-		  { "<leader>kA", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/api") }), desc = "Grep mdn api", mode = "n" },
-		  { "<leader>k<C-A>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/api") }), desc = "grep_word mdn api", mode = { "n", "x" } },
-		  { "<leader>kh", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/http") }), desc = "Find mdn http", mode = { "n", "x" } },
-		  { "<leader>kH", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/http") }), desc = "Grep mdn http", mode = "n" },
-		  { "<leader>k<C-H>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/http") }), desc = "grep_word mdn http", mode = { "n", "x" } },
-		  { "<leader>kj", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/javascript") }), desc = "Find mdn javascript", mode = { "n", "x" } },
-		  { "<leader>kJ", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/javascript") }), desc = "Grep mdn javascript", mode = "n" },
-		  { "<leader>k<C-J>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/mdn/files/en-us/web/javascript") }), desc = "grep_word mdn javascript", mode = { "n", "x" } },
-		  { "<leader>kr", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Find react", mode = { "n", "x" } },
-		  { "<leader>kR", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "Grep react", mode = "n" },
-		  { "<leader>k<C-R>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/react/src/content/reference/") }), desc = "grep_word react", mode = { "n", "x" } },
-		  { "<leader>kc", LazyVim.pick("files", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Find typescript-cheatsheets-react", mode = { "n", "x" } },
-		  { "<leader>kC", LazyVim.pick("grep", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "Grep typescript-cheatsheets-react", mode = "n" },
-		  { "<leader>k<C-C>", LazyVim.pick("grep_word", { cwd = vim.fn.expand("~/.src/typescript-cheatsheets-react/docs") }), desc = "grep_word typescript-cheatsheets-react", mode = { "n", "x" } },
 		},
+		config = function(_, opts)
+			require("snacks").setup(opts)
+
+			local function register(prefix, entries)
+				for i, entry in ipairs(entries) do
+					local path, desc = entry[1], entry[2] or entry[1]
+					local alphabet = string.char(string.byte("a") + i - 1)
+					local function run(picker)
+						return function()
+							LazyVim.pick(picker, { cwd = vim.fn.expand(path) })()
+						end
+					end
+
+					vim.keymap.set({ "n", "x" }, prefix .. alphabet, run("files"), { desc = "Find " .. desc })
+					vim.keymap.set("n", prefix .. alphabet:upper(), run("grep"), { desc = "Grep " .. desc })
+					vim.keymap.set(
+						{ "n", "x" },
+						prefix .. "<C-" .. alphabet .. ">",
+						run("grep_word"),
+						{ desc = "grep_word " .. desc }
+					)
+				end
+			end
+
+			register("<leader>k", {
+				{ "~/archlinux" },
+				{ "~/.src/better-auth/docs/content/docs", "better-auth" },
+				{ "~/archlinux/.config/nvim", "nvim" },
+				{ "~/.src/prisma/apps/docs/content/docs", "prisma" },
+				{ "~/.local/share/Trash/files", "trash" },
+				{ "~" },
+				{ "~/.src/react/src/content/reference", "react" },
+				{ "~/.src/mdn/files/en-us/web/http", "mdn http" },
+				{ "~/.src/mdn/files/en-us/web/api", "mdn api" },
+				{ "~/.src/mdn/files/en-us/web/javascript", "mdn javascript" },
+				{ "~/.src/typescript-cheatsheets-react/docs", "typescript-cheatsheets-react" },
+				{ "~/.local/share/nvim/lazy/LazyVim", "lazyVim" },
+				{ "~/medical" },
+				{ "~/.src/next.js/docs/01-app", "next.js" },
+				{ "~/.src/node/doc/api", "node" },
+				{ "~/personal" },
+				{ "~/projects/" },
+			})
+		end,
 	},
 }

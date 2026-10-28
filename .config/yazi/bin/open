@@ -1,36 +1,13 @@
 #!/bin/bash
 
 MY_ID=123456
-ARGS=()
 
+PATHS=()
 for arg in "$@"; do
-  case "$arg" in
-  *) ARGS+=("$arg") ;;
-  esac
+  PATHS+=("$(realpath -sm -- "$arg")")
 done
 
-PATHS=("${ARGS[@]:-$HOME}")
-YAZI_CMD=(kitty --class kitty-yazi -e yazi)
-
-cd_or_reveal() {
-  if [ -d "$1" ]; then
-    ya emit-to "$MY_ID" cd "$1"
-  else
-    ya emit-to "$MY_ID" reveal "$1"
-  fi
-}
-
-first="${PATHS[0]}"
-
-probe_ok() { ya emit-to "$MY_ID" tab_create 2>/dev/null && cd_or_reveal "$first"; }
-
-if probe_ok; then
-  for p in "${PATHS[@]:1}"; do
-    ya emit-to "$MY_ID" tab_create
-    cd_or_reveal "$p"
-  done
-else
-  "${YAZI_CMD[@]}" --client-id "$MY_ID" "${PATHS[@]}"
-fi
+ya emit-to "$MY_ID" plugin autosave ${PATHS:+load} "${PATHS[@]}" 2>/dev/null ||
+  kitty --class kitty-yazi -e yazi --client-id "$MY_ID" "${PATHS[@]}"
 
 hyprctl dispatch 'hl.dsp.focus({ workspace = "5" })' >/dev/null
